@@ -1,0 +1,4 @@
+.agents/
+.system_generated/
+*.log
+*.tmp

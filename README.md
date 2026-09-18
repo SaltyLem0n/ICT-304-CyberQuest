@@ -1,0 +1,47 @@
+# CyberQuest: Cybersecurity Study Hub & Cryptography Lab
+> Interactive cybersecurity study portal and cryptography solver for ICT 304 (Chapter 3: Cryptographic Concepts).
+
+## 🚀 Live Demo
+Visit the deployed application on GitHub Pages:
+**[https://saltylem0n.github.io/ICT-304-CyberQuest/](https://saltylem0n.github.io/ICT-304-CyberQuest/)**
+
+---
+
+## 🛠️ Features
+
+### 1. NotebookLM-Style Conceptual Quiz
+- Practice questions mapped directly to course slides.
+- Dynamic hint toggles and detailed rationale explanations.
+- Session score tracking and topic-based categorization.
+
+### 2. Interactive Cryptography Lab & Solvers
+- **Caesar & ROT13 Lab**: Live shift slider and 25-key automated brute-force inspector with English heuristic detection (`MYWOROBO` $\rightarrow$ `COMEHERE`).
+- **Atbash Cipher**: Symmetric Hebrew alphabet mirror with real-time transformation.
+- **Vigenère Square**: Interactive Tabula Recta ($26 \times 26$) with row/col coordinate highlight and step-by-step trace calculation.
+- **Playfair $5 \times 5$ Simulator**: Live key matrix generation, digraph pair tokenizer with duplicate insertion, and geometric rule cards (Same Row, Same Column, Rectangle). Includes Slide 33 National Treasure challenge.
+- **Vernam One-Time Pad**: Modular arithmetic subtraction ($P_i \equiv C_i - K_i \pmod{26}$) with step-by-step decimal calculation table.
+- **Digital Scratchpad**: Double-buffered HTML5 canvas with pen, highlighter, eraser, pre-loaded templates (Cyber Dot Grid, Playfair Box, Pigpen Enclosures), 25-step undo history, and PNG export.
+- **Reference Tables**: Fast interactive lookups for Tabula Recta, 1-25 Caesar shifts, 7-Bit ASCII code table with `smart-search.js` filtering, and Pigpen cards.
+
+---
+
+## 🏗️ Architecture
+- **Zero-Build Single-Page Application**: Runs straight out of the box without bundlers, Node.js runtime, or build steps.
+- **ES6 Object-Oriented Architecture**: Cleanly separated domain classes (`CaesarCipher`, `AtbashCipher`, `VigenereCipher`, `PlayfairCipher`, `VernamCipher`) and controllers (`ScratchpadEngine`, `QuizEngine`, `LabEngine`, `CyberQuestApp`).
+- **Styling**: Tailwind CSS v3 via CDN with cyber dark-mode theme.
+- **Bilingual Interface**: Quick toggle between English and Thai.
+
+---
+
+## 💻 Local Usage
+Simply open `index.html` in any modern web browser:
+```bash
+# Windows
+start index.html
+
+# macOS
+open index.html
+
+# Linux
+xdg-open index.html
+```

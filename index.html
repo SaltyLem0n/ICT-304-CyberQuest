@@ -1,0 +1,3390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberQuest | Cybersecurity Study & Cryptography Lab</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter and JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            cyber: {
+              50: '#eef2ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              900: '#1e1b4b',
+              accent: '#06b6d4',
+              neon: '#10b981',
+              warning: '#f59e0b',
+              danger: '#ef4444'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    /* Custom scrollbar and animations */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    .grid-cell-highlight {
+      background-color: rgba(99, 102, 241, 0.35);
+      color: #38bdf8;
+      font-weight: bold;
+    }
+    .grid-cell-target {
+      background-color: rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      font-weight: bold;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(99, 102, 241, 0.3); }
+      50% { box-shadow: 0 0 25px rgba(6, 182, 212, 0.5); }
+    }
+    .pulse-glow {
+      animation: pulseGlow 3s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+  <header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('landing')">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+        </div>
+        <div>
+          <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">CYBER<span class="text-cyan-400">QUEST</span></span>
+          <span class="hidden sm:inline-block ml-2 px-2 py-0.5 text-xs font-medium rounded-full bg-indigo-950 text-indigo-300 border border-indigo-700/50">Chapter 3 Ready</span>
+        </div>
+      </div>
+
+      <!-- Quick Nav Buttons -->
+      <nav class="flex items-center space-x-1.5 sm:space-x-3 text-sm font-medium">
+        <button id="nav-back" onclick="goBack()" title="Back / ย้อนกลับ" class="px-2.5 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 text-xs font-semibold flex items-center gap-1 transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          <span id="nav-back-text" class="hidden sm:inline">Back</span>
+        </button>
+        <button id="nav-dashboard" onclick="switchView('landing')" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+          <span id="nav-dashboard-text">Dashboard</span>
+        </button>
+        <button id="nav-theory" onclick="openChapterQuiz(3)" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition"><span id="nav-theory-text">Concept Quiz</span></button>
+        <button id="nav-lab" onclick="switchView('lab')" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="nav-lab-text">Practical Lab</span>
+        </button>
+        <button id="nav-translate" onclick="toggleTranslation()" title="Toggle Bilingual EN/TH Mode" class="px-2.5 py-1.5 rounded-lg bg-indigo-950 border border-indigo-700/60 text-cyan-300 hover:text-white hover:bg-indigo-900 text-xs font-semibold flex items-center gap-1 transition">
+          <span>🌐 EN | TH</span>
+        </button>
+        <button onclick="toggleHandoffModal()" class="px-2.5 py-1.5 rounded-lg bg-indigo-600/30 text-indigo-300 hover:bg-indigo-600/50 border border-indigo-500/40 text-xs font-semibold flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+          <span id="nav-handoff-text" class="hidden sm:inline">AGY Handoff</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- ========================================================= -->
+    <!-- VIEW 1: LANDING PAGE / CHAPTER SELECTOR                  -->
+    <!-- ========================================================= -->
+    <section id="view-landing" class="space-y-10">
+      <!-- Hero Banner -->
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-500/20 p-8 sm:p-12 shadow-2xl">
+        <div class="absolute -right-16 -top-16 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 max-w-3xl space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-900/60 border border-indigo-500/30 text-xs font-semibold text-cyan-300">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Cybersecurity Masterclass Exam Prep
+          </div>
+          <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
+            Master Cryptography & Classical Ciphers.
+          </h1>
+          <p class="text-slate-300 text-base sm:text-lg leading-relaxed">
+            Test your knowledge with NotebookLM-style question breakdowns, dynamic hints, and an interactive cipher sandbox directly mapped to your course syllabus.
+          </p>
+          <div class="flex flex-wrap gap-4 pt-2">
+            <button onclick="openChapterQuiz(3)" class="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-semibold shadow-lg shadow-indigo-600/30 transition flex items-center gap-2">
+              Start Chapter 3 Quiz
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+            <button onclick="switchView('lab')" class="px-6 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700 font-semibold transition flex items-center gap-2">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg>
+              Interactive Cipher Lab
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Bar -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl">
+          <p class="text-xs font-medium text-slate-400">Active Syllabus</p>
+          <p class="text-2xl font-bold text-white mt-1">Chapter 3</p>
+          <p class="text-xs text-indigo-400 mt-0.5">Classical Cryptography</p>
+        </div>
+        <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl">
+          <p class="text-xs font-medium text-slate-400">Concept Quiz Bank</p>
+          <p class="text-2xl font-bold text-white mt-1">10 Questions</p>
+          <p class="text-xs text-cyan-400 mt-0.5">With NotebookLM hints</p>
+        </div>
+        <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl">
+          <p class="text-xs font-medium text-slate-400">Hands-on Challenges</p>
+          <p class="text-2xl font-bold text-white mt-1">5 Ciphers</p>
+          <p class="text-xs text-emerald-400 mt-0.5">Interactive Decoders</p>
+        </div>
+        <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl">
+          <p class="text-xs font-medium text-slate-400">Your Practice Score</p>
+          <p id="landing-score-display" class="text-2xl font-bold text-indigo-400 mt-1">0 / 10</p>
+          <p class="text-xs text-slate-400 mt-0.5">Saved in Local Session</p>
+        </div>
+      </div>
+
+      <!-- Chapter Selection Catalog -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+          <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          Course Chapters
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <!-- Chapter 1 (Mock / Preview) -->
+          <div class="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-6 opacity-60 hover:opacity-80 transition flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+                <span>CHAPTER 01</span>
+                <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">Upcoming</span>
+              </div>
+              <h3 class="text-lg font-bold text-white mb-2">Cybersecurity Fundamentals & CIA Triad</h3>
+              <p class="text-sm text-slate-400 leading-relaxed">Confidentiality, integrity, availability, threat actors, and defense in depth.</p>
+            </div>
+            <button disabled class="mt-6 w-full py-2.5 rounded-xl bg-slate-800 text-slate-500 font-medium text-sm cursor-not-allowed">Locked for Midterm</button>
+          </div>
+
+          <!-- Chapter 2 (Mock / Preview) -->
+          <div class="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-6 opacity-60 hover:opacity-80 transition flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+                <span>CHAPTER 02</span>
+                <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">Upcoming</span>
+              </div>
+              <h3 class="text-lg font-bold text-white mb-2">Attacks, Malware & Social Engineering</h3>
+              <p class="text-sm text-slate-400 leading-relaxed">Phishing, MITM, ransomware, zero-day vulnerabilities, and security controls.</p>
+            </div>
+            <button disabled class="mt-6 w-full py-2.5 rounded-xl bg-slate-800 text-slate-500 font-medium text-sm cursor-not-allowed">Locked for Midterm</button>
+          </div>
+
+          <!-- Chapter 3 (ACTIVE HERO) -->
+          <div class="bg-slate-900 border-2 border-indigo-500/80 rounded-2xl p-6 shadow-xl shadow-indigo-500/10 flex flex-col justify-between relative group hover:border-cyan-400 transition-all duration-300">
+            <div class="absolute -top-3 right-6 bg-gradient-to-r from-indigo-500 to-cyan-500 text-white text-xs font-bold px-3 py-0.5 rounded-full uppercase tracking-wider shadow">
+              Ready to Study
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-xs font-mono text-cyan-400 mb-2">
+                <span>CHAPTER 03</span>
+                <span class="px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-700/50">Active Module</span>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyan-300 transition">Cryptographic Concepts & Classical Ciphers</h3>
+              <p class="text-sm text-slate-300 leading-relaxed mb-4">
+                Caesar, ROT13, Atbash, Scytale, Pigpen, Vigenère table, Playfair digraphs, Vernam OTP mod 26, and Obscurity vs Cryptography.
+              </p>
+              <div class="flex flex-wrap gap-1.5 mb-4">
+                <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300">Monoalphabetic</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300">Polyalphabetic</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300">Polygraphic</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300">Transposition</span>
+              </div>
+            </div>
+            <div class="space-y-2 mt-4">
+              <button onclick="openChapterQuiz(3)" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition shadow flex items-center justify-center gap-2">
+                Launch Concept Quiz (10 Qs)
+              </button>
+              <button onclick="switchView('lab')" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 font-semibold text-xs border border-slate-700 transition flex items-center justify-center gap-1.5">
+                Launch Practical Cipher Lab
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- VIEW 2: NOTEBOOKLM-STYLE CONCEPT QUIZ                     -->
+    <!-- ========================================================= -->
+    <section id="view-quiz" class="hidden space-y-6">
+      <!-- Quiz Header & Tracker -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+        <div>
+          <button onclick="switchView('landing')" class="text-xs font-semibold text-slate-400 hover:text-slate-200 flex items-center gap-1 mb-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            Back to Chapter Selection
+          </button>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span>Chapter 3: Cryptography Concept Quiz</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-900/80 text-indigo-300 border border-indigo-600/40">NotebookLM Mode</span>
+          </h2>
+        </div>
+        <!-- Progress Bar and Counter -->
+        <div class="flex items-center gap-4">
+          <div class="text-right">
+            <span class="text-xs text-slate-400 font-mono">Question</span>
+            <div class="text-base font-bold text-white" id="quiz-question-index">1 / 10</div>
+          </div>
+          <div class="w-32 bg-slate-800 h-2.5 rounded-full overflow-hidden">
+            <div id="quiz-progress-bar" class="bg-gradient-to-r from-indigo-500 to-cyan-400 h-full w-1/10 transition-all duration-300"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Question Card -->
+      <div id="quiz-question-card" class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+        <div class="flex items-center justify-between">
+          <span id="question-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-950 border border-indigo-700/50 text-indigo-300">
+            Topic: Classical Ciphers
+          </span>
+          <!-- Hint Toggle Button (NotebookLM style) -->
+          <button onclick="toggleHint()" id="hint-toggle-btn" class="text-xs font-medium text-amber-400 hover:text-amber-300 bg-amber-950/40 border border-amber-800/60 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+            <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+            <span id="hint-toggle-text">Need a Hint?</span>
+          </button>
+        </div>
+
+        <!-- NotebookLM Hint Box (Expandable) -->
+        <div id="hint-box" class="hidden p-4 rounded-xl bg-amber-950/20 border border-amber-500/30 text-amber-200 text-sm flex items-start gap-3">
+          <svg class="w-5 h-5 text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <div id="hint-text">Remember to review the core slides regarding key differences.</div>
+        </div>
+
+        <!-- Question Prompt -->
+        <h3 id="question-prompt" class="text-xl sm:text-2xl font-bold text-white leading-relaxed">
+          Loading Question...
+        </h3>
+
+        <!-- Options Container (4 answers) -->
+        <div id="options-container" class="grid grid-cols-1 gap-3 pt-2">
+          <!-- Filled dynamically by JavaScript -->
+        </div>
+
+        <!-- Feedback & Explanation Panel (NotebookLM Style Analysis) -->
+        <div id="explanation-panel" class="hidden p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+          <div class="flex items-center gap-2" id="explanation-status">
+            <!-- Icon and status injected dynamically -->
+          </div>
+          <p id="explanation-text" class="text-sm text-slate-300 leading-relaxed">
+            Explanation text will appear here.
+          </p>
+          <div class="pt-2 flex justify-between items-center border-t border-slate-800/80">
+            <span class="text-xs text-slate-500" id="source-slide-ref">Source: Chapter 3 Slides</span>
+            <button onclick="nextQuestion()" id="next-question-btn" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow transition flex items-center gap-1.5">
+              Next Question
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz Summary Modal / Final Results Screen (Hidden initially) -->
+      <div id="quiz-results-container" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center space-y-6">
+        <div class="w-16 h-16 rounded-2xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/40 mx-auto flex items-center justify-center">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h3 class="text-2xl font-black text-white">Chapter 3 Quiz Complete!</h3>
+        <p class="text-slate-300 text-sm max-w-md mx-auto">
+          Here is your comprehensive score breakdown. You can review your answers or test your practical skills in the cipher lab.
+        </p>
+        <div class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400" id="final-score-text">
+          8 / 10
+        </div>
+        <div class="flex justify-center gap-4 pt-4">
+          <button onclick="openChapterQuiz(3)" class="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-sm font-semibold transition">
+            Retake Quiz
+          </button>
+          <button onclick="switchView('lab')" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow transition">
+            Go to Practical Lab
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- VIEW 3: PRACTICAL CIPHER LAB (HANDS-ON SOLVING & TOOLS)   -->
+    <!-- ========================================================= -->
+    <section id="view-lab" class="hidden space-y-8">
+      
+      <!-- Lab Header -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-2xl font-bold text-white">Practical Cipher Lab & Solver</h2>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono bg-emerald-950 text-emerald-300 border border-emerald-700/50">Interactive</span>
+          </div>
+          <p class="text-sm text-slate-400 mt-1">
+            Solve challenges from Chapter 3 slides with live validation, interactive reference tables, and a digital scratchpad.
+          </p>
+        </div>
+        <!-- Lab Tab Selector -->
+        <div class="flex flex-wrap gap-2">
+          <button onclick="setLabTab('caesar')" id="tab-btn-caesar" class="lab-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white"><span id="tab-btn-caesar-text">Caesar & ROT13</span></button>
+          <button onclick="setLabTab('atbash')" id="tab-btn-atbash" class="lab-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white"><span id="tab-btn-atbash-text">Atbash</span></button>
+          <button onclick="setLabTab('vigenere')" id="tab-btn-vigenere" class="lab-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white"><span id="tab-btn-vigenere-text">Vigenère Square</span></button>
+          <button onclick="setLabTab('playfair')" id="tab-btn-playfair" class="lab-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white"><span id="tab-btn-playfair-text">Playfair 5x5</span></button>
+          <button onclick="setLabTab('vernam')" id="tab-btn-vernam" class="lab-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white"><span id="tab-btn-vernam-text">Vernam (OTP)</span></button>
+          <button onclick="setLabTab('grids')" id="tab-btn-grids" class="lab-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-cyan-300 hover:text-white border border-cyan-500/30 flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-10v16M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1z"/></svg>
+            <span id="tab-btn-grids-text">Reference Tables & Grids</span>
+          </button>
+          <button onclick="setLabTab('scratchpad')" id="tab-btn-scratchpad" class="lab-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-emerald-300 hover:text-white border border-emerald-500/30 flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+            <span id="tab-btn-scratchpad-text">Draw & Scratchpad</span>
+          </button>
+          <button onclick="setLabTab('pdfviewer')" id="tab-btn-pdfviewer" class="lab-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-amber-300 hover:text-white border border-amber-500/30 flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span id="tab-btn-pdfviewer-text">PDF Preview</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 1: CAESAR & ROT13 CHALLENGES -->
+      <div id="lab-caesar" class="space-y-6">
+        
+        <!-- Slide Challenge 1 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-cyan-400 font-semibold">Slide 14 Challenge | Ancient Rome</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300">Shift Key: n = 3</span>
+          </div>
+          <h4 class="text-lg font-bold text-white">Caesar Decryption Challenge</h4>
+          <p class="text-sm text-slate-300">
+            Julius Caesar's officers received the following ciphertext shifted by <strong class="text-cyan-400">3</strong> positions:
+          </p>
+          <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-cyan-300 tracking-widest text-sm break-all">
+            HASHULHQFHLVWKHW HDFKHURIDOOWKLQJV
+          </div>
+          <div class="space-y-2">
+            <label class="text-xs font-medium text-slate-400">Enter Your Plaintext Solution:</label>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input type="text" id="input-caesar-challenge" placeholder="TYPE DECRYPTED MESSAGE HERE..." class="flex-grow bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-mono text-white uppercase focus:outline-none focus:border-indigo-500">
+              <button id="btn-verify-caesar" onclick="verifyCaesarChallenge()" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition">Verify Plaintext</button>
+            </div>
+            <div id="feedback-caesar-challenge" class="hidden text-xs p-3 rounded-lg font-mono"></div>
+          </div>
+        </div>
+
+        <!-- Slide Challenge 2: ROT13 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-amber-400 font-semibold">Slide 15 Challenge | Rotate by 13</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300">Shift Key: n = 13</span>
+          </div>
+          <h4 class="text-lg font-bold text-white">ROT13 Decryption Challenge</h4>
+          <p class="text-sm text-slate-300">
+            Decrypt the message from the slide using ROT13:
+          </p>
+          <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-amber-300 tracking-widest text-sm">
+            RAPELCGNAQQRPELCG
+          </div>
+          <div class="space-y-2">
+            <label class="text-xs font-medium text-slate-400">Enter Your Plaintext Solution:</label>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input type="text" id="input-rot13-challenge" placeholder="TYPE ROT13 DECODED RESULT..." class="flex-grow bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-mono text-white uppercase focus:outline-none focus:border-indigo-500">
+              <button id="btn-verify-rot13" onclick="verifyRot13Challenge()" class="px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold transition">Verify ROT13</button>
+            </div>
+            <div id="feedback-rot13-challenge" class="hidden text-xs p-3 rounded-lg font-mono"></div>
+          </div>
+        </div>
+
+        <!-- Interactive Caesar Sandbox Tool -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <h4 class="text-sm font-bold text-white flex items-center gap-2">
+            <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+            Interactive Caesar Shift Calculator & Brute-Force Inspector
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="space-y-2">
+              <label class="text-xs text-slate-400">Input Text:</label>
+              <input type="text" id="sandbox-caesar-text" value="MEET AT 5 PM" oninput="runCaesarSandbox()" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 font-mono text-sm text-white uppercase">
+            </div>
+            <div class="space-y-2">
+              <div class="flex justify-between text-xs text-slate-400">
+                <span>Shift Key (n):</span>
+                <span id="sandbox-caesar-val" class="font-bold text-cyan-400">3</span>
+              </div>
+              <input type="range" min="1" max="25" value="3" id="sandbox-caesar-slider" oninput="runCaesarSandbox()" class="w-full accent-indigo-500">
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs text-slate-400">Encrypted Output:</label>
+              <div id="sandbox-caesar-output" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 font-mono text-sm text-emerald-400 break-all font-bold">
+                PHHW DW 5 SP
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Decryption Table Caesar 25-Shift Brute-Force Inspector -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-cyan-400 font-semibold">Decryption Table | Automated Cryptanalysis</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-700/50">25-Shift Brute Force</span>
+          </div>
+          <h4 class="text-base font-bold text-white flex items-center gap-2">
+            <span>Caesar Brute-Force Inspector & Decryption Table Tool</span>
+          </h4>
+          <p class="text-xs text-slate-300">
+            Test all 25 shift possibilities simultaneously with automated English dictionary and letter-frequency scoring. Solve the course Decryption Table challenge: Crack <code class="text-cyan-300 font-mono font-bold">MYWOROBO</code> to find the hidden plaintext word!
+          </p>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input type="text" id="input-caesar-bruteforce" value="MYWOROBO" placeholder="ENTER CIPHERTEXT TO CRACK..." class="flex-grow bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-mono text-white uppercase focus:outline-none focus:border-indigo-500">
+            <button onclick="runCaesarBruteForce()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition flex items-center justify-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              Crack All 25 Shifts
+            </button>
+            <button onclick="loadBrutePreset('MYWOROBO')" class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-mono transition border border-slate-700">
+              Reset: MYWOROBO
+            </button>
+          </div>
+          <!-- Brute Force Results Container -->
+          <div id="caesar-bruteforce-results" class="overflow-x-auto max-h-64 border border-slate-800 rounded-xl bg-slate-950 p-2 text-xs font-mono">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TAB 2: ATBASH CIPHER -->
+      <div id="lab-atbash" class="hidden space-y-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-indigo-400 font-semibold">Slide 11-12 | Hebrew Alphabet Mirror</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300">A &harr; Z, B &harr; Y</span>
+          </div>
+          <h4 class="text-lg font-bold text-white">Atbash Reverse Alphabet Mapper</h4>
+          <p class="text-sm text-slate-300">
+            Used in the Book of Jeremiah (Yirmeyahu). Each letter is replaced with its exact symmetric counterpart from the other end of the alphabet.
+          </p>
+          <!-- Visual Mapping Ribbon -->
+          <div class="overflow-x-auto p-4 bg-slate-950 rounded-xl border border-slate-800 font-mono text-xs">
+            <div class="text-slate-400 tracking-wider">PLAIN : A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</div>
+            <div class="text-cyan-400 tracking-wider mt-1">CIPHER: Z Y X W V U T S R Q P O N M L K J I H G F E D C B A</div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <div class="space-y-2">
+              <label class="text-xs text-slate-400">Type Any Word to Mirror (e.g. JEREMIAH):</label>
+              <input type="text" id="input-atbash" value="JEREMIAH" oninput="runAtbash()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 font-mono text-sm text-white uppercase">
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs text-slate-400">Atbash Result:</label>
+              <div id="output-atbash" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-sm text-cyan-400 font-bold">
+                QVIVNRZS
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: VIGENERE SQUARE & CHALLENGE -->
+      <div id="lab-vigenere" class="hidden space-y-6">
+        
+        <!-- Slide 23 Challenge -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-indigo-400 font-semibold">Slide 23 Challenge | Giovan Battista Bellaso</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-indigo-950 text-indigo-300">Keyword: BOSTON</span>
+          </div>
+          <h4 class="text-lg font-bold text-white">Vigenère Decryption Challenge</h4>
+          <p class="text-sm text-slate-300">
+            Decrypt the message from your slide using the keyword <span class="text-indigo-400 font-mono font-bold">"BOSTON"</span>:
+          </p>
+          <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-indigo-300 tracking-widest text-sm">
+            Ciphertext: <strong class="text-white">DFQIHNOODRGVT</strong> | Keyword: <strong class="text-cyan-400">BOSTONBOSTONB</strong>
+          </div>
+          <div class="space-y-2">
+            <label class="text-xs font-medium text-slate-400">Enter Your Plaintext Solution:</label>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input type="text" id="input-vigenere-challenge" placeholder="ENTER DECRYPTED WORD..." class="flex-grow bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-mono text-white uppercase focus:outline-none focus:border-indigo-500">
+              <button id="btn-verify-vigenere" onclick="verifyVigenereChallenge()" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition">Verify Plaintext</button>
+            </div>
+            <div id="feedback-vigenere-challenge" class="hidden text-xs p-3 rounded-lg font-mono"></div>
+          </div>
+        </div>
+
+        <!-- Interactive Vigenère Live Encoder / Decoder -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <h4 class="text-base font-bold text-white flex items-center gap-2">
+                <span>Interactive Vigenère Engine</span>
+                <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-700/50">Tabula Recta</span>
+              </h4>
+              <p class="text-xs text-slate-400 mt-0.5">Polyalphabetic substitution with coordinate mapping: $C_i \equiv (P_i + K_i) \pmod{26}$ or $P_i \equiv (C_i - K_i) \pmod{26}$.</p>
+            </div>
+            <div class="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 self-start sm:self-auto">
+              <button id="btn-vig-mode-encrypt" onclick="setVigenereMode('encrypt')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white">Encrypt (P + K)</button>
+              <button id="btn-vig-mode-decrypt" onclick="setVigenereMode('decrypt')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white">Decrypt (C - K)</button>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs text-slate-400 font-mono">Quick Presets:</span>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="loadVigenerePreset('DFQIHNOODRGVT', 'BOSTON', 'decrypt')" class="px-2.5 py-1 rounded-lg bg-indigo-950 border border-indigo-700/60 text-cyan-300 hover:text-white text-[11px] font-mono transition">
+                Load Slide 23 (DFQIHNOODRGVT + BOSTON)
+              </button>
+              <button onclick="loadVigenerePreset('YOU WILL NEVER WALK ALONE', 'BRITISH', 'encrypt')" class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-white text-[11px] font-mono transition">
+                Load Sample (YOU WILL... + BRITISH)
+              </button>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs text-slate-400 font-mono" id="vig-input-label">Plaintext Message (P):</label>
+              <input type="text" id="vig-input" value="YOU WILL NEVER WALK ALONE" oninput="calcVigenere()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 font-mono text-sm text-white uppercase mt-1 focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 font-mono">Keyword (K):</label>
+              <input type="text" id="vig-key" value="BRITISH" oninput="calcVigenere()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 font-mono text-sm text-cyan-400 uppercase mt-1 focus:outline-none focus:border-cyan-500">
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <div class="p-4 bg-slate-950 rounded-xl border border-slate-800">
+              <span class="text-xs text-slate-500 uppercase font-mono">Encrypted Output (C):</span>
+              <div id="vig-enc-output" class="text-sm font-mono font-bold text-indigo-400 mt-1 break-all">ZFC PQDS OVDXZ OHMB IEWFL</div>
+            </div>
+            <div class="p-4 bg-slate-950 rounded-xl border border-slate-800">
+              <span class="text-xs text-slate-500 uppercase font-mono">Decrypted Output (P):</span>
+              <div id="vig-dec-output" class="text-sm font-mono font-bold text-emerald-400 mt-1 break-all">YOU WILL NEVER WALK ALONE</div>
+            </div>
+          </div>
+
+          <!-- Step-by-Step Vigenère Coordinate Trace -->
+          <div class="space-y-2 pt-2 border-t border-slate-800">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-300 uppercase font-mono" id="vig-trace-title">Step-by-Step Tabula Recta Coordinate Breakdown:</span>
+              <span class="text-[11px] text-slate-500" id="vig-trace-subtitle">Row (Key) &times; Column (Plain) &rarr; Ciphertext</span>
+            </div>
+            <div id="vig-trace-container" class="overflow-x-auto max-h-56 border border-slate-800 rounded-xl bg-slate-950 p-2 text-xs font-mono">
+              <!-- Populated dynamically by calcVigenere() -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TAB 4: PLAYFAIR CIPHER (DIGRAPH 5x5 GRID) -->
+      <div id="lab-playfair" class="hidden space-y-6">
+        
+        <!-- Slide 33 Challenge: National Treasure -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-cyan-400 font-semibold">Slide 33 Challenge | National Treasure Double-Box Matrix</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-700/50">Keyword: DEATH</span>
+          </div>
+          <h4 class="text-lg font-bold text-white">Playfair Slide 33 Decryption Challenge</h4>
+          <p class="text-sm text-slate-300">
+            Decrypt the secret historic cipher discovered in the movie <em>National Treasure: Book of Secrets</em> using keyword <span class="font-mono text-cyan-400 font-bold">"DEATH"</span> (omits 'J', 'J' &rarr; 'I'):
+          </p>
+          <div class="p-3.5 bg-slate-950 rounded-xl border border-slate-800 font-mono text-cyan-300 tracking-widest text-xs break-all leading-relaxed">
+            ME IK QO TX CQ TE ZX CO MW QC TE HN FB IK ME HA KR QC UN GI KM AV
+          </div>
+          <div class="space-y-2">
+            <label class="text-xs font-medium text-slate-400">Enter Your Plaintext Solution (Slide 33):</label>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input type="text" id="input-playfair-challenge" placeholder="TYPE DECRYPTED MESSAGE (e.g. LABOULAYE LADY WILL LEAD...)..." class="flex-grow bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-mono text-white uppercase focus:outline-none focus:border-indigo-500">
+              <button id="btn-verify-playfair" onclick="verifyPlayfairChallenge()" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition flex items-center justify-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span id="btn-verify-playfair-text">Verify Plaintext</span>
+              </button>
+            </div>
+            <div id="feedback-playfair-challenge" class="hidden text-xs p-3 rounded-lg font-mono"></div>
+          </div>
+        </div>
+
+        <!-- Interactive Playfair 5x5 Grid Simulator & Digraph Tokenizer -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div>
+              <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                <span>Interactive Playfair 5&times;5 Matrix Engine</span>
+                <span class="text-xs font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-700/50">Wheatstone (1854)</span>
+              </h4>
+              <p class="text-xs text-slate-400 mt-0.5">Dynamic key matrix generation, live digraph tokenization with 'X' rules, and step-by-step geometric rule cards.</p>
+            </div>
+            <!-- Mode Toggle: Decrypt / Encrypt -->
+            <div class="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 self-start sm:self-auto">
+              <button id="btn-playfair-mode-decrypt" onclick="setPlayfairMode('decrypt')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white">Decrypt Mode</button>
+              <button id="btn-playfair-mode-encrypt" onclick="setPlayfairMode('encrypt')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white">Encrypt Mode</button>
+            </div>
+          </div>
+
+          <!-- Quick Presets -->
+          <div class="flex flex-wrap items-center gap-2 pt-1">
+            <span class="text-xs text-slate-500 font-mono">Quick Presets:</span>
+            <button onclick="loadPlayfairPreset('ME IK QO TX CQ TE ZX CO MW QC TE HN FB IK ME HA KR QC UN GI KM AV', 'DEATH', 'decrypt')" class="px-2.5 py-1 rounded-lg bg-indigo-950 border border-indigo-700/60 text-cyan-300 hover:text-white text-[11px] font-mono transition">
+              [Slide 33: National Treasure]
+            </button>
+            <button onclick="loadPlayfairPreset('HIDE THE GOLD IN THE TREE STUMP', 'MONARCHY', 'encrypt')" class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-white text-[11px] font-mono transition">
+              [Slide 25: MONARCHY Encrypt]
+            </button>
+          </div>
+
+          <!-- Controls: Key and Input Text -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs text-slate-400 font-mono">Keyword / Keyphrase (Auto 'J' &rarr; 'I' & deduplication):</label>
+              <input type="text" id="playfair-sandbox-key" value="DEATH" oninput="runPlayfairSandbox()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 font-mono text-sm text-cyan-400 uppercase mt-1 focus:outline-none focus:border-cyan-500">
+            </div>
+            <div>
+              <label id="playfair-input-label" class="text-xs text-slate-400 font-mono">Input Message / Ciphertext:</label>
+              <input type="text" id="playfair-sandbox-text" value="ME IK QO TX CQ TE ZX CO MW QC TE HN FB IK ME HA KR QC UN GI KM AV" oninput="runPlayfairSandbox()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 font-mono text-sm text-white uppercase mt-1 focus:outline-none focus:border-indigo-500">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- 5x5 Dynamic Key Matrix Display (5 cols) -->
+            <div class="lg:col-span-5 space-y-2">
+              <div class="flex items-center justify-between text-xs font-mono text-slate-400">
+                <span>Dynamic 5&times;5 Key Matrix:</span>
+                <span class="text-[10px] text-indigo-400">Blue = Key Letters</span>
+              </div>
+              <div id="playfair-matrix-grid" class="grid grid-cols-5 gap-1.5 p-3.5 bg-slate-950 rounded-2xl border border-slate-800 text-center">
+                <!-- Dynamically populated via renderPlayfairMatrix() -->
+              </div>
+              <p class="text-[11px] text-slate-500 text-center font-mono">Letter 'J' is mapped to 'I' inside the 25-cell grid.</p>
+            </div>
+
+            <!-- Transformation Rules & Digraph Tokenizer (7 cols) -->
+            <div class="lg:col-span-7 space-y-4">
+              <!-- Live Digraph Ribbon -->
+              <div class="space-y-1.5">
+                <span class="text-xs font-mono text-slate-400 block">Parsed Digraph Pairs (Rule: 'X' inserted between consecutive identicals):</span>
+                <div id="playfair-digraph-ribbon" class="flex flex-wrap gap-1.5 p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs font-mono">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+
+              <!-- Output Box -->
+              <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-1">
+                <span class="text-xs text-slate-500 uppercase font-mono">Result Output:</span>
+                <div id="playfair-output" class="text-sm font-mono font-bold text-emerald-400 break-all">
+                  LABOULAYELADYWILLXLEADTOCIBOLATEMPLESOFGOLDX
+                </div>
+              </div>
+
+              <!-- Rules Summary Reference -->
+              <div class="space-y-2 text-xs text-slate-300 bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                <h5 class="font-bold text-white text-xs uppercase tracking-wider">Playfair Transformation Rules Reference:</h5>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px]">
+                  <div class="p-2 rounded bg-slate-900 border border-slate-800">
+                    <strong class="text-cyan-400 block mb-0.5">1. Same Row</strong>
+                    <span class="text-slate-400">Enc: Shift right &rarr; (wrap)<br>Dec: Shift left &larr; (wrap)</span>
+                  </div>
+                  <div class="p-2 rounded bg-slate-900 border border-slate-800">
+                    <strong class="text-emerald-400 block mb-0.5">2. Same Col</strong>
+                    <span class="text-slate-400">Enc: Shift down &darr; (wrap)<br>Dec: Shift up &uarr; (wrap)</span>
+                  </div>
+                  <div class="p-2 rounded bg-slate-900 border border-slate-800">
+                    <strong class="text-indigo-400 block mb-0.5">3. Rectangle</strong>
+                    <span class="text-slate-400">Swap column coordinates with opposite corners</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step-by-Step Digraph Transformation Cards -->
+          <div class="space-y-2 pt-2 border-t border-slate-800">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-300 uppercase font-mono">Step-by-Step Digraph Transformation Cards:</span>
+              <span class="text-[11px] text-slate-500 font-mono">Coordinates & Applied Rules</span>
+            </div>
+            <div id="playfair-steps-container" class="overflow-x-auto max-h-72 border border-slate-800 rounded-xl bg-slate-950 p-3">
+              <!-- Populated via runPlayfairSandbox() -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TAB 5: VERNAM CIPHER (ONE-TIME PAD MOD 26) -->
+      <div id="lab-vernam" class="hidden space-y-6">
+        
+        <!-- Slide 37 Challenge -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-emerald-400 font-semibold">Slide 37 Challenge | Gilbert Vernam (AT&T Bell Labs)</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700/50">One-Time Pad</span>
+          </div>
+          <h4 class="text-lg font-bold text-white">Vernam Modular Arithmetic Challenge</h4>
+          <p class="text-sm text-slate-300">
+            Solve the slide problem: Decrypt ciphertext <span class="font-mono text-emerald-400 font-bold">"RRQNDLWDJRAL"</span> using the one-time pad key <span class="font-mono text-cyan-400 font-bold">"PASYKXQMJCTN"</span>:
+          </p>
+
+          <!-- Step by Step Math Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs font-mono text-center border-collapse">
+              <thead>
+                <tr class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                  <th class="p-2 text-left">Step</th>
+                  <th class="p-2">1</th><th class="p-2">2</th><th class="p-2">3</th><th class="p-2">4</th><th class="p-2">5</th><th class="p-2">6</th><th class="p-2">7</th><th class="p-2">8</th><th class="p-2">9</th><th class="p-2">10</th><th class="p-2">11</th><th class="p-2">12</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60 bg-slate-900/40">
+                <tr>
+                  <td class="p-2 text-left font-semibold text-slate-300">Ciphertext (C)</td>
+                  <td class="p-2 text-emerald-400 font-bold">R</td><td class="p-2 text-emerald-400 font-bold">R</td><td class="p-2 text-emerald-400 font-bold">Q</td><td class="p-2 text-emerald-400 font-bold">N</td><td class="p-2 text-emerald-400 font-bold">D</td><td class="p-2 text-emerald-400 font-bold">L</td><td class="p-2 text-emerald-400 font-bold">W</td><td class="p-2 text-emerald-400 font-bold">D</td><td class="p-2 text-emerald-400 font-bold">J</td><td class="p-2 text-emerald-400 font-bold">R</td><td class="p-2 text-emerald-400 font-bold">A</td><td class="p-2 text-emerald-400 font-bold">L</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-left font-semibold text-slate-400">Pad Key (K)</td>
+                  <td class="p-2 text-amber-400">P</td><td class="p-2 text-amber-400">A</td><td class="p-2 text-amber-400">S</td><td class="p-2 text-amber-400">Y</td><td class="p-2 text-amber-400">K</td><td class="p-2 text-amber-400">X</td><td class="p-2 text-amber-400">Q</td><td class="p-2 text-amber-400">M</td><td class="p-2 text-amber-400">J</td><td class="p-2 text-amber-400">C</td><td class="p-2 text-amber-400">T</td><td class="p-2 text-amber-400">N</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-left font-semibold text-slate-400">Formula</td>
+                  <td colspan="12" class="p-2 text-slate-300 font-mono text-center bg-slate-950/60">Plaintext = (Ciphertext Value - Key Value) mod 26</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="space-y-2 pt-2">
+            <label class="text-xs font-medium text-slate-400">What does the resulting plaintext read?</label>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input type="text" id="input-vernam-challenge" placeholder="TYPE DECRYPTED VERNAM WORD..." class="flex-grow bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-mono text-white uppercase focus:outline-none focus:border-indigo-500">
+              <button id="btn-verify-vernam" onclick="verifyVernamChallenge()" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold transition">Verify Plaintext</button>
+            </div>
+            <div id="feedback-vernam-challenge" class="hidden text-xs p-3 rounded-lg font-mono"></div>
+          </div>
+        </div>
+
+        <!-- Interactive Vernam Calculator & Modular Step Breakdown -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                <span>Interactive Vernam OTP Calculator</span>
+                <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700/50">Modular Math &Delta; 26</span>
+              </h4>
+              <p class="text-xs text-slate-400 mt-0.5">Calculate One-Time Pad transformations with live decimal index breakdown: $P_i \equiv (C_i - K_i) \pmod{26}$.</p>
+            </div>
+            <div class="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 self-start sm:self-auto">
+              <button id="btn-vernam-mode-decrypt" onclick="setVernamMode('decrypt')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white">Decrypt (C - K)</button>
+              <button id="btn-vernam-mode-encrypt" onclick="setVernamMode('encrypt')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white">Encrypt (P + K)</button>
+            </div>
+          </div>
+
+          <!-- Quick Presets -->
+          <div class="flex flex-wrap items-center gap-2 pt-1">
+            <span class="text-xs text-slate-500 font-mono">Quick Presets:</span>
+            <button onclick="loadVernamPreset('RRQNDLWDJRAL', 'PASYKXQMJCTN', 'decrypt')" class="px-2.5 py-1 rounded-lg bg-emerald-950 border border-emerald-700/60 text-emerald-300 hover:text-white text-[11px] font-mono transition">
+              [Slide 37: RRQNDLWDJRAL Decrypt]
+            </button>
+            <button onclick="loadVernamPreset('CRYPTOGRAPHY', 'PASYKXQMJCTN', 'encrypt')" class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-white text-[11px] font-mono transition">
+              [Slide 37: CRYPTOGRAPHY Encrypt]
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label id="vernam-input-label" class="text-xs text-slate-400 font-mono">Input Message / Ciphertext:</label>
+              <input type="text" id="vernam-sandbox-text" value="RRQNDLWDJRAL" oninput="runVernamSandbox()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 font-mono text-sm text-emerald-400 uppercase mt-1 focus:outline-none focus:border-emerald-500">
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 font-mono">One-Time Pad Key (Pad Length &ge; Message):</label>
+              <input type="text" id="vernam-sandbox-key" value="PASYKXQMJCTN" oninput="runVernamSandbox()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 font-mono text-sm text-cyan-400 uppercase mt-1 focus:outline-none focus:border-cyan-500">
+            </div>
+          </div>
+
+          <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-1">
+            <span class="text-xs text-slate-500 uppercase font-mono">Calculated Result Output:</span>
+            <div id="vernam-sandbox-output" class="text-base font-mono font-bold text-emerald-400 break-all">CRYPTOGRAPHY</div>
+          </div>
+
+          <!-- Dynamic Modular Arithmetic Breakdown Table -->
+          <div class="space-y-2 pt-1">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-300 uppercase font-mono">Step-by-Step Modular Decimal Computation:</span>
+              <span class="text-[11px] text-slate-500 font-mono">Index &middot; Char &middot; Decimal &middot; Formula</span>
+            </div>
+            <div id="vernam-steps-table" class="overflow-x-auto max-h-60 border border-slate-800 rounded-xl bg-slate-950 p-2.5">
+              <!-- Populated dynamically via runVernamSandbox() -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TAB 6: REFERENCE TABLES & DECRYPTION GRIDS -->
+      <div id="lab-grids" class="hidden space-y-6">
+        
+        <!-- Grid Sub-Navigation -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-white uppercase tracking-wider">Select Reference Table:</span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="setGridSubTab('vigenere-grid')" id="subtab-btn-vigenere-grid" class="px-3 py-1 rounded-lg text-xs font-semibold bg-indigo-600 text-white">Vigenère 26x26 Square</button>
+            <button onclick="setGridSubTab('caesar-table')" id="subtab-btn-caesar-table" class="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white">Caesar 1-25 Shifts</button>
+            <button onclick="setGridSubTab('ascii-chart')" id="subtab-btn-ascii-chart" class="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white">ASCII Code Chart (7-Bit)</button>
+            <button onclick="setGridSubTab('pigpen-ref')" id="subtab-btn-pigpen-ref" class="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white">Pigpen & Atbash Cards</button>
+          </div>
+        </div>
+
+        <!-- 6A. VIGENÈRE 26x26 TABULA RECTA INTERACTIVE GRID -->
+        <div id="grid-sub-vigenere" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                <span>Tabula Recta (26×26 Vigenère Grid)</span>
+                <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-950 text-cyan-300 border border-indigo-700/50">PDF Page 2</span>
+              </h4>
+              <p class="text-xs text-slate-400 mt-0.5">Hover or click any cell to inspect intersecting Key row, Plaintext column, and Ciphertext result.</p>
+            </div>
+            <!-- Dynamic Coordinate Inspector -->
+            <div id="vigenere-coords-display" class="px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-cyan-300 flex items-center gap-2">
+              <span>Row (Key): <strong id="vig-coord-row" class="text-white">-</strong></span>
+              <span>•</span>
+              <span>Col (Plain): <strong id="vig-coord-col" class="text-white">-</strong></span>
+              <span>•</span>
+              <span>Result: <strong id="vig-coord-val" class="text-emerald-400">-</strong></span>
+            </div>
+          </div>
+
+          <!-- The Table Container -->
+          <div class="overflow-x-auto max-h-[500px] border border-slate-800 rounded-xl bg-slate-950">
+            <table id="vigenere-table-element" class="text-[11px] font-mono border-collapse select-none w-full text-center">
+              <!-- Dynamically populated via JS for clean DOM & fast rendering -->
+            </table>
+          </div>
+        </div>
+
+        <!-- 6B. CAESAR COMPLETE 1-25 SHIFT TABLE -->
+        <div id="grid-sub-caesar" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                <span>Caesar 25-Shift Complete Decryption Matrix</span>
+                <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-700/50">PDF Page 3</span>
+              </h4>
+              <p class="text-xs text-slate-400 mt-0.5">All 25 alphabet shift positions (n=1 to n=25) for brute force or rapid verification.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="text" id="caesar-filter-input" placeholder="Search Letter / Shift..." oninput="filterCaesarTable()" class="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-indigo-500">
+            </div>
+          </div>
+          <div class="overflow-x-auto max-h-[480px] border border-slate-800 rounded-xl bg-slate-950">
+            <table id="caesar-shift-table-element" class="w-full text-xs font-mono text-center border-collapse">
+              <!-- Dynamically populated via JS -->
+            </table>
+          </div>
+        </div>
+
+        <!-- 6C. ASCII 7-BIT CODE CHART -->
+        <div id="grid-sub-ascii" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                <span>ASCII 7-Bit Code Chart</span>
+                <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700/50">PDF Page 4</span>
+              </h4>
+              <p class="text-xs text-slate-400 mt-0.5">Columns: High bits $b_7 b_6 b_5$ (0–7). Rows: Low bits $b_4 b_3 b_2 b_1$ (0–15).</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="text" id="ascii-filter-input" placeholder="Search Character / Code..." oninput="filterAsciiTable()" class="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-emerald-500">
+            </div>
+          </div>
+          <div class="overflow-x-auto border border-slate-800 rounded-xl bg-slate-950 p-2">
+            <table id="ascii-table-element" class="w-full text-xs font-mono text-center border-collapse">
+              <!-- Dynamically populated from Page 4 chart -->
+            </table>
+          </div>
+        </div>
+
+        <!-- 6D. PIGPEN & ATBASH REFERENCE CARDS -->
+        <div id="grid-sub-pigpen" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
+          <div class="border-b border-slate-800 pb-3">
+            <h4 class="text-lg font-bold text-white flex items-center gap-2">
+              <span>Pigpen (Freemason) & Atbash Visual Diagrams</span>
+              <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-700/50">Slide 11 & 17</span>
+            </h4>
+            <p class="text-xs text-slate-400 mt-0.5">Use these geometric keys to transcribe symbols into letters.</p>
+          </div>
+
+          <!-- Pigpen 4 Enclosures SVG Display -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <!-- Grid 1: A-I -->
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-center space-y-2">
+              <span class="text-xs font-bold text-cyan-400 font-mono">1. Plain 3x3 Grid (A - I)</span>
+              <div class="grid grid-cols-3 gap-1 p-2 bg-slate-900 rounded-lg font-mono text-base font-bold text-white">
+                <div class="border-b-2 border-r-2 border-cyan-500/80 p-2">A</div>
+                <div class="border-b-2 border-r-2 border-cyan-500/80 p-2">B</div>
+                <div class="border-b-2 border-cyan-500/80 p-2">C</div>
+                <div class="border-b-2 border-r-2 border-cyan-500/80 p-2">D</div>
+                <div class="border-b-2 border-r-2 border-cyan-500/80 p-2">E</div>
+                <div class="border-b-2 border-cyan-500/80 p-2">F</div>
+                <div class="border-r-2 border-cyan-500/80 p-2">G</div>
+                <div class="border-r-2 border-cyan-500/80 p-2">H</div>
+                <div class="p-2">I</div>
+              </div>
+              <span class="text-[10px] text-slate-400 block">No dot added</span>
+            </div>
+
+            <!-- Grid 2: J-R (With Dots) -->
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-center space-y-2">
+              <span class="text-xs font-bold text-indigo-400 font-mono">2. Dotted 3x3 Grid (J - R)</span>
+              <div class="grid grid-cols-3 gap-1 p-2 bg-slate-900 rounded-lg font-mono text-base font-bold text-white">
+                <div class="border-b-2 border-r-2 border-indigo-500/80 p-2">J•</div>
+                <div class="border-b-2 border-r-2 border-indigo-500/80 p-2">K•</div>
+                <div class="border-b-2 border-indigo-500/80 p-2">L•</div>
+                <div class="border-b-2 border-r-2 border-indigo-500/80 p-2">M•</div>
+                <div class="border-b-2 border-r-2 border-indigo-500/80 p-2">N•</div>
+                <div class="border-b-2 border-indigo-500/80 p-2">O•</div>
+                <div class="border-r-2 border-indigo-500/80 p-2">P•</div>
+                <div class="border-r-2 border-indigo-500/80 p-2">Q•</div>
+                <div class="p-2">R•</div>
+              </div>
+              <span class="text-[10px] text-slate-400 block">Identical grid + single dot</span>
+            </div>
+
+            <!-- Grid 3: S-V (X-Shape) -->
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-center space-y-2">
+              <span class="text-xs font-bold text-emerald-400 font-mono">3. X-Enclosure (S - V)</span>
+              <div class="relative h-28 bg-slate-900 rounded-lg flex items-center justify-center font-mono font-bold text-white">
+                <svg class="absolute inset-0 w-full h-full stroke-emerald-500/80 stroke-2" viewBox="0 0 100 100">
+                  <line x1="15" y1="15" x2="85" y2="85" />
+                  <line x1="85" y1="15" x2="15" y2="85" />
+                </svg>
+                <div class="absolute top-2 text-sm font-bold">S</div>
+                <div class="absolute left-4 text-sm font-bold">T</div>
+                <div class="absolute right-4 text-sm font-bold">U</div>
+                <div class="absolute bottom-2 text-sm font-bold">V</div>
+              </div>
+              <span class="text-[10px] text-slate-400 block">Diagonal quadrants</span>
+            </div>
+
+            <!-- Grid 4: W-Z (X-Shape with Dots) -->
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-center space-y-2">
+              <span class="text-xs font-bold text-amber-400 font-mono">4. Dotted X (W - Z)</span>
+              <div class="relative h-28 bg-slate-900 rounded-lg flex items-center justify-center font-mono font-bold text-white">
+                <svg class="absolute inset-0 w-full h-full stroke-amber-500/80 stroke-2" viewBox="0 0 100 100">
+                  <line x1="15" y1="15" x2="85" y2="85" />
+                  <line x1="85" y1="15" x2="15" y2="85" />
+                </svg>
+                <div class="absolute top-2 text-sm font-bold">W•</div>
+                <div class="absolute left-4 text-sm font-bold">•X</div>
+                <div class="absolute right-4 text-sm font-bold">Y•</div>
+                <div class="absolute bottom-2 text-sm font-bold">Z•</div>
+              </div>
+              <span class="text-[10px] text-slate-400 block">Diagonal quadrants + dot</span>
+            </div>
+
+          </div>
+
+          <!-- Atbash Reference Ribbon -->
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-2">
+            <span class="text-xs font-bold text-cyan-400 font-mono">Atbash Mirror Alphabet Ribbon:</span>
+            <div class="grid grid-cols-13 gap-1 text-center font-mono text-xs">
+              <div class="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300">A &harr; Z</div>
+              <div class="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300">B &harr; Y</div>
+              <div class="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300">C &harr; X</div>
+              <div class="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300">D &harr; W</div>
+              <div class="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300">E &harr; V</div>
+              <div class="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300">F &harr; U</div>
+              <div class="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300">G &harr; T</div>
+              <div class="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300">H &harr; S</div>
+              <div class="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300">I &harr; R</div>
+              <div class="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300">J &harr; Q</div>
+              <div class="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300">K &harr; P</div>
+              <div class="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300">L &harr; O</div>
+              <div class="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300">M &harr; N</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TAB 7: DRAW & SCRATCHPAD (TOUCH + MOUSE CANVAS) -->
+      <div id="lab-scratchpad" class="hidden space-y-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div>
+              <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                <span>Cipher Scratchpad & Digital Whiteboard</span>
+                <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700/50">Mouse & Touch Enabled</span>
+              </h4>
+              <p class="text-xs text-slate-400 mt-0.5">Draw Pigpen symbols, Playfair 5x5 matrices, or calculate One-Time Pad mod 26 steps.</p>
+            </div>
+
+            <!-- Canvas Action Controls -->
+            <div class="flex items-center gap-2">
+              <button id="btn-export-canvas" onclick="downloadCanvasImg()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                <span id="btn-export-canvas-text">Export Drawing</span>
+              </button>
+              <button id="btn-undo-canvas" onclick="undoCanvas()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m0 0l-4-4m4 4l4-4M3 10l4-4m-4 4l4 4"/></svg>
+                <span id="btn-undo-canvas-text">Undo</span>
+              </button>
+              <button id="btn-clear-canvas" onclick="clearCanvas()" class="px-3 py-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900/60 text-rose-300 border border-rose-800/60 text-xs font-semibold transition flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                <span id="btn-clear-canvas-text">Clear</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Canvas Toolbar (Tools, Colors, Stroke Size, Background Template) -->
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Tool Modes -->
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400 font-mono">Tool:</span>
+              <button id="tool-pen" onclick="setCanvasTool('pen')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-600 text-white">Pen</button>
+              <button id="tool-highlighter" onclick="setCanvasTool('highlighter')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white">Highlighter</button>
+              <button id="tool-eraser" onclick="setCanvasTool('eraser')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white">Eraser</button>
+            </div>
+
+            <!-- Color Palette -->
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs text-slate-400 font-mono mr-1">Color:</span>
+              <button onclick="setCanvasColor('#38bdf8')" class="w-6 h-6 rounded-full bg-sky-400 ring-2 ring-transparent focus:ring-white"></button>
+              <button onclick="setCanvasColor('#34d399')" class="w-6 h-6 rounded-full bg-emerald-400 ring-2 ring-transparent focus:ring-white"></button>
+              <button onclick="setCanvasColor('#fbbf24')" class="w-6 h-6 rounded-full bg-amber-400 ring-2 ring-transparent focus:ring-white"></button>
+              <button onclick="setCanvasColor('#f43f5e')" class="w-6 h-6 rounded-full bg-rose-500 ring-2 ring-transparent focus:ring-white"></button>
+              <button onclick="setCanvasColor('#818cf8')" class="w-6 h-6 rounded-full bg-indigo-400 ring-2 ring-transparent focus:ring-white"></button>
+              <button onclick="setCanvasColor('#ffffff')" class="w-6 h-6 rounded-full bg-white ring-2 ring-transparent focus:ring-white"></button>
+            </div>
+
+            <!-- Size Slider -->
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400 font-mono">Size:</span>
+              <input type="range" id="canvas-stroke-size" min="1" max="18" value="3" oninput="updateStrokeSize(this.value)" class="w-24 accent-indigo-500">
+              <span id="canvas-stroke-val" class="text-xs font-mono text-slate-300 w-4">3</span>
+            </div>
+
+            <!-- Background Template Guide -->
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400 font-mono">Template:</span>
+              <select id="canvas-template-select" onchange="switchCanvasTemplate(this.value)" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg px-2 py-1 focus:outline-none">
+                <option value="grid">Cyber Dot Grid</option>
+                <option value="playfair">Playfair 5x5 Box</option>
+                <option value="pigpen">Pigpen Enclosures</option>
+                <option value="blank">Blank Slate</option>
+              </select>
+            </div>
+
+          </div>
+
+          <!-- The Canvas Area -->
+          <div class="relative w-full h-[520px] bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden shadow-inner touch-none">
+            <canvas id="scratchpad-canvas" class="w-full h-full block cursor-crosshair" style="touch-action: none;"></canvas>
+            <div class="absolute bottom-3 left-3 px-2.5 py-1 rounded-md bg-slate-900/80 border border-slate-800 text-[10px] font-mono text-slate-400 pointer-events-none">
+              Tip: Supports stylus and multi-touch on iPad / tablet screens
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TAB 8: COURSE PDF VIEWER -->
+      <div id="lab-pdfviewer" class="hidden space-y-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div>
+              <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                <span>Course PDF & Slide Viewer</span>
+                <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-700/50">Side-by-Side</span>
+              </h4>
+              <p class="text-xs text-slate-400 mt-0.5">Upload your downloaded course slides or Decryption Table to review notes right here.</p>
+            </div>
+
+            <!-- PDF Presets & Upload Input -->
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="loadPdfPreset('Chapter 3 - Cryptographic Concepts.pdf')" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition">
+                Course Slides (Ch 3)
+              </button>
+              <button onclick="loadPdfPreset('Decryption Table.pdf')" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition">
+                Decryption Table
+              </button>
+              <label class="cursor-pointer px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition flex items-center gap-2 shadow">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                <span>Upload Custom PDF</span>
+                <input type="file" id="pdf-file-input" accept="application/pdf,.pdf" onchange="loadUserPdf(event)" class="hidden">
+              </label>
+            </div>
+          </div>
+
+          <!-- Viewer Container -->
+          <div class="relative w-full h-[650px] bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden flex flex-col items-center justify-center">
+            
+            <div id="pdf-placeholder" class="text-center p-8 space-y-3 max-w-md">
+              <div class="w-14 h-14 rounded-2xl bg-amber-950/40 text-amber-400 border border-amber-800/60 mx-auto flex items-center justify-center">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              </div>
+              <h5 class="text-white font-bold text-base">No PDF File Loaded Yet</h5>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                Click the <strong>Select Local PDF File</strong> button above to load <code class="text-amber-300">Decryption Table.pdf</code> or <code class="text-cyan-300">Chapter 3 - Cryptographic Concepts.pdf</code> directly in your browser.
+              </p>
+              <div class="pt-2">
+                <button onclick="setLabTab('grids')" class="text-xs text-indigo-400 hover:text-indigo-300 underline font-medium">
+                  Or use the built-in interactive Reference Tables & Grids &rarr;
+                </button>
+              </div>
+            </div>
+
+            <!-- PDF Object Frame -->
+            <iframe id="pdf-frame" class="w-full h-full hidden" src="" title="PDF Document Preview"></iframe>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ========================================================= -->
+  <!-- MODAL: AGY HANDOFF & GITHUB PAGES DEPLOYMENT GUIDE       -->
+  <!-- ========================================================= -->
+  <div id="handoff-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center text-indigo-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-white">AGY Handoff & GitHub Pages Guide</h3>
+            <p class="text-xs text-slate-400">Ready for instant zero-config static hosting</p>
+          </div>
+        </div>
+        <button onclick="toggleHandoffModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-sm text-slate-300">
+        <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+          <h4 class="font-bold text-white text-xs uppercase tracking-wider text-indigo-400">1. Zero-Build GitHub Pages Deployment</h4>
+          <ol class="list-decimal list-inside space-y-1.5 text-xs text-slate-300">
+            <li>Create a new repository on GitHub (e.g. <code class="text-cyan-300">cyber-quiz-hub</code>).</li>
+            <li>Commit this single file as <code class="text-emerald-400">index.html</code> at the repository root.</li>
+            <li>Go to <strong>Settings</strong> &rarr; <strong>Pages</strong> in your GitHub repo.</li>
+            <li>Under <strong>Build and deployment &gt; Branch</strong>, select <code class="text-cyan-300">main</code> and <code class="text-cyan-300">/ (root)</code>, then click <strong>Save</strong>.</li>
+            <li>Your site will be live in 60 seconds at: <br><code class="text-indigo-300">https://&lt;your-username&gt;.github.io/&lt;repo-name&gt;/</code></li>
+          </ol>
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+          <h4 class="font-bold text-white text-xs uppercase tracking-wider text-cyan-400">2. AGY Integration Specifications</h4>
+          <p class="text-xs text-slate-400">
+            This application is constructed as an autonomous, self-contained single-page educational application. It does not require any Node.js runtime, build step, or external database:
+          </p>
+          <ul class="list-disc list-inside space-y-1 text-xs text-slate-300">
+            <li><strong>Data Model:</strong> Quiz data is structured in clean JSON array <code class="text-indigo-300">chapter3QuizData</code> ready to accept additional chapters.</li>
+            <li><strong>Styling:</strong> Pure Tailwind CSS utility classes via official CDN.</li>
+            <li><strong>No Local Storage Dependencies:</strong> Works cleanly inside sandboxed iFrames, LMS systems, or GitHub Pages domains.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button onclick="toggleHandoffModal()" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold">
+          Close Guide
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div id="toast-box" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-slate-900 border border-slate-700 text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2" id="toast-content">
+      Notification text
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- JAVASCRIPT LOGIC & QUIZ DATA MODEL                        -->
+  <!-- ========================================================= -->
+  <script>
+    /* CHAPTER 3 QUESTION DATA BANK (Mapped directly to PDF source slides) */
+    const chapter3QuizData = [
+      {
+        id: 1,
+        topic: "Core Cryptography",
+        slideRef: "Slide 2: Meaning of Cryptography",
+        question: "What is the primary conceptual difference between modern cryptography and 'security through obscurity'?",
+        hint: "Think about Kerckhoffs's principle: Does the safety depend on mathematical keys or keeping the algorithm itself secret?",
+        options: [
+          "Cryptography relies on public algorithms secured by a secret credential (key), whereas obscurity relies on hiding the existence of the message or mechanism.",
+          "Cryptography relies on keeping the mathematical formula secret from everyone, while obscurity uses open-source ciphers.",
+          "Security through obscurity uses symmetric keys, whereas modern cryptography only uses asymmetric keys.",
+          "There is no difference; both terms refer to the same classical Greek principle of kryptos."
+        ],
+        correctIndex: 0,
+        explanation: "Slide 2 highlights that with cryptography, even if third parties know the ciphertext exists, it remains secure because decryption requires an authorized credential (key). Security through obscurity fails as soon as the hidden mechanism is discovered."
+      },
+      {
+        id: 2,
+        topic: "Ancient History",
+        slideRef: "Slide 10: Ancient Greeks (650 BC)",
+        question: "Which ancient cryptographic tool used by the Spartan military involved wrapping a strip of leather around a wooden rod of a specific diameter?",
+        hint: "The recipient needed a rod of the exact same thickness to realign the transposed letters horizontally.",
+        options: [
+          "Atbash Cipher",
+          "Scytale Cipher",
+          "Polybius Square",
+          "Pigpen Enclosure"
+        ],
+        correctIndex: 1,
+        explanation: "Slide 10 details the Scytale cipher used in 650 BC by the Spartans. A parchment or leather strip was wrapped around a wooden baton (scytale) to read the message across the coils."
+      },
+      {
+        id: 3,
+        topic: "Monoalphabetic Substitution",
+        slideRef: "Slide 11-12: Hebrew Atbash",
+        question: "How does the Hebrew Atbash cipher transform letters of an alphabet?",
+        hint: "Consider the mapping of the first letter to the last letter, second to the second-to-last (A <-> Z, B <-> Y).",
+        options: [
+          "It shifts each letter forward by exactly 13 fixed positions.",
+          "It maps each letter to its exact reverse counterpart in the alphabet (A to Z, B to Y).",
+          "It breaks characters into digraphs using a 5x5 matrix omitting the letter 'J'.",
+          "It rearranges the letters into rows and reads them column by column."
+        ],
+        correctIndex: 1,
+        explanation: "Slides 11-12 explain that Atbash is an ancient monoalphabetic substitution cipher originally used in Hebrew (Book of Jeremiah), pairing the first and last letters of the alphabet together."
+      },
+      {
+        id: 4,
+        topic: "Modern Classifications",
+        slideRef: "Slide 4: Modern Ciphers",
+        question: "What is the defining characteristic of a symmetric (private key) cipher compared to an asymmetric cipher?",
+        hint: "Look at the number of keys involved during the encryption and decryption pipeline.",
+        options: [
+          "It uses two completely mathematically related public and private key pairs.",
+          "It operates only on analog voice streams rather than binary data blocks.",
+          "The exact same key is used for both encryption and decryption.",
+          "It is completely unbreakable regardless of key length."
+        ],
+        correctIndex: 2,
+        explanation: "Slide 4 classifies modern ciphers: Private key (Symmetric) algorithms utilize the exact same key to both encrypt and decrypt the message."
+      },
+      {
+        id: 5,
+        topic: "Modern Data Types",
+        slideRef: "Slide 4: Modern Ciphers",
+        question: "In modern cipher taxonomy, how does a 'block cipher' process input data?",
+        hint: "Contrast this with a 'stream cipher' which processes continuous bits one at a time.",
+        options: [
+          "It processes continuous streams of data bit-by-bit in real time.",
+          "It divides the input data and encrypts it in fixed-size blocks (e.g., 64 or 128 bits).",
+          "It transposes letters along a diagonal zigzag fence.",
+          "It compresses data before applying an Atbash inversion."
+        ],
+        correctIndex: 1,
+        explanation: "Slide 4 defines a Block Cipher as an algorithm that encrypts data in predetermined, fixed-size chunks (blocks), whereas a Stream Cipher processes continuous bit streams."
+      },
+      {
+        id: 6,
+        topic: "Polyalphabetic History",
+        slideRef: "Slide 19: Vigenère Origins",
+        question: "Who originally published the polyalphabetic cipher table that was later misattributed to Blaise de Vigenère?",
+        hint: "An Italian cryptologist published it in the 16th century, though de Vigenère later received the credit.",
+        options: [
+          "Giovan Battista Bellaso",
+          "Julius Caesar",
+          "Sir Charles Wheatstone",
+          "Gilbert Vernam"
+        ],
+        correctIndex: 0,
+        explanation: "Slide 19 emphasizes that the polyalphabetic cipher was actually published by Giovan Battista Bellaso in 1553, though historically misattributed to the French cryptologist Blaise de Vigenère."
+      },
+      {
+        id: 7,
+        topic: "Polygraphic Substitution",
+        slideRef: "Slide 24-25: Playfair Cipher",
+        question: "What is the primary operational rule in the Playfair cipher when duplicate identical letters occur within the same digraph pair (e.g., 'EE')?",
+        hint: "Think about how 'TREE' becomes 'TR' and 'EX' with an inserted null character.",
+        options: [
+          "Delete both duplicate letters immediately.",
+          "Insert an 'X' between the identical consecutive letters.",
+          "Pad the entire message with zeros until it reaches length 26.",
+          "Reverse the order of the entire message."
+        ],
+        correctIndex: 1,
+        explanation: "Slide 25 states: 'If there are identical consecutive characters, insert an X between them; if the final character does not form a complete pair, add an X.'"
+      },
+      {
+        id: 8,
+        topic: "Polygraphic History",
+        slideRef: "Slide 24: Playfair Invention",
+        question: "Who actually invented the Playfair cipher, despite it being named after Lord Playfair?",
+        hint: "He was a famous English scientist and polymath who also contributed to the electric telegraph.",
+        options: [
+          "Gilbert Sandford Vernam",
+          "Sir Charles Wheatstone",
+          "Blaise de Vigenère",
+          "Khnumhotep II"
+        ],
+        correctIndex: 1,
+        explanation: "Slide 24 notes that while named after Lyon Playfair (Lord Playfair) who promoted its use, the cipher was invented in 1854 by Sir Charles Wheatstone."
+      },
+      {
+        id: 9,
+        topic: "One-Time Pad",
+        slideRef: "Slide 34: Vernam Cipher",
+        question: "Which of the following is NOT one of the 4 mandatory requirements for a Vernam One-Time Pad to be mathematically unbreakable?",
+        hint: "Slide 34 lists 4 rules regarding length, randomness, reuse, and secrecy.",
+        options: [
+          "The key must be at least as long as the plaintext.",
+          "The key must be generated using an asymmetric RSA key pair.",
+          "The key must be truly random and never reused.",
+          "The key must be kept completely secret by the communicating parties."
+        ],
+        correctIndex: 1,
+        explanation: "Slide 34 specifies the four rules for OTP unbreakability: (1) Key length >= plaintext, (2) Truly random, (3) Never reused in whole or in part, (4) Kept completely secret. Asymmetric RSA keys are NOT part of the Vernam cipher."
+      },
+      {
+        id: 10,
+        topic: "Caesar Cryptanalysis",
+        slideRef: "Slide 16: Caesar Cryptanalysis",
+        question: "Why can an English Caesar cipher message be easily cracked through brute force even if the key is unknown?",
+        hint: "How many letters are in the standard English alphabet?",
+        options: [
+          "Because there are only 25 possible shift keys to test.",
+          "Because each letter is replaced with a 5x5 coordinate matrix.",
+          "Because it automatically embeds the private key in the header.",
+          "Because the frequency of vowels is inverted."
+        ],
+        correctIndex: 0,
+        explanation: "Slide 16 explains that testing shift values from n=1 to n=25 requires a maximum of only 25 attempts for English text, making brute force trivial."
+      }
+    ];
+
+    /* ========================================================= */
+    /* 1. CRYPTOGRAPHIC DOMAIN LAYER (ES6 CLASSES)               */
+    /* ========================================================= */
+
+    class SmartSearch {
+      static filter(query, items, getText) {
+        if (!Array.isArray(items)) return [];
+        const queryStr = String(query ?? "").trim().toUpperCase();
+        if (!queryStr) return items;
+        const terms = queryStr.split(/\s+/).filter(Boolean);
+        return items.filter(item => {
+          const text = (getText ? String(getText(item) ?? "") : String(item ?? "")).toUpperCase();
+          return terms.every(term => text.includes(term));
+        });
+      }
+
+      static filterTableRows(query, rowSelector, getText) {
+        const queryStr = String(query ?? "").trim().toUpperCase();
+        const terms = queryStr.split(/\s+/).filter(Boolean);
+        if (typeof document === 'undefined') return;
+        const rows = document.querySelectorAll(rowSelector);
+        rows.forEach(r => {
+          if (terms.length === 0) {
+            r.style.display = '';
+          } else {
+            const text = (getText ? String(getText(r) ?? "") : String(r.textContent || "")).toUpperCase();
+            const matches = terms.every(t => text.includes(t));
+            r.style.display = matches ? '' : 'none';
+          }
+        });
+      }
+    }
+
+    class CaesarCipher {
+      static ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+      encrypt(text, shift) {
+        if (!text && text !== 0) return "";
+        const str = String(text);
+        const parsed = parseInt(shift, 10);
+        const s = isNaN(parsed) ? 0 : ((parsed % 26) + 26) % 26;
+        return str.split('').map(char => {
+          const code = char.charCodeAt(0);
+          if (code >= 65 && code <= 90) {
+            return String.fromCharCode(((code - 65 + s) % 26) + 65);
+          } else if (code >= 97 && code <= 122) {
+            return String.fromCharCode(((code - 97 + s) % 26) + 97);
+          }
+          return char;
+        }).join('');
+      }
+
+      decrypt(text, shift) {
+        const parsed = parseInt(shift, 10);
+        const s = isNaN(parsed) ? 0 : parsed;
+        return this.encrypt(text, -s);
+      }
+
+      rot13(text) {
+        return this.encrypt(text, 13);
+      }
+
+      bruteForce(ciphertext) {
+        if (!ciphertext && ciphertext !== 0) return [];
+        const dictionary = [
+          "THE", "AND", "THAT", "HAVE", "FOR", "NOT", "WITH", "YOU", "THIS", "BUT", 
+          "HIS", "FROM", "THEY", "SAY", "HER", "SHE", "WILL", "ONE", "ALL", "WOULD", 
+          "THERE", "THEIR", "WHAT", "OUT", "ABOUT", "WHO", "GET", "WHICH", "GO", "ME",
+          "WHEN", "MAKE", "CAN", "LIKE", "TIME", "NO", "JUST", "HIM", "KNOW", "TAKE",
+          "PEOPLE", "INTO", "YEAR", "YOUR", "GOOD", "SOME", "COULD", "THEM", "SEE", "OTHER",
+          "THAN", "THEN", "NOW", "LOOK", "ONLY", "COME", "ITS", "OVER", "THINK", "ALSO",
+          "BACK", "AFTER", "USE", "TWO", "HOW", "OUR", "WORK", "FIRST", "WELL", "WAY",
+          "EVEN", "NEW", "WANT", "BECAUSE", "ANY", "THESE", "GIVE", "DAY", "MOST", "US",
+          "COMEHERE", "HERE", "EXPERIENCE", "TEACHER", "THINGS", "ENCRYPT", "DECRYPT",
+          "CIPHER", "SECRET", "ATTACK", "SECURITY", "KNOWLEDGE", "LEARN", "STUDY"
+        ];
+
+        const letterFreq = {
+          'E': 12.02, 'T': 9.10, 'A': 8.12, 'O': 7.68, 'I': 7.31, 'N': 6.95,
+          'S': 6.28, 'R': 6.02, 'H': 5.92, 'D': 4.32, 'L': 3.98, 'U': 2.88,
+          'C': 2.71, 'M': 2.61, 'F': 2.30, 'Y': 2.11, 'W': 2.09, 'G': 2.03,
+          'P': 1.82, 'B': 1.49, 'V': 1.11, 'K': 0.69, 'X': 0.17, 'Q': 0.11, 'J': 0.10, 'Z': 0.07
+        };
+
+        const results = [];
+        const cleanCipher = String(ciphertext).toUpperCase();
+
+        for (let shift = 1; shift <= 25; shift++) {
+          const plaintext = this.decrypt(cleanCipher, shift);
+          const stripped = plaintext.replace(/[^A-Z]/g, '');
+          let score = 0;
+          const matchedWords = [];
+
+          for (const word of dictionary) {
+            if (plaintext.includes(word) || (stripped.length > 0 && stripped.includes(word))) {
+              score += word.length * word.length * 15;
+              matchedWords.push(word);
+            }
+          }
+
+          for (let i = 0; i < plaintext.length; i++) {
+            const char = plaintext[i];
+            if (letterFreq[char]) {
+              score += letterFreq[char];
+            }
+          }
+
+          results.push({
+            shift,
+            plaintext,
+            score: Math.round(score * 10) / 10,
+            matchedWords: Array.from(new Set(matchedWords))
+          });
+        }
+
+        results.sort((a, b) => b.score - a.score);
+        return results;
+      }
+    }
+
+    class AtbashCipher {
+      transform(text) {
+        if (!text && text !== 0) return "";
+        const str = String(text);
+        return str.split('').map(char => {
+          const code = char.charCodeAt(0);
+          if (code >= 65 && code <= 90) {
+            return String.fromCharCode(90 - (code - 65));
+          } else if (code >= 97 && code <= 122) {
+            return String.fromCharCode(122 - (code - 97));
+          }
+          return char;
+        }).join('');
+      }
+
+      encrypt(text) {
+        return this.transform(text);
+      }
+
+      decrypt(text) {
+        return this.transform(text);
+      }
+    }
+
+    class VigenereCipher {
+      cleanKey(key) {
+        if (!key && key !== 0) return "A";
+        const cleaned = String(key).toUpperCase().replace(/[^A-Z]/g, '');
+        return cleaned.length > 0 ? cleaned : "A";
+      }
+
+      encrypt(plaintext, key) {
+        if (!plaintext && plaintext !== 0) return { ciphertext: "", steps: [] };
+        const str = String(plaintext);
+        const validKey = this.cleanKey(key);
+        let keyIdx = 0;
+        const steps = [];
+        let ciphertext = "";
+
+        for (let i = 0; i < str.length; i++) {
+          const char = str[i];
+          const upper = char.toUpperCase();
+          const pVal = upper.charCodeAt(0) - 65;
+
+          if (pVal >= 0 && pVal < 26) {
+            const kChar = validKey[keyIdx % validKey.length];
+            const kVal = kChar.charCodeAt(0) - 65;
+            const cVal = (pVal + kVal) % 26;
+            const cChar = String.fromCharCode(cVal + 65);
+
+            const finalChar = char === char.toLowerCase() ? cChar.toLowerCase() : cChar;
+            ciphertext += finalChar;
+
+            steps.push({
+              index: i + 1,
+              plainChar: char,
+              plainVal: pVal,
+              keyChar: kChar,
+              keyVal: kVal,
+              cipherVal: cVal,
+              cipherChar: cChar,
+              formula: `(${pVal} + ${kVal}) % 26 = ${cVal}`
+            });
+
+            keyIdx++;
+          } else {
+            ciphertext += char;
+          }
+        }
+
+        return { ciphertext, steps };
+      }
+
+      decrypt(ciphertext, key) {
+        if (!ciphertext && ciphertext !== 0) return { plaintext: "", steps: [] };
+        const str = String(ciphertext);
+        const validKey = this.cleanKey(key);
+        let keyIdx = 0;
+        const steps = [];
+        let plaintext = "";
+
+        for (let i = 0; i < str.length; i++) {
+          const char = str[i];
+          const upper = char.toUpperCase();
+          const cVal = upper.charCodeAt(0) - 65;
+
+          if (cVal >= 0 && cVal < 26) {
+            const kChar = validKey[keyIdx % validKey.length];
+            const kVal = kChar.charCodeAt(0) - 65;
+            const pVal = (cVal - kVal + 26) % 26;
+            const pChar = String.fromCharCode(pVal + 65);
+
+            const finalChar = char === char.toLowerCase() ? pChar.toLowerCase() : pChar;
+            plaintext += finalChar;
+
+            steps.push({
+              index: i + 1,
+              cipherChar: char,
+              cipherVal: cVal,
+              keyChar: kChar,
+              keyVal: kVal,
+              plainVal: pVal,
+              plainChar: pChar,
+              formula: `(${cVal} - ${kVal} + 26) % 26 = ${pVal}`
+            });
+
+            keyIdx++;
+          } else {
+            plaintext += char;
+          }
+        }
+
+        return { plaintext, steps };
+      }
+    }
+
+    class PlayfairCipher {
+      generateMatrix(key) {
+        const cleanKey = String(key ?? "").toUpperCase().replace(/J/g, 'I').replace(/[^A-Z]/g, '');
+        const seen = new Set();
+        const matrix = [];
+        const alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ"; // 25 letters, omits J
+
+        for (const ch of cleanKey) {
+          if (!seen.has(ch)) {
+            seen.add(ch);
+            matrix.push(ch);
+          }
+        }
+
+        for (const ch of alphabet) {
+          if (!seen.has(ch)) {
+            seen.add(ch);
+            matrix.push(ch);
+          }
+        }
+
+        const grid = [];
+        for (let r = 0; r < 5; r++) {
+          grid.push(matrix.slice(r * 5, r * 5 + 5));
+        }
+        return grid;
+      }
+
+      getCharMap(matrix) {
+        const map = {};
+        for (let r = 0; r < 5; r++) {
+          for (let c = 0; c < 5; c++) {
+            map[matrix[r][c]] = { row: r, col: c };
+          }
+        }
+        return map;
+      }
+
+      tokenize(text) {
+        const clean = String(text ?? "").toUpperCase().replace(/J/g, 'I').replace(/[^A-Z]/g, '');
+        const digraphs = [];
+        let i = 0;
+        while (i < clean.length) {
+          const ch1 = clean[i];
+          if (i + 1 >= clean.length) {
+            digraphs.push([ch1, ch1 === 'X' ? 'Q' : 'X']);
+            i++;
+          } else {
+            const ch2 = clean[i + 1];
+            if (ch1 === ch2) {
+              digraphs.push([ch1, ch1 === 'X' ? 'Q' : 'X']);
+              i++;
+            } else {
+              digraphs.push([ch1, ch2]);
+              i += 2;
+            }
+          }
+        }
+        return digraphs;
+      }
+
+      encrypt(plaintext, key) {
+        const matrix = this.generateMatrix(key);
+        const charMap = this.getCharMap(matrix);
+        const digraphs = this.tokenize(plaintext);
+        const steps = [];
+        let ciphertext = "";
+
+        for (const [ch1, ch2] of digraphs) {
+          const p1 = charMap[ch1];
+          const p2 = charMap[ch2];
+          let out1, out2, rule, ruleExplanation;
+
+          if (!p1 || !p2) continue;
+
+          if (p1.row === p2.row) {
+            out1 = matrix[p1.row][(p1.col + 1) % 5];
+            out2 = matrix[p2.row][(p2.col + 1) % 5];
+            rule = "Same Row";
+            ruleExplanation = `Row ${p1.row}: shift right → ${out1}${out2}`;
+          } else if (p1.col === p2.col) {
+            out1 = matrix[(p1.row + 1) % 5][p1.col];
+            out2 = matrix[(p2.row + 1) % 5][p2.col];
+            rule = "Same Column";
+            ruleExplanation = `Column ${p1.col}: shift down → ${out1}${out2}`;
+          } else {
+            out1 = matrix[p1.row][p2.col];
+            out2 = matrix[p2.row][p1.col];
+            rule = "Rectangle";
+            ruleExplanation = `Opposite corners (${p1.row},${p2.col}) & (${p2.row},${p1.col}) → ${out1}${out2}`;
+          }
+
+          ciphertext += out1 + out2;
+          steps.push({
+            digraph: `${ch1}${ch2}`,
+            pos1: p1,
+            pos2: p2,
+            rule,
+            ruleExplanation,
+            result: `${out1}${out2}`
+          });
+        }
+
+        return { ciphertext, matrix, digraphs, steps };
+      }
+
+      decrypt(ciphertext, key) {
+        const matrix = this.generateMatrix(key);
+        const charMap = this.getCharMap(matrix);
+        const clean = String(ciphertext ?? "").toUpperCase().replace(/J/g, 'I').replace(/[^A-Z]/g, '');
+        const digraphs = [];
+        for (let i = 0; i < clean.length; i += 2) {
+          if (i + 1 < clean.length) {
+            digraphs.push([clean[i], clean[i + 1]]);
+          } else {
+            digraphs.push([clean[i], clean[i] === 'X' ? 'Q' : 'X']);
+          }
+        }
+
+        const steps = [];
+        let plaintext = "";
+
+        for (const [ch1, ch2] of digraphs) {
+          const p1 = charMap[ch1];
+          const p2 = charMap[ch2];
+          let out1, out2, rule, ruleExplanation;
+
+          if (!p1 || !p2) continue;
+
+          if (p1.row === p2.row) {
+            out1 = matrix[p1.row][(p1.col - 1 + 5) % 5];
+            out2 = matrix[p2.row][(p2.col - 1 + 5) % 5];
+            rule = "Same Row";
+            ruleExplanation = `Row ${p1.row}: shift left → ${out1}${out2}`;
+          } else if (p1.col === p2.col) {
+            out1 = matrix[(p1.row - 1 + 5) % 5][p1.col];
+            out2 = matrix[(p2.row - 1 + 5) % 5][p2.col];
+            rule = "Same Column";
+            ruleExplanation = `Column ${p1.col}: shift up → ${out1}${out2}`;
+          } else {
+            out1 = matrix[p1.row][p2.col];
+            out2 = matrix[p2.row][p1.col];
+            rule = "Rectangle";
+            ruleExplanation = `Opposite corners (${p1.row},${p2.col}) & (${p2.row},${p1.col}) → ${out1}${out2}`;
+          }
+
+          plaintext += out1 + out2;
+          steps.push({
+            digraph: `${ch1}${ch2}`,
+            pos1: p1,
+            pos2: p2,
+            rule,
+            ruleExplanation,
+            result: `${out1}${out2}`
+          });
+        }
+
+        return { plaintext, matrix, digraphs, steps };
+      }
+    }
+
+    class VernamCipher {
+      decrypt(ciphertext, key) {
+        if (!ciphertext && ciphertext !== 0) return { plaintext: "", steps: [] };
+        if (!key && key !== 0) return { plaintext: "", steps: [] };
+        const cleanC = String(ciphertext).toUpperCase().replace(/[^A-Z]/g, '');
+        const cleanK = String(key).toUpperCase().replace(/[^A-Z]/g, '');
+        const len = Math.min(cleanC.length, cleanK.length);
+        const steps = [];
+        let plaintext = "";
+
+        for (let i = 0; i < len; i++) {
+          const cChar = cleanC[i];
+          const kChar = cleanK[i];
+          const cVal = cChar.charCodeAt(0) - 65;
+          const kVal = kChar.charCodeAt(0) - 65;
+          const diff = cVal - kVal;
+          const pVal = ((diff % 26) + 26) % 26;
+          const pChar = String.fromCharCode(pVal + 65);
+
+          plaintext += pChar;
+          steps.push({
+            step: i + 1,
+            cChar,
+            cVal,
+            kChar,
+            kVal,
+            diff,
+            pVal,
+            pChar,
+            formula: `(${cVal} - ${kVal} = ${diff}) mod 26 = ${pVal} → ${pChar}`
+          });
+        }
+
+        return { plaintext, steps };
+      }
+
+      encrypt(plaintext, key) {
+        if (!plaintext && plaintext !== 0) return { ciphertext: "", steps: [] };
+        if (!key && key !== 0) return { ciphertext: "", steps: [] };
+        const cleanP = String(plaintext).toUpperCase().replace(/[^A-Z]/g, '');
+        const cleanK = String(key).toUpperCase().replace(/[^A-Z]/g, '');
+        const len = Math.min(cleanP.length, cleanK.length);
+        const steps = [];
+        let ciphertext = "";
+
+        for (let i = 0; i < len; i++) {
+          const pChar = cleanP[i];
+          const kChar = cleanK[i];
+          const pVal = pChar.charCodeAt(0) - 65;
+          const kVal = kChar.charCodeAt(0) - 65;
+          const sum = pVal + kVal;
+          const cVal = sum % 26;
+          const cChar = String.fromCharCode(cVal + 65);
+
+          ciphertext += cChar;
+          steps.push({
+            step: i + 1,
+            pChar,
+            pVal,
+            kChar,
+            kVal,
+            sum,
+            cVal,
+            cChar,
+            formula: `(${pVal} + ${kVal} = ${sum}) mod 26 = ${cVal} → ${cChar}`
+          });
+        }
+
+        return { ciphertext, steps };
+      }
+    }
+
+    /* ========================================================= */
+    /* 2. APPLICATION CONTROLLER LAYER                           */
+    /* ========================================================= */
+
+    class ScratchpadEngine {
+      constructor() {
+        this.canvas = null;
+        this.ctx = null;
+        this.drawingCanvas = null;
+        this.drawingCtx = null;
+        this.isDrawing = false;
+        this.currentTool = 'pen';
+        this.strokeColor = '#38bdf8';
+        this.strokeWidth = 3;
+        this.currentTemplate = 'grid';
+        this.dpr = 1;
+        this.lastX = 0;
+        this.lastY = 0;
+        this.undoStack = [];
+        this.maxUndoSteps = 25;
+        this.boundResize = this.resize.bind(this);
+        this.boundPointerDown = this.onPointerDown.bind(this);
+        this.boundPointerMove = this.onPointerMove.bind(this);
+        this.boundPointerUp = this.onPointerUp.bind(this);
+      }
+
+      init(canvasId = 'scratchpad-canvas') {
+        this.canvas = document.getElementById(canvasId);
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext('2d');
+
+        if (typeof document !== 'undefined' && !this.drawingCanvas) {
+          this.drawingCanvas = document.createElement('canvas');
+          this.drawingCtx = this.drawingCanvas.getContext('2d');
+        }
+
+        if (typeof window !== 'undefined' && window.addEventListener) {
+          if (window.removeEventListener) window.removeEventListener('resize', this.boundResize);
+          window.addEventListener('resize', this.boundResize);
+        }
+        this.resize();
+
+        // Native Pointer Events for unified Touch, Stylus, and Mouse support
+        this.canvas.addEventListener('pointerdown', this.boundPointerDown);
+        this.canvas.addEventListener('pointermove', this.boundPointerMove);
+        this.canvas.addEventListener('pointerup', this.boundPointerUp);
+        this.canvas.addEventListener('pointercancel', this.boundPointerUp);
+        this.canvas.addEventListener('pointerleave', this.boundPointerUp);
+      }
+
+      saveUndoState() {
+        if (!this.drawingCanvas || this.drawingCanvas.width === 0 || this.drawingCanvas.height === 0) return;
+        try {
+          const snap = document.createElement('canvas');
+          snap.width = this.drawingCanvas.width;
+          snap.height = this.drawingCanvas.height;
+          const snapCtx = snap.getContext('2d');
+          snapCtx.drawImage(this.drawingCanvas, 0, 0);
+          this.undoStack.push(snap);
+          if (this.undoStack.length > this.maxUndoSteps) {
+            this.undoStack.shift();
+          }
+        } catch(e) {}
+      }
+
+      undo() {
+        if (!this.drawingCanvas || !this.drawingCtx || this.undoStack.length === 0) {
+          if (window.app) window.app.showToast("Nothing to undo!");
+          return;
+        }
+        const lastState = this.undoStack.pop();
+        this.drawingCtx.clearRect(0, 0, this.drawingCanvas.width, this.drawingCanvas.height);
+        try {
+          this.drawingCtx.drawImage(lastState, 0, 0);
+        } catch(e) {}
+        this.renderBackground();
+        if (window.app) window.app.showToast("Undo applied!");
+      }
+
+      resize() {
+        if (!this.canvas || !this.ctx) return;
+        const rect = this.canvas.parentElement ? this.canvas.parentElement.getBoundingClientRect() : null;
+        if (!rect || rect.width === 0 || rect.height === 0) return;
+
+        this.dpr = (typeof window !== 'undefined' && window.devicePixelRatio) ? Math.max(1, window.devicePixelRatio) : 1;
+        const cssWidth = Math.floor(rect.width);
+        const cssHeight = Math.floor(rect.height);
+
+        // Preserve previous drawing layer on resize
+        let tempCanvas = null;
+        if (this.drawingCanvas && this.drawingCanvas.width > 0 && this.drawingCanvas.height > 0) {
+          try {
+            tempCanvas = document.createElement('canvas');
+            tempCanvas.width = this.drawingCanvas.width;
+            tempCanvas.height = this.drawingCanvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(this.drawingCanvas, 0, 0);
+          } catch(e) {}
+        }
+
+        this.canvas.width = cssWidth * this.dpr;
+        this.canvas.height = cssHeight * this.dpr;
+        this.canvas.style.width = cssWidth + 'px';
+        this.canvas.style.height = cssHeight + 'px';
+
+        if (!this.drawingCanvas && typeof document !== 'undefined') {
+          this.drawingCanvas = document.createElement('canvas');
+          this.drawingCtx = this.drawingCanvas.getContext('2d');
+        }
+
+        if (this.drawingCanvas) {
+          this.drawingCanvas.width = cssWidth * this.dpr;
+          this.drawingCanvas.height = cssHeight * this.dpr;
+          if (tempCanvas && this.drawingCtx) {
+            try { this.drawingCtx.drawImage(tempCanvas, 0, 0); } catch(e) {}
+          }
+        }
+
+        this.renderBackground();
+      }
+
+      renderBackground() {
+        if (!this.ctx || !this.canvas) return;
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+        const s = this.dpr;
+
+        // 1. Draw template background
+        this.ctx.fillStyle = '#020617';
+        this.ctx.fillRect(0, 0, w, h);
+
+        if (this.currentTemplate === 'grid') {
+          this.ctx.fillStyle = 'rgba(99, 102, 241, 0.25)';
+          const step = 28 * s;
+          for (let x = 14 * s; x < w; x += step) {
+            for (let y = 14 * s; y < h; y += step) {
+              this.ctx.fillRect(x, y, 2 * s, 2 * s);
+            }
+          }
+        } else if (this.currentTemplate === 'playfair') {
+          this.ctx.strokeStyle = 'rgba(6, 182, 212, 0.4)';
+          this.ctx.lineWidth = 1.5 * s;
+          const boxSize = Math.min(w, h) * 0.75;
+          const startX = (w - boxSize) / 2;
+          const startY = (h - boxSize) / 2;
+          const cellSize = boxSize / 5;
+
+          for (let i = 0; i <= 5; i++) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(startX + i * cellSize, startY);
+            this.ctx.lineTo(startX + i * cellSize, startY + boxSize);
+            this.ctx.stroke();
+
+            this.ctx.beginPath();
+            this.ctx.moveTo(startX, startY + i * cellSize);
+            this.ctx.lineTo(startX + boxSize, startY + i * cellSize);
+            this.ctx.stroke();
+          }
+        } else if (this.currentTemplate === 'pigpen') {
+          this.ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
+          this.ctx.lineWidth = 2 * s;
+          const halfW = w / 2;
+          const halfH = h / 2;
+
+          const tttX = halfW * 0.25;
+          const tttY = halfH * 0.4;
+          const sz = 160 * s;
+          this.ctx.strokeRect(tttX, tttY, sz, sz);
+          this.ctx.beginPath();
+          this.ctx.moveTo(tttX + sz / 3, tttY); this.ctx.lineTo(tttX + sz / 3, tttY + sz);
+          this.ctx.moveTo(tttX + (sz * 2) / 3, tttY); this.ctx.lineTo(tttX + (sz * 2) / 3, tttY + sz);
+          this.ctx.moveTo(tttX, tttY + sz / 3); this.ctx.lineTo(tttX + sz, tttY + sz / 3);
+          this.ctx.moveTo(tttX, tttY + (sz * 2) / 3); this.ctx.lineTo(tttX + sz, tttY + (sz * 2) / 3);
+          this.ctx.stroke();
+
+          const xX = halfW + halfW * 0.25;
+          const xY = halfH * 0.4;
+          this.ctx.beginPath();
+          this.ctx.moveTo(xX, xY); this.ctx.lineTo(xX + sz, xY + sz);
+          this.ctx.moveTo(xX + sz, xY); this.ctx.lineTo(xX, xY + sz);
+          this.ctx.stroke();
+        }
+
+        // 2. Composite user drawing layer on top
+        if (this.drawingCanvas) {
+          try { this.ctx.drawImage(this.drawingCanvas, 0, 0); } catch(e) {}
+        }
+      }
+
+      switchTemplate(template) {
+        this.currentTemplate = template;
+        this.renderBackground();
+      }
+
+      getPointerPos(e) {
+        if (!this.canvas) return { x: 0, y: 0 };
+        const rect = this.canvas.getBoundingClientRect();
+        const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+        const clientY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+        return {
+          x: (clientX - rect.left) * this.dpr,
+          y: (clientY - rect.top) * this.dpr
+        };
+      }
+
+      onPointerDown(e) {
+        if (e.button !== undefined && e.button !== 0) return;
+        this.saveUndoState();
+        if (this.canvas.setPointerCapture && e.pointerId) {
+          try { this.canvas.setPointerCapture(e.pointerId); } catch(err) {}
+        }
+        this.isDrawing = true;
+        const pos = this.getPointerPos(e);
+        this.lastX = pos.x;
+        this.lastY = pos.y;
+      }
+
+      onPointerMove(e) {
+        if (!this.isDrawing || !this.drawingCtx) return;
+        const pos = this.getPointerPos(e);
+
+        this.drawingCtx.lineCap = 'round';
+        this.drawingCtx.lineJoin = 'round';
+
+        let pressureMultiplier = 1;
+        if (typeof e.pressure === 'number' && e.pressure > 0 && e.pressure !== 0.5) {
+          pressureMultiplier = Math.max(0.4, Math.min(2.0, e.pressure * 1.6));
+        }
+
+        if (this.currentTool === 'eraser') {
+          this.drawingCtx.globalCompositeOperation = 'destination-out';
+          this.drawingCtx.lineWidth = this.strokeWidth * 4 * this.dpr * pressureMultiplier;
+        } else if (this.currentTool === 'highlighter') {
+          this.drawingCtx.globalCompositeOperation = 'source-over';
+          this.drawingCtx.strokeStyle = this.strokeColor + '55';
+          this.drawingCtx.lineWidth = this.strokeWidth * 3 * this.dpr * pressureMultiplier;
+        } else {
+          this.drawingCtx.globalCompositeOperation = 'source-over';
+          this.drawingCtx.strokeStyle = this.strokeColor;
+          this.drawingCtx.lineWidth = this.strokeWidth * this.dpr * pressureMultiplier;
+        }
+
+        this.drawingCtx.beginPath();
+        this.drawingCtx.moveTo(this.lastX, this.lastY);
+        this.drawingCtx.lineTo(pos.x, pos.y);
+        this.drawingCtx.stroke();
+
+        this.lastX = pos.x;
+        this.lastY = pos.y;
+
+        this.renderBackground();
+      }
+
+      onPointerUp(e) {
+        if (!this.isDrawing) return;
+        this.isDrawing = false;
+        if (this.canvas.releasePointerCapture && e && e.pointerId) {
+          try { this.canvas.releasePointerCapture(e.pointerId); } catch(err) {}
+        }
+      }
+
+      setTool(tool) {
+        this.currentTool = tool;
+        ['pen', 'highlighter', 'eraser'].forEach(t => {
+          const btn = document.getElementById(`tool-${t}`);
+          if (!btn) return;
+          if (t === tool) {
+            btn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-600 text-white";
+          } else {
+            btn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white";
+          }
+        });
+      }
+
+      setColor(hex) {
+        this.strokeColor = hex;
+        if (this.currentTool === 'eraser') this.setTool('pen');
+      }
+
+      updateStrokeSize(val) {
+        const parsed = parseInt(val, 10);
+        this.strokeWidth = isNaN(parsed) ? 3 : Math.max(1, Math.min(30, parsed));
+        const label = document.getElementById('canvas-stroke-val');
+        if (label) label.textContent = this.strokeWidth;
+      }
+
+      clear() {
+        this.saveUndoState();
+        if (this.drawingCtx && this.drawingCanvas) {
+          this.drawingCtx.clearRect(0, 0, this.drawingCanvas.width, this.drawingCanvas.height);
+        }
+        this.renderBackground();
+        if (window.app) window.app.showToast("Scratchpad Cleared! (Click Undo to restore)");
+      }
+
+      exportPng() {
+        if (!this.canvas) return;
+        this.renderBackground();
+        const link = document.createElement('a');
+        link.download = `cyberquest-scratchpad-${Date.now()}.png`;
+        link.href = this.canvas.toDataURL('image/png');
+        link.click();
+        if (window.app) window.app.showToast("Drawing exported as PNG!");
+      }
+    }
+
+    class QuizEngine {
+      constructor(questions = []) {
+        this.questions = questions;
+        this.currentIndex = 0;
+        this.studentAnswers = {};
+        this.activeChapter = 3;
+      }
+
+      openChapter(chapterNum = 3) {
+        this.activeChapter = chapterNum;
+        this.currentIndex = 0;
+        this.studentAnswers = {};
+        if (window.app) window.app.switchView('quiz');
+        const qCard = document.getElementById('quiz-question-card');
+        if (qCard) qCard.classList.remove('hidden');
+        const resultsContainer = document.getElementById('quiz-results-container');
+        if (resultsContainer) resultsContainer.classList.add('hidden');
+        this.renderQuestion();
+      }
+
+      renderQuestion() {
+        if (!this.questions || this.questions.length === 0) return;
+        const q = this.questions[this.currentIndex];
+        const total = this.questions.length;
+
+        const idxEl = document.getElementById('quiz-question-index');
+        if (idxEl) idxEl.textContent = `${this.currentIndex + 1} / ${total}`;
+
+        const progressEl = document.getElementById('quiz-progress-bar');
+        if (progressEl) {
+          const progressPct = ((this.currentIndex + 1) / total) * 100;
+          progressEl.style.width = `${progressPct}%`;
+        }
+
+        const badgeEl = document.getElementById('question-badge');
+        if (badgeEl) badgeEl.textContent = `Topic: ${q.topic}`;
+
+        const promptEl = document.getElementById('question-prompt');
+        if (promptEl) promptEl.textContent = q.question;
+
+        const sourceEl = document.getElementById('source-slide-ref');
+        if (sourceEl) sourceEl.textContent = `Source: ${q.slideRef}`;
+
+        const hintBox = document.getElementById('hint-box');
+        if (hintBox) hintBox.classList.add('hidden');
+        const hintText = document.getElementById('hint-text');
+        if (hintText) hintText.textContent = q.hint;
+        const hintBtnSpan = document.getElementById('hint-toggle-text');
+        if (hintBtnSpan) {
+          hintBtnSpan.textContent = (window.app && window.app.currentLang === 'th') ? "ต้องการคำใบ้?" : "Need a Hint?";
+        }
+
+        const expPanel = document.getElementById('explanation-panel');
+        if (expPanel) expPanel.classList.add('hidden');
+
+        const optionsContainer = document.getElementById('options-container');
+        if (optionsContainer) {
+          optionsContainer.innerHTML = '';
+          q.options.forEach((optText, idx) => {
+            const btn = document.createElement('button');
+            btn.className = "w-full text-left p-4 rounded-2xl bg-slate-950/80 border border-slate-800 hover:border-indigo-500/80 hover:bg-slate-900 transition flex items-start gap-3 group text-sm text-slate-200";
+            const letter = String.fromCharCode(65 + idx);
+            btn.innerHTML = `
+              <span class="w-6 h-6 rounded-lg bg-slate-800 group-hover:bg-indigo-600 text-slate-300 group-hover:text-white flex items-center justify-center font-mono text-xs font-bold shrink-0 mt-0.5 transition">
+                ${letter}
+              </span>
+              <span class="leading-relaxed flex-grow">${optText}</span>
+            `;
+            btn.onclick = () => this.selectOption(idx);
+            optionsContainer.appendChild(btn);
+          });
+        }
+      }
+
+      toggleHint() {
+        const hintBox = document.getElementById('hint-box');
+        if (!hintBox) return;
+        hintBox.classList.toggle('hidden');
+        const isHidden = hintBox.classList.contains('hidden');
+        const hintBtnSpan = document.getElementById('hint-toggle-text');
+        if (hintBtnSpan) {
+          if (window.app && window.app.currentLang === 'th') {
+            hintBtnSpan.textContent = isHidden ? "ต้องการคำใบ้?" : "ซ่อนคำใบ้";
+          } else {
+            hintBtnSpan.textContent = isHidden ? "Need a Hint?" : "Hide Hint";
+          }
+        }
+      }
+
+      selectOption(selectedIndex) {
+        if (!this.questions || this.questions.length === 0) return;
+        const q = this.questions[this.currentIndex];
+        const isCorrect = selectedIndex === q.correctIndex;
+        this.studentAnswers[this.currentIndex] = { selected: selectedIndex, isCorrect };
+
+        const buttons = document.querySelectorAll('#options-container button');
+        buttons.forEach((btn, idx) => {
+          btn.disabled = true;
+          btn.classList.remove('hover:border-indigo-500/80', 'hover:bg-slate-900');
+          if (idx === q.correctIndex) {
+            btn.classList.add('border-emerald-500', 'bg-emerald-950/30', 'text-emerald-200');
+            const badge = btn.querySelector('span:first-child');
+            if (badge) badge.className = "w-6 h-6 rounded-lg bg-emerald-500 text-white flex items-center justify-center font-mono text-xs font-bold shrink-0 mt-0.5";
+          } else if (idx === selectedIndex && !isCorrect) {
+            btn.classList.add('border-rose-500', 'bg-rose-950/30', 'text-rose-200');
+            const badge = btn.querySelector('span:first-child');
+            if (badge) badge.className = "w-6 h-6 rounded-lg bg-rose-500 text-white flex items-center justify-center font-mono text-xs font-bold shrink-0 mt-0.5";
+          } else {
+            btn.classList.add('opacity-40');
+          }
+        });
+
+        const expPanel = document.getElementById('explanation-panel');
+        const expStatus = document.getElementById('explanation-status');
+        const expText = document.getElementById('explanation-text');
+
+        if (expStatus) {
+          if (isCorrect) {
+            expStatus.innerHTML = `
+              <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="font-bold text-emerald-400 text-sm">Correct Answer!</span>
+            `;
+          } else {
+            expStatus.innerHTML = `
+              <div class="w-6 h-6 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              </div>
+              <span class="font-bold text-rose-400 text-sm">Incorrect Choice</span>
+            `;
+          }
+        }
+
+        if (expText) expText.textContent = q.explanation;
+        if (expPanel) expPanel.classList.remove('hidden');
+
+        const nextBtn = document.getElementById('next-question-btn');
+        if (nextBtn) {
+          if (this.currentIndex === this.questions.length - 1) {
+            nextBtn.innerHTML = `View Summary Score <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`;
+          } else {
+            nextBtn.innerHTML = `Next Question <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>`;
+          }
+        }
+      }
+
+      nextQuestion() {
+        if (this.currentIndex < this.questions.length - 1) {
+          this.currentIndex++;
+          this.renderQuestion();
+        } else {
+          this.showSummary();
+        }
+      }
+
+      showSummary() {
+        let correctCount = 0;
+        Object.values(this.studentAnswers).forEach(ans => {
+          if (ans.isCorrect) correctCount++;
+        });
+
+        const scoreFinal = document.getElementById('final-score-text');
+        if (scoreFinal) scoreFinal.textContent = `${correctCount} / ${this.questions.length}`;
+
+        const scoreLanding = document.getElementById('landing-score-display');
+        if (scoreLanding) scoreLanding.textContent = `${correctCount} / ${this.questions.length}`;
+
+        try {
+          if (typeof sessionStorage !== 'undefined') {
+            sessionStorage.setItem('cyberquest_practice_score', `${correctCount} / ${this.questions.length}`);
+          }
+        } catch(e) {}
+
+        const optContainer = document.getElementById('options-container');
+        if (optContainer) optContainer.innerHTML = '';
+
+        // Hide question card to reveal completion summary without clutter
+        const qCard = document.getElementById('quiz-question-card');
+        if (qCard) qCard.classList.add('hidden');
+
+        const expPanel = document.getElementById('explanation-panel');
+        if (expPanel) expPanel.classList.add('hidden');
+
+        const resultsContainer = document.getElementById('quiz-results-container');
+        if (resultsContainer) resultsContainer.classList.remove('hidden');
+      }
+    }
+
+    class LabEngine {
+      constructor(ciphers, scratchpad) {
+        this.ciphers = ciphers;
+        this.scratchpad = scratchpad;
+        this.playfairMode = 'decrypt';
+        this.vernamMode = 'decrypt';
+        this.vigenereMode = 'encrypt';
+      }
+
+      setTab(tabName) {
+        const tabs = ['caesar', 'atbash', 'vigenere', 'playfair', 'vernam', 'grids', 'scratchpad', 'pdfviewer'];
+        tabs.forEach(t => {
+          const el = document.getElementById(`lab-${t}`);
+          const btn = document.getElementById(`tab-btn-${t}`);
+          if (!el || !btn) return;
+          if (t === tabName) {
+            el.classList.remove('hidden');
+            btn.className = "lab-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white";
+          } else {
+            el.classList.add('hidden');
+            btn.className = "lab-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white";
+          }
+        });
+
+        if (tabName === 'grids') {
+          this.initVigenereTable();
+          this.initCaesarShiftTable();
+          this.initAsciiTable();
+        } else if (tabName === 'scratchpad') {
+          if (this.scratchpad) {
+            setTimeout(() => this.scratchpad.resize(), 50);
+          }
+        }
+      }
+
+      setGridSubTab(subTabName) {
+        const subTabs = {
+          'vigenere-grid': 'grid-sub-vigenere',
+          'caesar-table': 'grid-sub-caesar',
+          'ascii-chart': 'grid-sub-ascii',
+          'pigpen-ref': 'grid-sub-pigpen'
+        };
+
+        Object.entries(subTabs).forEach(([btnKey, sectionId]) => {
+          const section = document.getElementById(sectionId);
+          const btn = document.getElementById(`subtab-btn-${btnKey}`);
+          if (!section || !btn) return;
+          if (btnKey === subTabName) {
+            section.classList.remove('hidden');
+            btn.className = "px-3 py-1 rounded-lg text-xs font-semibold bg-indigo-600 text-white";
+          } else {
+            section.classList.add('hidden');
+            btn.className = "px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white";
+          }
+        });
+      }
+
+      // --- CAESAR & ROT13 METHODS ---
+      runCaesarSandbox() {
+        const textInput = document.getElementById('sandbox-caesar-text');
+        const sliderInput = document.getElementById('sandbox-caesar-slider');
+        const valDisplay = document.getElementById('sandbox-caesar-val');
+        const outputDisplay = document.getElementById('sandbox-caesar-output');
+
+        if (!textInput || !sliderInput) return;
+        const text = textInput.value;
+        const parsed = parseInt(sliderInput.value, 10);
+        const shift = isNaN(parsed) ? 3 : parsed;
+        if (valDisplay) valDisplay.textContent = shift;
+
+        const encrypted = this.ciphers.caesar.encrypt(text, shift);
+        if (outputDisplay) outputDisplay.textContent = encrypted || "(empty)";
+      }
+
+      runCaesarBruteForce(customText = null) {
+        const inputEl = document.getElementById('input-caesar-bruteforce');
+        const resultsContainer = document.getElementById('caesar-bruteforce-results');
+        const text = customText !== null ? customText : (inputEl ? inputEl.value : "MYWOROBO");
+        if (!resultsContainer) return;
+
+        const results = this.ciphers.caesar.bruteForce(text);
+        if (results.length === 0) {
+          resultsContainer.innerHTML = `<div class="p-3 text-slate-500 text-center">No text provided to crack.</div>`;
+          return;
+        }
+
+        let html = `<div class="grid grid-cols-1 divide-y divide-slate-800">`;
+        results.forEach((r, idx) => {
+          const isTop = idx === 0;
+          const highlightCls = isTop ? "bg-indigo-950/40 border-l-4 border-indigo-500 font-bold" : "hover:bg-slate-900/50";
+          const badgeCls = isTop ? "bg-emerald-500 text-white" : "bg-slate-800 text-slate-400";
+          const wordTags = r.matchedWords.length > 0 
+            ? r.matchedWords.map(w => `<span class="px-1.5 py-0.5 rounded text-[10px] bg-indigo-900/80 text-cyan-300 border border-indigo-700/60">${w}</span>`).join(' ')
+            : `<span class="text-[10px] text-slate-600">Letter Freq: ${r.score}</span>`;
+
+          html += `
+            <div class="p-2 flex items-center justify-between gap-2 text-xs font-mono ${highlightCls}">
+              <div class="flex items-center gap-3">
+                <span class="px-2 py-0.5 rounded text-[11px] font-bold ${badgeCls}">Shift ${r.shift}</span>
+                <span class="text-white tracking-wider font-semibold">${r.plaintext}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                ${wordTags}
+                ${isTop ? '<span class="text-[10px] text-emerald-400 font-sans font-bold flex items-center gap-1">★ Best Match</span>' : ''}
+              </div>
+            </div>
+          `;
+        });
+        html += `</div>`;
+        resultsContainer.innerHTML = html;
+      }
+
+      verifyCaesarChallenge() {
+        const input = document.getElementById('input-caesar-challenge');
+        const feedback = document.getElementById('feedback-caesar-challenge');
+        if (!input || !feedback) return;
+
+        const val = input.value.trim().toUpperCase().replace(/[^A-Z]/g, '');
+        const target = "EXPERIENCEISTHETEACHEROFALLTHINGS";
+        const isTh = window.app && window.app.currentLang === 'th';
+
+        feedback.classList.remove('hidden', 'bg-emerald-950/60', 'border-emerald-700', 'text-emerald-300', 'bg-rose-950/60', 'border-rose-700', 'text-rose-300');
+        feedback.classList.add('border');
+
+        if (val === target) {
+          feedback.classList.add('bg-emerald-950/60', 'border-emerald-700', 'text-emerald-300');
+          feedback.innerHTML = isTh
+            ? `✓ ถูกต้อง! การเลื่อนของจูเลียส ซีซาร์ n = 3 (ถอดรหัส C - 3 mod 26) ได้ผลลัพธ์คือ: <strong class="text-white">EXPERIENCE IS THE TEACHER OF ALL THINGS</strong>.`
+            : `✓ Correct! Julius Caesar shift n = 3 (decryption C - 3 mod 26) yields: <strong class="text-white">EXPERIENCE IS THE TEACHER OF ALL THINGS</strong>.`;
+        } else {
+          feedback.classList.add('bg-rose-950/60', 'border-rose-700', 'text-rose-300');
+          feedback.innerHTML = isTh
+            ? `✗ ไม่ถูกต้อง คำใบ้: สไลด์ที่ 14 แสดงคำกล่าวของซีซาร์ที่ขึ้นต้นด้วย "EXPERIENCE...". เลื่อนตัวอักษรแต่ละตัวถอยหลัง 3 ตำแหน่ง (H - 3 = E, A - 3 = X)`
+            : `✗ Incorrect. Hint: Slide 14 shows Caesar's quote beginning with "EXPERIENCE...". Shift each letter backward by 3 positions (H - 3 = E, A - 3 = X).`;
+        }
+      }
+
+      verifyRot13Challenge() {
+        const input = document.getElementById('input-rot13-challenge');
+        const feedback = document.getElementById('feedback-rot13-challenge');
+        if (!input || !feedback) return;
+
+        const val = input.value.trim().toUpperCase().replace(/[^A-Z]/g, '');
+        const target = "ENCRYPTANDDECRYPT";
+        const isTh = window.app && window.app.currentLang === 'th';
+
+        feedback.classList.remove('hidden', 'bg-emerald-950/60', 'border-emerald-700', 'text-emerald-300', 'bg-rose-950/60', 'border-rose-700', 'text-rose-300');
+        feedback.classList.add('border');
+
+        if (val === target) {
+          feedback.classList.add('bg-emerald-950/60', 'border-emerald-700', 'text-emerald-300');
+          feedback.innerHTML = isTh
+            ? `✓ ถูกต้อง! ROT13 (เลื่อน n = 13) ได้ผลลัพธ์คือ: <strong class="text-white">ENCRYPT AND DECRYPT</strong> (RAPELCG = ENCRYPT, NAQ = AND, QRPELCG = DECRYPT).`
+            : `✓ Correct! ROT13 (shift n = 13) yields: <strong class="text-white">ENCRYPT AND DECRYPT</strong> (RAPELCG = ENCRYPT, NAQ = AND, QRPELCG = DECRYPT).`;
+        } else {
+          feedback.classList.add('bg-rose-950/60', 'border-rose-700', 'text-rose-300');
+          feedback.innerHTML = isTh
+            ? `✗ ไม่ถูกต้อง คำใบ้: สไลด์ที่ 15 ROT13 เป็นการแปลงแบบสมมาตร R + 13 = E, A + 13 = N... คำแรกคือ ENCRYPT`
+            : `✗ Incorrect. Hint: Slide 15 ROT13 is symmetric. R + 13 = E, A + 13 = N, P + 13 = C... The first word is ENCRYPT.`;
+        }
+      }
+
+      // --- ATBASH METHODS ---
+      runAtbash() {
+        const input = document.getElementById('input-atbash');
+        const output = document.getElementById('output-atbash');
+        if (!input || !output) return;
+        const text = input.value;
+        output.textContent = this.ciphers.atbash.encrypt(text) || "(empty)";
+      }
+
+      // --- VIGENERE METHODS ---
+      setVigenereMode(mode) {
+        this.vigenereMode = mode;
+        const btnEnc = document.getElementById('btn-vig-mode-encrypt');
+        const btnDec = document.getElementById('btn-vig-mode-decrypt');
+        const inputLabel = document.getElementById('vig-input-label');
+        const traceSubtitle = document.getElementById('vig-trace-subtitle');
+
+        if (btnEnc && btnDec) {
+          if (mode === 'encrypt') {
+            btnEnc.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white";
+            btnDec.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white";
+            if (inputLabel) inputLabel.textContent = "Plaintext Message (P):";
+            if (traceSubtitle) traceSubtitle.textContent = "Row (Key) × Column (Plain) → Ciphertext [ (P + K) mod 26 ]";
+          } else {
+            btnDec.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white";
+            btnEnc.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white";
+            if (inputLabel) inputLabel.textContent = "Ciphertext Message (C):";
+            if (traceSubtitle) traceSubtitle.textContent = "Coordinate Decryption: [ (C - K + 26) mod 26 = P ]";
+          }
+        }
+        this.calcVigenere();
+      }
+
+      loadVigenerePreset(text, key, mode = 'decrypt') {
+        const input = document.getElementById('vig-input');
+        const keyInput = document.getElementById('vig-key');
+        if (input) input.value = text;
+        if (keyInput) keyInput.value = key;
+        this.setVigenereMode(mode);
+      }
+
+      calcVigenere() {
+        const input = document.getElementById('vig-input');
+        const keyInput = document.getElementById('vig-key');
+        const encOutput = document.getElementById('vig-enc-output');
+        const decOutput = document.getElementById('vig-dec-output');
+        const traceContainer = document.getElementById('vig-trace-container');
+
+        if (!input || !keyInput) return;
+        const text = input.value;
+        const key = keyInput.value;
+
+        const encRes = this.ciphers.vigenere.encrypt(text, key);
+        const decRes = this.ciphers.vigenere.decrypt(text, key);
+
+        if (encOutput) encOutput.textContent = encRes.ciphertext || "(empty)";
+        if (decOutput) decOutput.textContent = decRes.plaintext || "(empty)";
+
+        if (traceContainer) {
+          const isEncrypt = this.vigenereMode === 'encrypt';
+          const activeSteps = isEncrypt ? encRes.steps : decRes.steps;
+
+          if (activeSteps.length === 0) {
+            traceContainer.innerHTML = `<div class="p-2 text-slate-500 text-center">Enter text and keyword to view step-by-step Tabula Recta coordinates.</div>`;
+          } else {
+            let html = `
+              <table class="w-full text-center border-collapse text-[11px] font-mono">
+                <thead>
+                  <tr class="bg-slate-900 text-slate-400 border-b border-slate-800">
+                    <th class="p-1.5 text-left">Step</th>
+                    <th class="p-1.5">${isEncrypt ? 'Plain Char (Col)' : 'Cipher Char (In)'}</th>
+                    <th class="p-1.5">Key Char (Row)</th>
+                    <th class="p-1.5">Coordinate Formula</th>
+                    <th class="p-1.5 text-cyan-300 font-bold">${isEncrypt ? 'Cipher Result' : 'Plain Result'}</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 bg-slate-900/40">
+            `;
+            activeSteps.slice(0, 16).forEach(s => {
+              const charIn = isEncrypt ? s.plainChar : s.cipherChar;
+              const valIn = isEncrypt ? s.plainVal : s.cipherVal;
+              const charOut = isEncrypt ? s.cipherChar : s.plainChar;
+              html += `
+                <tr class="hover:bg-slate-800/50">
+                  <td class="p-1 text-left text-slate-500 font-bold">#${s.index}</td>
+                  <td class="p-1 text-white font-bold">${charIn} (${valIn})</td>
+                  <td class="p-1 text-amber-400 font-bold">${s.keyChar} (${s.keyVal})</td>
+                  <td class="p-1 text-slate-300 font-mono">${s.formula}</td>
+                  <td class="p-1 text-cyan-300 font-bold bg-indigo-950/30">${charOut}</td>
+                </tr>
+              `;
+            });
+            if (activeSteps.length > 16) {
+              html += `<tr><td colspan="5" class="p-1 text-slate-500 text-center">... and ${activeSteps.length - 16} more characters</td></tr>`;
+            }
+            html += `</tbody></table>`;
+            traceContainer.innerHTML = html;
+          }
+        }
+      }
+
+      verifyVigenereChallenge() {
+        const input = document.getElementById('input-vigenere-challenge');
+        const feedback = document.getElementById('feedback-vigenere-challenge');
+        if (!input || !feedback) return;
+
+        const val = input.value.trim().toUpperCase().replace(/[^A-Z]/g, '');
+        const target = "CRYPTANALYSIS";
+        const isTh = window.app && window.app.currentLang === 'th';
+
+        feedback.classList.remove('hidden', 'bg-emerald-950/60', 'border-emerald-700', 'text-emerald-300', 'bg-rose-950/60', 'border-rose-700', 'text-rose-300');
+        feedback.classList.add('border');
+
+        if (val === target) {
+          feedback.classList.add('bg-emerald-950/60', 'border-emerald-700', 'text-emerald-300');
+          feedback.innerHTML = isTh
+            ? `✓ ถูกต้อง! การถอดรหัส DFQIHNOODRGVT ด้วยคีย์เวิร์ด BOSTON ได้ผลลัพธ์คือ: <strong class="text-white">CRYPTANALYSIS</strong>.`
+            : `✓ Correct! Decrypting DFQIHNOODRGVT with keyword BOSTON yields: <strong class="text-white">CRYPTANALYSIS</strong>.`;
+        } else {
+          feedback.classList.add('bg-rose-950/60', 'border-rose-700', 'text-rose-300');
+          feedback.innerHTML = isTh
+            ? `✗ ไม่ถูกต้อง คำใบ้: สไลด์ที่ 23 แสดง D - B = C, F - O = R, Q - S = Y... ผลลัพธ์คือสาขาพื้นฐานของความมั่นคงปลอดภัยไซเบอร์`
+            : `✗ Incorrect. Hint: Slide 23 shows D - B = C, F - O = R, Q - S = Y... The result is a fundamental cybersecurity branch.`;
+        }
+      }
+
+      // --- PLAYFAIR METHODS ---
+      runPlayfairSandbox() {
+        const keyInput = document.getElementById('playfair-sandbox-key');
+        const textInput = document.getElementById('playfair-sandbox-text');
+        const outputDisplay = document.getElementById('playfair-output');
+        const matrixContainer = document.getElementById('playfair-matrix-grid');
+        const ribbonContainer = document.getElementById('playfair-digraph-ribbon');
+        const stepsContainer = document.getElementById('playfair-steps-container');
+
+        const key = keyInput ? keyInput.value : "DEATH";
+        const text = textInput ? textInput.value : "ME IK QO TX CQ TE ZX CO MW QC TE HN FB IK ME HA KR QC UN GI KM AV";
+
+        const matrix = this.ciphers.playfair.generateMatrix(key);
+        this.renderPlayfairMatrix(matrix, key, matrixContainer);
+
+        let result;
+        if (this.playfairMode === 'encrypt') {
+          result = this.ciphers.playfair.encrypt(text, key);
+          if (outputDisplay) outputDisplay.textContent = result.ciphertext || "(empty)";
+        } else {
+          result = this.ciphers.playfair.decrypt(text, key);
+          if (outputDisplay) outputDisplay.textContent = result.plaintext || "(empty)";
+        }
+
+        // Render Digraph Ribbon
+        if (ribbonContainer) {
+          if (result.digraphs.length === 0) {
+            ribbonContainer.innerHTML = `<span class="text-slate-500">No digraphs generated.</span>`;
+          } else {
+            ribbonContainer.innerHTML = result.digraphs.map(d => 
+              `<span class="px-2 py-1 rounded bg-slate-900 border border-slate-700 text-cyan-300 font-bold tracking-wider">${d[0]}${d[1]}</span>`
+            ).join(' ');
+          }
+        }
+
+        // Render Step-by-Step Transformation Cards
+        if (stepsContainer) {
+          if (result.steps.length === 0) {
+            stepsContainer.innerHTML = `<div class="p-3 text-slate-500 text-center">No transformations to display.</div>`;
+          } else {
+            let html = `<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">`;
+            result.steps.forEach((s, idx) => {
+              let ruleBadgeColor = "bg-indigo-900 text-indigo-300 border-indigo-700";
+              if (s.rule === "Same Row") ruleBadgeColor = "bg-cyan-950 text-cyan-300 border-cyan-700";
+              if (s.rule === "Same Column") ruleBadgeColor = "bg-emerald-950 text-emerald-300 border-emerald-700";
+
+              html += `
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1 text-xs font-mono">
+                  <div class="flex items-center justify-between">
+                    <span class="text-slate-500 font-bold">Pair #${idx + 1}</span>
+                    <span class="px-1.5 py-0.5 rounded text-[10px] border ${ruleBadgeColor}">${s.rule}</span>
+                  </div>
+                  <div class="flex items-center justify-between pt-1">
+                    <span class="text-slate-300 font-bold tracking-widest text-sm">${s.digraph}</span>
+                    <span class="text-slate-500">&rarr;</span>
+                    <span class="text-emerald-400 font-bold tracking-widest text-sm">${s.result}</span>
+                  </div>
+                  <div class="text-[10px] text-slate-400 pt-1 leading-snug">
+                    ${s.ruleExplanation}
+                  </div>
+                </div>
+              `;
+            });
+            html += `</div>`;
+            stepsContainer.innerHTML = html;
+          }
+        }
+      }
+
+      loadPlayfairPreset(text, key, mode = 'decrypt') {
+        const textInput = document.getElementById('playfair-sandbox-text');
+        const keyInput = document.getElementById('playfair-sandbox-key');
+        if (textInput) textInput.value = text;
+        if (keyInput) keyInput.value = key;
+        this.setPlayfairMode(mode);
+      }
+
+      setPlayfairMode(mode) {
+        this.playfairMode = mode;
+        const btnEnc = document.getElementById('btn-playfair-mode-encrypt');
+        const btnDec = document.getElementById('btn-playfair-mode-decrypt');
+        const inputLabel = document.getElementById('playfair-input-label');
+        if (btnEnc && btnDec) {
+          if (mode === 'encrypt') {
+            btnEnc.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white";
+            btnDec.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white";
+            if (inputLabel) inputLabel.textContent = "Plaintext Message (P):";
+          } else {
+            btnDec.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white";
+            btnEnc.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white";
+            if (inputLabel) inputLabel.textContent = "Input Message / Ciphertext:";
+          }
+        }
+        this.runPlayfairSandbox();
+      }
+
+      renderPlayfairMatrix(matrix, key = "", container = null) {
+        const el = container || document.getElementById('playfair-matrix-grid');
+        if (!el || !matrix) return;
+
+        const cleanKeyLetters = new Set((key || "").toUpperCase().replace(/J/g, 'I').replace(/[^A-Z]/g, '').split(''));
+        let html = "";
+        for (let r = 0; r < 5; r++) {
+          for (let c = 0; c < 5; c++) {
+            const letter = matrix[r][c];
+            const isKeyLetter = cleanKeyLetters.has(letter);
+            const cellStyle = isKeyLetter 
+              ? "bg-indigo-900/60 border-indigo-500/60 text-cyan-300 font-bold" 
+              : "bg-slate-900/80 border-slate-800 text-slate-200";
+            html += `
+              <div class="p-2 rounded-lg border flex items-center justify-center font-mono text-sm relative group ${cellStyle}">
+                <span>${letter}</span>
+                <span class="absolute bottom-0.5 right-1 text-[8px] text-slate-500">${r},${c}</span>
+              </div>
+            `;
+          }
+        }
+        el.innerHTML = html;
+      }
+
+      verifyPlayfairChallenge() {
+        const input = document.getElementById('input-playfair-challenge');
+        const feedback = document.getElementById('feedback-playfair-challenge');
+        if (!input || !feedback) return;
+
+        const cleanVal = input.value.trim().toUpperCase().replace(/[^A-Z]/g, '');
+        const validAnswers = [
+          "LABOULAYELADYWILLXLEADTOCIBOLATEMPLESOFGOLDX",
+          "LABOULAYELADYWILLLEADTOCIBOLATEMPLESOFGOLD",
+          "LABOULAYELADYWILLXLEADTOCIBOLATEMPLESOFGOLD",
+          "LABOULAYELADYWILLLEADTOCIBOLATEMPLESOFGOLDX",
+          "LABOULAYELADYWILLXLEADTOCIBOLATEMPLEOFGOLDX",
+          "LABOULAYELADYWILLLEADTOCIBOLATEMPLEOFGOLD"
+        ];
+        const isTh = window.app && window.app.currentLang === 'th';
+
+        feedback.classList.remove('hidden', 'bg-emerald-950/60', 'border-emerald-700', 'text-emerald-300', 'bg-rose-950/60', 'border-rose-700', 'text-rose-300');
+        feedback.classList.add('border');
+
+        if (validAnswers.includes(cleanVal)) {
+          feedback.classList.add('bg-emerald-950/60', 'border-emerald-700', 'text-emerald-300');
+          feedback.innerHTML = isTh
+            ? `✓ ถูกต้อง! ไซเฟอร์ National Treasure ในสไลด์ที่ 33 ถอดรหัสได้เป็น: <strong class="text-white">LABOULAYE LADY WILL LEAD TO CIBOLA TEMPLES OF GOLD</strong> (Playfair Digraphs: LABOULAYELADYWILLXLEADTOCIBOLATEMPLESOFGOLDX).`
+            : `✓ Correct! Slide 33 National Treasure cipher decrypts to: <strong class="text-white">LABOULAYE LADY WILL LEAD TO CIBOLA TEMPLES OF GOLD</strong> (Playfair Digraphs: LABOULAYELADYWILLXLEADTOCIBOLATEMPLESOFGOLDX).`;
+        } else {
+          feedback.classList.add('bg-rose-950/60', 'border-rose-700', 'text-rose-300');
+          feedback.innerHTML = isTh
+            ? `✗ ไม่ถูกต้อง คำใบ้: สไลด์ที่ 33 แสดงวลีจาก National Treasure เริ่มต้นด้วย "LABOULAYE LADY WILL LEAD TO..." มีการแทรกตัวอักษร 'X' คั่นตัวซ้ำ`
+            : `✗ Incorrect. Hint: Slide 33 shows the phrase from National Treasure beginning with "LABOULAYE LADY WILL LEAD TO...". Digraph 'X' is inserted between repeated letters.`;
+        }
+      }
+
+      // --- VERNAM METHODS ---
+      runVernamSandbox() {
+        const textInput = document.getElementById('vernam-sandbox-text');
+        const keyInput = document.getElementById('vernam-sandbox-key');
+        const outputDisplay = document.getElementById('vernam-sandbox-output');
+        const stepsTable = document.getElementById('vernam-steps-table');
+
+        const text = textInput ? textInput.value : "RRQNDLWDJRAL";
+        const key = keyInput ? keyInput.value : "PASYKXQMJCTN";
+
+        const res = this.vernamMode === 'encrypt'
+          ? this.ciphers.vernam.encrypt(text, key)
+          : this.ciphers.vernam.decrypt(text, key);
+
+        if (outputDisplay) {
+          outputDisplay.textContent = (this.vernamMode === 'encrypt' ? res.ciphertext : res.plaintext) || "(empty)";
+        }
+
+        if (stepsTable) {
+          if (res.steps.length === 0) {
+            const cleanT = (text || "").toUpperCase().replace(/[^A-Z]/g, '');
+            const cleanK = (key || "").toUpperCase().replace(/[^A-Z]/g, '');
+            if (cleanT.length > 0 && cleanK.length === 0 && (key || "").trim().length > 0) {
+              stepsTable.innerHTML = `<div class="p-2 text-amber-400 text-center font-mono text-xs">⚠️ Pad key must contain alphabetic characters (A-Z) to calculate One-Time Pad transformations.</div>`;
+            } else {
+              stepsTable.innerHTML = `<div class="p-2 text-slate-500 text-center">Provide ciphertext and pad key to calculate modular arithmetic.</div>`;
+            }
+          } else {
+            const cleanT = (text || "").toUpperCase().replace(/[^A-Z]/g, '');
+            const cleanK = (key || "").toUpperCase().replace(/[^A-Z]/g, '');
+            const keyWarning = cleanK.length < cleanT.length
+              ? `<div class="p-2 mb-2 text-xs rounded-xl bg-amber-950/60 border border-amber-800 text-amber-300 flex items-center gap-1.5"><span>⚠️ Warning: Pad key (${cleanK.length} chars) is shorter than message (${cleanT.length} chars). Only first ${res.steps.length} characters are computed.</span></div>`
+              : `<div class="p-2 mb-2 text-xs rounded-xl bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 flex items-center gap-1.5"><span>✓ One-Time Pad requirement satisfied: Pad key length (${cleanK.length}) &ge; message length (${cleanT.length}).</span></div>`;
+
+            let html = keyWarning;
+            html += `
+              <table class="w-full text-center border-collapse text-xs font-mono">
+                <thead>
+                  <tr class="bg-slate-900 text-slate-400 border-b border-slate-800">
+                    <th class="p-1.5 text-left">Step</th>
+                    <th class="p-1.5">${this.vernamMode === 'encrypt' ? 'Plain (P)' : 'Cipher (C)'}</th>
+                    <th class="p-1.5">Value</th>
+                    <th class="p-1.5">Pad Key (K)</th>
+                    <th class="p-1.5">Value</th>
+                    <th class="p-1.5">Modular Formula (mod 26)</th>
+                    <th class="p-1.5 text-emerald-400 font-bold">${this.vernamMode === 'encrypt' ? 'Cipher Output' : 'Plain Output'}</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 bg-slate-900/40">
+            `;
+            res.steps.forEach(s => {
+              const charIn = this.vernamMode === 'encrypt' ? s.pChar : s.cChar;
+              const valIn = this.vernamMode === 'encrypt' ? s.pVal : s.cVal;
+              const charOut = this.vernamMode === 'encrypt' ? s.cChar : s.pChar;
+              html += `
+                <tr class="hover:bg-slate-800/50">
+                  <td class="p-1.5 text-left text-slate-500 font-bold">#${s.step}</td>
+                  <td class="p-1.5 font-bold text-white">${charIn}</td>
+                  <td class="p-1.5 text-slate-400">${valIn}</td>
+                  <td class="p-1.5 font-bold text-amber-400">${s.kChar}</td>
+                  <td class="p-1.5 text-slate-400">${s.kVal}</td>
+                  <td class="p-1.5 text-cyan-300">${s.formula}</td>
+                  <td class="p-1.5 font-bold text-emerald-400 bg-emerald-950/20">${charOut}</td>
+                </tr>
+              `;
+            });
+            html += `</tbody></table>`;
+            stepsTable.innerHTML = html;
+          }
+        }
+      }
+
+      loadVernamPreset(text, key, mode = 'decrypt') {
+        const textInput = document.getElementById('vernam-sandbox-text');
+        const keyInput = document.getElementById('vernam-sandbox-key');
+        if (textInput) textInput.value = text;
+        if (keyInput) keyInput.value = key;
+        this.setVernamMode(mode);
+      }
+
+      setVernamMode(mode) {
+        this.vernamMode = mode;
+        const btnEnc = document.getElementById('btn-vernam-mode-encrypt');
+        const btnDec = document.getElementById('btn-vernam-mode-decrypt');
+        const inputLabel = document.getElementById('vernam-input-label');
+        if (btnEnc && btnDec) {
+          if (mode === 'encrypt') {
+            btnEnc.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white";
+            btnDec.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white";
+            if (inputLabel) inputLabel.textContent = "Plaintext Message (P):";
+          } else {
+            btnDec.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white";
+            btnEnc.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white";
+            if (inputLabel) inputLabel.textContent = "Input Message / Ciphertext:";
+          }
+        }
+        this.runVernamSandbox();
+      }
+
+      verifyVernamChallenge() {
+        const input = document.getElementById('input-vernam-challenge');
+        const feedback = document.getElementById('feedback-vernam-challenge');
+        if (!input || !feedback) return;
+
+        const val = input.value.trim().toUpperCase().replace(/[^A-Z]/g, '');
+        const target = "CRYPTOGRAPHY";
+        const isTh = window.app && window.app.currentLang === 'th';
+
+        feedback.classList.remove('hidden', 'bg-emerald-950/60', 'border-emerald-700', 'text-emerald-300', 'bg-rose-950/60', 'border-rose-700', 'text-rose-300');
+        feedback.classList.add('border');
+
+        if (val === target) {
+          feedback.classList.add('bg-emerald-950/60', 'border-emerald-700', 'text-emerald-300');
+          feedback.innerHTML = isTh
+            ? `✓ ถูกต้อง! การคำนวณ Vernam One-Time Pad (C - K mod 26) ได้ผลลัพธ์คือ: <strong class="text-white">CRYPTOGRAPHY</strong>.`
+            : `✓ Correct! Vernam One-Time Pad calculation (C - K mod 26) yields: <strong class="text-white">CRYPTOGRAPHY</strong>.`;
+        } else {
+          feedback.classList.add('bg-rose-950/60', 'border-rose-700', 'text-rose-300');
+          feedback.innerHTML = isTh
+            ? `✗ ไม่ถูกต้อง คำใบ้: การคำนวณในสไลด์ที่ 37: R(17) - P(15) = C(2), R(17) - A(0) = R(17), Q(16) - S(18) = Y(24)... ผลลัพธ์มีความยาว 12 ตัวอักษร`
+            : `✗ Incorrect. Hint: Slide 37 calculation: R(17) - P(15) = C(2), R(17) - A(0) = R(17), Q(16) - S(18) = Y(24)... Result is 12 letters.`;
+        }
+      }
+
+      // --- TABLES & REFERENCE METHODS ---
+      initVigenereTable() {
+        const table = document.getElementById('vigenere-table-element');
+        if (!table || table.children.length > 0) return;
+
+        const alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let html = "<thead><tr class='bg-slate-900 text-cyan-400 font-bold border-b border-slate-800'>";
+        html += "<th class='p-1.5 border border-slate-800 bg-slate-950'>Key \\ Plain</th>";
+        for (let c = 0; c < 26; c++) {
+          html += `<th class='p-1 border border-slate-800'>${alpha[c]}</th>`;
+        }
+        html += "</tr></thead><tbody>";
+
+        for (let r = 0; r < 26; r++) {
+          const rowChar = alpha[r];
+          html += `<tr class='hover:bg-indigo-950/30 transition-colors'>`;
+          html += `<th class='p-1.5 border border-slate-800 bg-slate-900/80 text-cyan-400 font-bold'>${rowChar}</th>`;
+          for (let c = 0; c < 26; c++) {
+            const colChar = alpha[c];
+            const char = alpha[(r + c) % 26];
+            html += `<td onmouseenter="highlightVigCell('${rowChar}', '${colChar}', '${char}')" class='p-1 border border-slate-800/80 hover:bg-indigo-600 hover:text-white transition cursor-pointer text-slate-300'>${char}</td>`;
+          }
+          html += "</tr>";
+        }
+        html += "</tbody>";
+        table.innerHTML = html;
+      }
+
+      highlightVigCell(row, col, val) {
+        const rEl = document.getElementById('vig-coord-row');
+        const cEl = document.getElementById('vig-coord-col');
+        const vEl = document.getElementById('vig-coord-val');
+        if (rEl) rEl.textContent = row;
+        if (cEl) cEl.textContent = col;
+        if (vEl) vEl.textContent = val;
+      }
+
+      initCaesarShiftTable() {
+        const table = document.getElementById('caesar-shift-table-element');
+        if (!table || table.children.length > 0) return;
+
+        const alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let html = "<thead><tr class='bg-slate-900 text-indigo-300 font-bold border-b border-slate-800'>";
+        html += "<th class='p-2 border border-slate-800'>Shift (n)</th>";
+        html += "<th class='p-2 border border-slate-800 text-left'>Shifted Alphabet (A &rarr; Z)</th>";
+        html += "</tr></thead><tbody class='divide-y divide-slate-800/60'>";
+
+        for (let s = 1; s <= 25; s++) {
+          let shifted = "";
+          for (let i = 0; i < 26; i++) {
+            shifted += alpha[(i + s) % 26];
+          }
+          html += `<tr class='caesar-shift-row hover:bg-slate-900/80 transition-colors'>`;
+          html += `<td class='p-2 font-bold text-cyan-400 border border-slate-800'>n = ${s}</td>`;
+          html += `<td class='p-2 font-mono tracking-widest text-left text-slate-300 border border-slate-800'>${shifted}</td>`;
+          html += `</tr>`;
+        }
+        html += "</tbody>";
+        table.innerHTML = html;
+      }
+
+      filterCaesarTable() {
+        const filterInput = document.getElementById('caesar-filter-input');
+        const query = filterInput ? filterInput.value : "";
+        SmartSearch.filterTableRows(query, '.caesar-shift-row');
+      }
+
+      initAsciiTable() {
+        const table = document.getElementById('ascii-table-element');
+        if (!table || table.children.length > 0) return;
+
+        const asciiMatrix = [
+          ['NUL', 'DLE', 'SP', '0', '@', 'P', '`', 'p'],
+          ['SOH', 'DC1', '!',  '1', 'A', 'Q', 'a', 'q'],
+          ['STX', 'DC2', '"',  '2', 'B', 'R', 'b', 'r'],
+          ['ETX', 'DC3', '#',  '3', 'C', 'S', 'c', 's'],
+          ['EOT', 'DC4', '$',  '4', 'D', 'T', 'd', 't'],
+          ['ENQ', 'NAK', '%',  '5', 'E', 'U', 'e', 'u'],
+          ['ACK', 'SYN', '&',  '6', 'F', 'V', 'f', 'v'],
+          ['BEL', 'ETB', '\'', '7', 'G', 'W', 'g', 'w'],
+          ['BS',  'CAN', '(',  '8', 'H', 'X', 'h', 'x'],
+          ['HT',  'EM',  ')',  '9', 'I', 'Y', 'i', 'y'],
+          ['LF',  'SUB', '*',  ':', 'J', 'Z', 'j', 'z'],
+          ['VT',  'ESC', '+',  ';', 'K', '[', 'k', '{'],
+          ['FF',  'FS',  ',',  '<', 'L', '\\','l', '|'],
+          ['CR',  'GS',  '-',  '=', 'M', ']', 'm', '}'],
+          ['SO',  'RS',  '.',  '>', 'N', '^', 'n', '~'],
+          ['SI',  'US',  '/',  '?', 'O', '_', 'o', 'DEL']
+        ];
+
+        let html = "<thead>";
+        html += "<tr class='bg-slate-900 text-emerald-400 font-bold border-b border-slate-800 text-[11px]'>";
+        html += "<th class='p-2 border border-slate-800' rowspan='2'>Row (Hex/Bin)</th>";
+        html += "<th class='p-1 border border-slate-800' colspan='8'>Columns (b7 b6 b5)</th>";
+        html += "</tr><tr class='bg-slate-900/80 text-cyan-300 text-[10px] border-b border-slate-800'>";
+        const colHeaders = ['0 (000)', '1 (001)', '2 (010)', '3 (011)', '4 (100)', '5 (101)', '6 (110)', '7 (111)'];
+        colHeaders.forEach(c => html += `<th class='p-1.5 border border-slate-800'>${c}</th>`);
+        html += "</tr></thead><tbody>";
+
+        asciiMatrix.forEach((rowArr, rowIdx) => {
+          const bin = rowIdx.toString(2).padStart(4, '0');
+          html += `<tr class='ascii-row hover:bg-slate-900/60'>`;
+          html += `<td class='p-1.5 font-bold text-slate-400 bg-slate-950 border border-slate-800'>${rowIdx} (${bin})</td>`;
+          rowArr.forEach((val, colIdx) => {
+            let colorCls = "text-slate-300";
+            if (colIdx >= 4 && colIdx <= 5) colorCls = "text-cyan-300 font-bold";
+            if (colIdx >= 6) colorCls = "text-emerald-300 font-bold";
+            html += `<td class='p-1.5 border border-slate-800/80 font-mono ${colorCls} hover:bg-indigo-600 hover:text-white transition'>${val}</td>`;
+          });
+          html += `</tr>`;
+        });
+        html += "</tbody>";
+        table.innerHTML = html;
+      }
+
+      filterAsciiTable() {
+        const filterInput = document.getElementById('ascii-filter-input');
+        const query = filterInput ? filterInput.value : "";
+        SmartSearch.filterTableRows(query, '.ascii-row');
+      }
+
+      loadUserPdf(event) {
+        if (!event || !event.target || !event.target.files) return;
+        const file = event.target.files[0];
+        // Handle Windows MIME type inconsistency
+        const isPdf = file && (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'));
+        if (!file || !isPdf) {
+          if (window.app) window.app.showToast("Please select a valid PDF file");
+          return;
+        }
+        const fileUrl = URL.createObjectURL(file);
+        const frame = document.getElementById('pdf-frame');
+        const placeholder = document.getElementById('pdf-placeholder');
+        if (frame && placeholder) {
+          frame.src = fileUrl;
+          frame.classList.remove('hidden');
+          placeholder.classList.add('hidden');
+        }
+        if (window.app) window.app.showToast(`Loaded: ${file.name}`);
+      }
+
+      loadPdfPreset(filename) {
+        const frame = document.getElementById('pdf-frame');
+        const placeholder = document.getElementById('pdf-placeholder');
+        if (frame && placeholder) {
+          frame.src = filename;
+          frame.classList.remove('hidden');
+          placeholder.classList.add('hidden');
+        }
+        if (window.app) window.app.showToast(`Loaded: ${filename}`);
+      }
+
+      bindChallengeEnterKeys() {
+        const bindings = [
+          { id: 'input-caesar-challenge', fn: () => this.verifyCaesarChallenge() },
+          { id: 'input-rot13-challenge', fn: () => this.verifyRot13Challenge() },
+          { id: 'input-vigenere-challenge', fn: () => this.verifyVigenereChallenge() },
+          { id: 'input-playfair-challenge', fn: () => this.verifyPlayfairChallenge() },
+          { id: 'input-vernam-challenge', fn: () => this.verifyVernamChallenge() },
+          { id: 'input-caesar-bruteforce', fn: () => this.runCaesarBruteForce() }
+        ];
+
+        bindings.forEach(b => {
+          const el = document.getElementById(b.id);
+          if (el) {
+            el.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                b.fn();
+              }
+            });
+          }
+        });
+      }
+    }
+
+    /* ========================================================= */
+    /* 3. APPLICATION ROOT ORCHESTRATOR                          */
+    /* ========================================================= */
+
+    class CyberQuestApp {
+      constructor() {
+        this.ciphers = {
+          caesar: new CaesarCipher(),
+          atbash: new AtbashCipher(),
+          vigenere: new VigenereCipher(),
+          playfair: new PlayfairCipher(),
+          vernam: new VernamCipher()
+        };
+        this.scratchpad = new ScratchpadEngine();
+        this.quiz = new QuizEngine(typeof chapter3QuizData !== 'undefined' ? chapter3QuizData : []);
+        this.lab = new LabEngine(this.ciphers, this.scratchpad);
+        this.toastTimeout = null;
+        this.currentView = 'landing';
+        this.viewHistory = ['landing'];
+        this.currentLang = 'en';
+      }
+
+      init() {
+        this.scratchpad.init('scratchpad-canvas');
+        this.lab.calcVigenere();
+        this.lab.runCaesarSandbox();
+        this.lab.runAtbash();
+        this.lab.runPlayfairSandbox();
+        this.lab.runVernamSandbox();
+        this.lab.runCaesarBruteForce("MYWOROBO");
+        this.lab.bindChallengeEnterKeys();
+
+        // Restore session score if previously completed in this browser session
+        try {
+          if (typeof sessionStorage !== 'undefined') {
+            const savedScore = sessionStorage.getItem('cyberquest_practice_score');
+            if (savedScore) {
+              const scoreLanding = document.getElementById('landing-score-display');
+              if (scoreLanding) scoreLanding.textContent = savedScore;
+            }
+          }
+        } catch(e) {}
+      }
+
+      switchView(viewName, pushHistory = true) {
+        if (pushHistory && this.currentView !== viewName) {
+          this.viewHistory.push(this.currentView);
+        }
+        this.currentView = viewName;
+
+        const landing = document.getElementById('view-landing');
+        const quiz = document.getElementById('view-quiz');
+        const lab = document.getElementById('view-lab');
+
+        if (landing) landing.classList.add('hidden');
+        if (quiz) quiz.classList.add('hidden');
+        if (lab) lab.classList.add('hidden');
+
+        if (viewName === 'landing' && landing) {
+          landing.classList.remove('hidden');
+        } else if (viewName === 'quiz' && quiz) {
+          quiz.classList.remove('hidden');
+        } else if (viewName === 'lab' && lab) {
+          lab.classList.remove('hidden');
+        }
+
+        if (typeof window !== 'undefined' && window.scrollTo) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+
+      goBack() {
+        if (this.viewHistory.length > 0) {
+          const prevView = this.viewHistory.pop();
+          this.switchView(prevView, false);
+          this.showToast(`Returned to: ${prevView.toUpperCase()}`);
+        } else {
+          this.switchView('landing', false);
+        }
+      }
+
+      applyTranslation() {
+        const dict = {
+          en: {
+            'nav-back-text': 'Back',
+            'nav-dashboard-text': 'Dashboard',
+            'nav-theory-text': 'Concept Quiz',
+            'nav-lab-text': 'Practical Lab',
+            'nav-handoff-text': 'AGY Handoff',
+            'tab-btn-caesar-text': 'Caesar & ROT13',
+            'tab-btn-atbash-text': 'Atbash',
+            'tab-btn-vigenere-text': 'Vigenère Square',
+            'tab-btn-playfair-text': 'Playfair 5x5',
+            'tab-btn-vernam-text': 'Vernam (OTP)',
+            'tab-btn-grids-text': 'Reference Tables & Grids',
+            'tab-btn-scratchpad-text': 'Draw & Scratchpad',
+            'tab-btn-pdfviewer-text': 'PDF Preview',
+            'btn-verify-caesar': 'Verify Plaintext',
+            'btn-verify-rot13': 'Verify ROT13',
+            'btn-verify-vigenere': 'Verify Plaintext',
+            'btn-verify-playfair-text': 'Verify Plaintext',
+            'btn-verify-vernam': 'Verify Plaintext',
+            'btn-export-canvas-text': 'Export Drawing',
+            'btn-undo-canvas-text': 'Undo',
+            'btn-clear-canvas-text': 'Clear'
+          },
+          th: {
+            'nav-back-text': 'ย้อนกลับ',
+            'nav-dashboard-text': 'แดชบอร์ด',
+            'nav-theory-text': 'แบบทดสอบทฤษฎี',
+            'nav-lab-text': 'ห้องทดลองปฏิบัติ',
+            'nav-handoff-text': 'ส่งต่องาน AGY',
+            'tab-btn-caesar-text': 'ซีซาร์ & ROT13',
+            'tab-btn-atbash-text': 'แอตแบชไซเฟอร์',
+            'tab-btn-vigenere-text': 'ตารางวิจิแนร์',
+            'tab-btn-playfair-text': 'เพลย์แฟร์ 5x5',
+            'tab-btn-vernam-text': 'เวอร์นัม (OTP)',
+            'tab-btn-grids-text': 'ตารางอ้างอิงและกริด',
+            'tab-btn-scratchpad-text': 'กระดานวาดเขียน',
+            'tab-btn-pdfviewer-text': 'เอกสารสไลด์',
+            'btn-verify-caesar': 'ตรวจสอบคำตอบชิฟต์',
+            'btn-verify-rot13': 'ตรวจสอบคำตอบ ROT13',
+            'btn-verify-vigenere': 'ตรวจสอบคำตอบวิจิแนร์',
+            'btn-verify-playfair-text': 'ตรวจสอบคำตอบเพลย์แฟร์',
+            'btn-verify-vernam': 'ตรวจสอบคำตอบเวอร์นัม',
+            'btn-export-canvas-text': 'ส่งออกภาพ',
+            'btn-undo-canvas-text': 'เลิกทำ',
+            'btn-clear-canvas-text': 'ล้างกระดาน'
+          }
+        };
+
+        const current = dict[this.currentLang] || dict.en;
+        Object.entries(current).forEach(([id, text]) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = text;
+        });
+
+        const asciiInput = document.getElementById('ascii-filter-input');
+        if (asciiInput) {
+          asciiInput.placeholder = this.currentLang === 'th' ? 'ค้นหาตัวอักษร / รหัส...' : 'Search Character / Code...';
+        }
+        const caesarFilter = document.getElementById('caesar-filter-input');
+        if (caesarFilter) {
+          caesarFilter.placeholder = this.currentLang === 'th' ? 'ค้นหาตัวอักษร / ชิฟต์...' : 'Search Letter / Shift...';
+        }
+
+        const hintBtnSpan = document.getElementById('hint-toggle-text');
+        if (hintBtnSpan) {
+          const hintBox = document.getElementById('hint-box');
+          const isHidden = !hintBox || hintBox.classList.contains('hidden');
+          if (this.currentLang === 'th') {
+            hintBtnSpan.textContent = isHidden ? "ต้องการคำใบ้?" : "ซ่อนคำใบ้";
+          } else {
+            hintBtnSpan.textContent = isHidden ? "Need a Hint?" : "Hide Hint";
+          }
+        }
+      }
+
+      toggleTranslation() {
+        this.currentLang = this.currentLang === 'en' ? 'th' : 'en';
+        const isTh = this.currentLang === 'th';
+        const transBtn = document.getElementById('nav-translate');
+        if (transBtn) {
+          transBtn.innerHTML = isTh ? "<span>🇹🇭 TH | EN</span>" : "<span>🌐 EN | TH</span>";
+          transBtn.className = isTh 
+            ? "px-2.5 py-1.5 rounded-lg bg-emerald-950 border border-emerald-600 text-emerald-300 hover:text-white text-xs font-semibold flex items-center gap-1 transition"
+            : "px-2.5 py-1.5 rounded-lg bg-indigo-950 border border-indigo-700/60 text-cyan-300 hover:text-white hover:bg-indigo-900 text-xs font-semibold flex items-center gap-1 transition";
+        }
+        this.applyTranslation();
+        this.showToast(isTh ? "เปิดโหมดสองภาษา (TH/EN Mode Active)" : "Switched to English Mode");
+      }
+
+      openChapterQuiz(chapterNum = 3) {
+        this.quiz.openChapter(chapterNum);
+      }
+
+      toggleHandoffModal() {
+        const modal = document.getElementById('handoff-modal');
+        if (modal) modal.classList.toggle('hidden');
+      }
+
+      showToast(message) {
+        const toast = document.getElementById('toast-box');
+        const content = document.getElementById('toast-content');
+        if (!toast || !content) return;
+
+        content.textContent = message;
+        toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+        toast.classList.add('translate-y-0', 'opacity-100');
+
+        if (this.toastTimeout) clearTimeout(this.toastTimeout);
+        this.toastTimeout = setTimeout(() => {
+          toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+          toast.classList.remove('translate-y-0', 'opacity-100');
+        }, 2500);
+      }
+    }
+
+    /* ========================================================= */
+    /* 4. GLOBAL BRIDGE INITIALIZATION                           */
+    /* ========================================================= */
+
+    // Export OOP Classes to Window for modularity, test runners, & inspection
+    window.SmartSearch = SmartSearch;
+    window.CaesarCipher = CaesarCipher;
+    window.AtbashCipher = AtbashCipher;
+    window.VigenereCipher = VigenereCipher;
+    window.PlayfairCipher = PlayfairCipher;
+    window.VernamCipher = VernamCipher;
+    window.ScratchpadEngine = ScratchpadEngine;
+    window.QuizEngine = QuizEngine;
+    window.LabEngine = LabEngine;
+    window.CyberQuestApp = CyberQuestApp;
+
+    window.app = new CyberQuestApp();
+
+    // View & Modal routing
+    window.switchView = (v) => window.app.switchView(v);
+    window.goBack = () => window.app.goBack();
+    window.toggleTranslation = () => window.app.toggleTranslation();
+    window.openChapterQuiz = (c) => window.app.openChapterQuiz(c);
+    window.toggleHandoffModal = () => window.app.toggleHandoffModal();
+    window.showToast = (m) => window.app.showToast(m);
+
+    // Quiz delegations
+    window.toggleHint = () => window.app.quiz.toggleHint();
+    window.selectOption = (i) => window.app.quiz.selectOption(i);
+    window.nextQuestion = () => window.app.quiz.nextQuestion();
+
+    // Lab & Solver delegations
+    window.setLabTab = (t) => window.app.lab.setTab(t);
+    window.setGridSubTab = (st) => window.app.lab.setGridSubTab(st);
+    window.runCaesarSandbox = () => window.app.lab.runCaesarSandbox();
+    window.runCaesarBruteForce = (t) => window.app.lab.runCaesarBruteForce(t);
+    window.loadBrutePreset = (t) => {
+      const el = document.getElementById('input-caesar-bruteforce');
+      if (el) el.value = t;
+      window.app.lab.runCaesarBruteForce(t);
+    };
+    window.verifyCaesarChallenge = () => window.app.lab.verifyCaesarChallenge();
+    window.verifyRot13Challenge = () => window.app.lab.verifyRot13Challenge();
+    window.runAtbash = () => window.app.lab.runAtbash();
+
+    // Vigenere delegations
+    window.calcVigenere = () => window.app.lab.calcVigenere();
+    window.setVigenereMode = (m) => window.app.lab.setVigenereMode(m);
+    window.loadVigenerePreset = (t, k, m) => window.app.lab.loadVigenerePreset(t, k, m);
+    window.verifyVigenereChallenge = () => window.app.lab.verifyVigenereChallenge();
+
+    // Playfair delegations
+    window.runPlayfairSandbox = () => window.app.lab.runPlayfairSandbox();
+    window.setPlayfairMode = (m) => window.app.lab.setPlayfairMode(m);
+    window.loadPlayfairPreset = (t, k, m) => window.app.lab.loadPlayfairPreset(t, k, m);
+    window.verifyPlayfairChallenge = () => window.app.lab.verifyPlayfairChallenge();
+
+    // Vernam delegations
+    window.runVernamSandbox = () => window.app.lab.runVernamSandbox();
+    window.setVernamMode = (m) => window.app.lab.setVernamMode(m);
+    window.loadVernamPreset = (t, k, m) => window.app.lab.loadVernamPreset(t, k, m);
+    window.verifyVernamChallenge = () => window.app.lab.verifyVernamChallenge();
+
+    // Reference Table & PDF delegations
+    window.initVigenereTable = () => window.app.lab.initVigenereTable();
+    window.highlightVigCell = (r, c, v) => window.app.lab.highlightVigCell(r, c, v);
+    window.initCaesarShiftTable = () => window.app.lab.initCaesarShiftTable();
+    window.filterCaesarTable = () => window.app.lab.filterCaesarTable();
+    window.initAsciiTable = () => window.app.lab.initAsciiTable();
+    window.filterAsciiTable = () => window.app.lab.filterAsciiTable();
+    window.loadUserPdf = (e) => window.app.lab.loadUserPdf(e);
+    window.loadPdfPreset = (f) => window.app.lab.loadPdfPreset(f);
+
+    // Canvas Scratchpad delegations
+    window.downloadCanvasImg = () => window.app.scratchpad.exportPng();
+    window.undoCanvas = () => window.app.scratchpad.undo();
+    window.clearCanvas = () => window.app.scratchpad.clear();
+    window.setCanvasTool = (t) => window.app.scratchpad.setTool(t);
+    window.setCanvasColor = (c) => window.app.scratchpad.setColor(c);
+    window.updateStrokeSize = (v) => window.app.scratchpad.updateStrokeSize(v);
+    window.switchCanvasTemplate = (tpl) => window.app.scratchpad.switchTemplate(tpl);
+
+    // DOM Ready initialization with fallback for already-loaded states
+    if (typeof document !== 'undefined' && document.readyState !== 'loading') {
+      window.app.init();
+    } else if (typeof document !== 'undefined') {
+      document.addEventListener('DOMContentLoaded', () => window.app.init());
+    }
+    window.onload = function() {
+      window.app.init();
+    };
+  </script>
+</body>
+</html>

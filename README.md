@@ -1,9 +1,23 @@
 # CyberQuest: Cybersecurity Study Hub & Cryptography Lab
-> Interactive cybersecurity study portal and cryptography solver for ICT 304 (Chapter 3: Cryptographic Concepts).
+> Interactive cybersecurity study portal and cryptography practice for ICT 304: Chapter 3 (Cryptographic Concepts) and Chapter 5 (Public Key Cryptography).
 
 ## 🚀 Live Demo
 Visit the deployed application on GitHub Pages:
 **[https://saltylem0n.github.io/ICT-304-CyberQuest/](https://saltylem0n.github.io/ICT-304-CyberQuest/)**
+
+---
+
+## Chapter 5: paper-first RSA practice
+
+Open [Chapter 5](https://saltylem0n.github.io/ICT-304-CyberQuest/chapter5.html) or use its dashboard card.
+
+- Ten English lessons covering the course's public-key topics and prerequisite paper arithmetic, with slide references and clarification of simplified security claims.
+- Guided checks for key generation, encoding, repeated squaring, encryption, and decryption. Solutions and hints appear only on request.
+- Exam papers using slide Q1–Q4 or generated small-number exercises, graded on submission. Q2 uses the key pair chosen in Q1.
+- Printable blank worksheets and separate worked answer keys, including every modular reduction.
+- Browser-local progress, reset controls, and exact `BigInt` arithmetic. A=1–Z=26 and slide 14's four-digit encoding remain separate.
+
+Chapter 5 uses `chapter5.html` and `chapter5.js` without external dependencies. The dashboard retains Chapter 3's existing engines. Run the arithmetic regression checks with `node tests/chapter5-math.test.js`.
 
 ---
 

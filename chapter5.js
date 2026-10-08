@@ -153,7 +153,7 @@
   let state = fresh(), storageAvailable = true, resetPending = false;
   try {
     const saved = JSON.parse(localStorage.getItem(STORE));
-    if (saved && typeof saved === 'object' && ['learn', 'guided', 'exam'].includes(saved.view)) {
+    if (saved && typeof saved === 'object' && ['learn', 'guided', 'exam', 'assignment'].includes(saved.view)) {
       // Validate stored shape rather than trusting arbitrary markup or exercise parameters.
       const defaults = fresh();
       state = { ...defaults, view: saved.view, lesson: Number.isInteger(saved.lesson) ? Math.max(0, Math.min(9, saved.lesson)) : 0, reviewed: Array.isArray(saved.reviewed) ? saved.reviewed.filter(i => Number.isInteger(i) && i >= 0 && i < 10) : [], completed: Array.isArray(saved.completed) ? saved.completed.filter(i => typeof i === 'string') : [], concepts: saved.concepts && typeof saved.concepts === 'object' ? saved.concepts : {}, difficulty: saved.difficulty === 'mixed' ? 'mixed' : 'beginner', lastScore: typeof saved.lastScore === 'string' ? saved.lastScore : null };
@@ -380,7 +380,7 @@
     state.view = view;
     document.querySelector('.hero-note').hidden = view === 'exam';
     document.querySelector('.hero').classList.toggle('exam-hero', view === 'exam');
-    for (const name of ['learn', 'guided', 'exam']) $('view-' + name).hidden = name !== view;
+    for (const name of ['learn', 'guided', 'exam', 'assignment']) $('view-' + name).hidden = name !== view;
     document.querySelectorAll('[data-view]').forEach(button => { button.classList.toggle('active', button.dataset.view === view); if (button.dataset.view === view) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current'); });
     save();
   }
@@ -416,7 +416,10 @@
       state.exam = { generated, answers: {}, submitted: false }; renderExam(); save();
     }
     if (button.id === 'exam-print-key') printMaterial(examItems(), true, true);
-    if (button.id === 'print-worksheet') printMaterial(state.view === 'guided' ? [currentExercise()] : examItems(), false, state.view !== 'guided');
+    if (button.id === 'print-worksheet') {
+      if (state.view === 'assignment') root.Chapter5Assignment.print(false);
+      else printMaterial(state.view === 'guided' ? [currentExercise()] : examItems(), false, state.view !== 'guided');
+    }
     if (button.id === 'reset-progress') {
       if (resetPending) {
         state = fresh(); resetPending = false; renderAll(); save();

@@ -16,8 +16,9 @@ Open [Chapter 5](https://saltylem0n.github.io/ICT-304-CyberQuest/chapter5.html) 
 - Exam papers using slide Q1–Q4 or generated small-number exercises, graded on submission. Q2 uses the key pair chosen in Q1.
 - Printable blank worksheets and separate worked answer keys, including every modular reduction.
 - Browser-local progress, reset controls, and exact `BigInt` arithmetic. A=1–Z=26 and slide 14's four-digit encoding remain separate.
+- Assignment 3 helper: enter a full name, select or edit the complete A–Z mapping, and choose distinct primes greater than 13. Follow the modular-inverse derivation and every encryption/decryption reduction, check the recovered name, and print worked steps or a blank worksheet. Name inputs stay in the open page and are not stored with progress.
 
-Chapter 5 uses `chapter5.html` and `chapter5.js` without external dependencies. The dashboard retains Chapter 3's existing engines. Run the arithmetic regression checks with `node tests/chapter5-math.test.js`.
+Chapter 5 uses `chapter5.html`, `chapter5.js`, and `chapter5-assignment.js` without external dependencies. The dashboard retains Chapter 3's existing engines. Run the arithmetic regression checks with `node tests/chapter5-math.test.js` and `node tests/chapter5-assignment.test.js`.
 
 ---
 

@@ -7,6 +7,19 @@ Visit the deployed application on GitHub Pages:
 
 ---
 
+## Chapter 3: guided practice paper
+
+Open [Chapter 3 guided practice](https://saltylem0n.github.io/ICT-304-CyberQuest/chapter3-practice.html) from the Chapter 3 card.
+
+- All 15 questions from `ICT304 Chapter 3 Practice Questions.pdf`, with original diagrams, accessible symbol transcriptions, method explanations, optional hints, and worked answers.
+- Fourteen checked questions covering ASCII, classical substitution, Pigpen, Vigenère, rail fence, route and block permutation, and single/double columnar transposition. The printed Playfair ciphertext produces garbled text with its supplied grid; that item preserves the literal working as ungraded self-check.
+- Blank worksheets and a separate worked-answer print view. Documented padding variants are accepted explicitly; meaningful letters, digits, and separators are retained.
+- Typed attempts remain while switching questions in the open page. The original concept quiz, cipher lab, and Chapter 5 remain available.
+
+The new page uses `chapter3-practice.html`, `chapter3-practice.js`, `chapter3-practice-data.js`, and local figures in `assets/chapter3-practice/`. Run `node tests/chapter3-practice.test.js` for independent answer/round-trip and answer-checking coverage.
+
+---
+
 ## Chapter 5: paper-first RSA practice
 
 Open [Chapter 5](https://saltylem0n.github.io/ICT-304-CyberQuest/chapter5.html) or use its dashboard card.

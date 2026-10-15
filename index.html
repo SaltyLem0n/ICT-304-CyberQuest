@@ -227,6 +227,9 @@
               </div>
             </div>
             <div class="space-y-2 mt-4">
+              <a href="chapter3-practice.html" class="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-sm transition shadow flex items-center justify-center gap-2">
+                Practice Paper · 15 Guided Questions →
+              </a>
               <button onclick="openChapterQuiz(3)" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition shadow flex items-center justify-center gap-2">
                 Launch Concept Quiz (10 Qs)
               </button>
@@ -3155,6 +3158,9 @@
             }
           }
         } catch(e) {}
+
+        // Allow the guided practice page to link directly to the existing lab.
+        if (window.location.hash === '#view-lab' && this.currentView === 'landing') this.switchView('lab', false);
       }
 
       switchView(viewName, pushHistory = true) {

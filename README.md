@@ -1,5 +1,5 @@
 # CyberQuest: Cybersecurity Study Hub & Cryptography Lab
-> Interactive cybersecurity study portal and cryptography practice for ICT 304: Chapter 3 (Cryptographic Concepts) and Chapter 5 (Public Key Cryptography).
+> Interactive cybersecurity study portal and cryptography practice for ICT 304: Chapter 3 (Cryptographic Concepts), Chapter 4 (Secret Key Cryptography & DES), and Chapter 5 (Public Key Cryptography).
 
 ## 🚀 Live Demo
 Visit the deployed application on GitHub Pages:
@@ -17,6 +17,20 @@ Open [Chapter 3 guided practice](https://saltylem0n.github.io/ICT-304-CyberQuest
 - Typed attempts remain while switching questions in the open page. The original concept quiz, cipher lab, and Chapter 5 remain available.
 
 The new page uses `chapter3-practice.html`, `chapter3-practice.js`, `chapter3-practice-data.js`, and local figures in `assets/chapter3-practice/`. Run `node tests/chapter3-practice.test.js` for independent answer/round-trip and answer-checking coverage.
+
+---
+
+## Chapter 4: secret-key lessons and guided practice
+
+Open [Chapter 4](https://saltylem0n.github.io/ICT-304-CyberQuest/chapter4.html) from its dashboard card.
+
+- Eleven lessons grounded in both Chapter 4 slide decks: rotor machines, ASCII/XOR, bit transposition, key distribution, stream ciphers/IVs, block modes/padding, brute force, DES rounds/key generation, and the chapter's algorithm/future-risk comparison.
+- All seven original practice questions, preserving Part 1/Part 2 numbering. Optional hints and worked solutions, binary answer checks, exact password counts, and two-decimal exhaustive times using 365 days/year.
+- DES working preserves `Computer` and `ABCD1234` case, shows ASCII, IP, key rotations, expansion, all eight S-box lookups, P, XOR, and the round-two key preparation. Binary leading zeroes are retained; solutions also show hex.
+- The 56-bit carried key state and 48-bit subkeys are labeled separately. Source clarifications identify PC-1 indexing, the PC-2 position-label typo, and the corrected final-permutation entry against NIST FIPS 46-3. Original PDFs are unchanged.
+- Blank worksheets and worked-answer printing share the screen calculations and include DES reference tables. Attempts remain only in the open page.
+
+The zero-build page uses `chapter4.html`, `chapter4.css`, `chapter4.js`, `chapter4-content.js`, and `chapter4-math.js`. `Chapter4Math` and `Chapter4Content` work in browsers and CommonJS. Run `node tests/chapter4.test.js` for source-derived fixtures, DES stage checks, exact arithmetic, padding, and grading coverage.
 
 ---
 

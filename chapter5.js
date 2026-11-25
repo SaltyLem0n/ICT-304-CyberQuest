@@ -78,11 +78,101 @@
     const multiple = row.quotient * modulus;
     return `<div class="formula worked-reduction"><span class="trace-line">1. <strong>Calculate:</strong> A = ${operation} = ${row.dividend}</span><span class="trace-line">2. <strong>Divide:</strong> Q = whole-number part of ${row.dividend} ÷ ${modulus} = ${row.quotient}</span><span class="trace-line">3. <strong>Multiply:</strong> B = ${row.quotient} × ${modulus} = ${multiple}</span><span class="trace-line">4. <strong>Subtract:</strong> ${answerSymbol} = ${row.dividend} − ${multiple} = <em>${row.remainder}</em></span><strong class="trace-line">5. Answer: ${answerSymbol} = ${row.remainder}</strong></div>`;
   }
+  function decimalPreview(dividend, modulus) {
+    if (dividend % modulus === 0n) return String(dividend / modulus);
+    const q = dividend / modulus, frac = ((dividend % modulus) * 100n) / modulus;
+    return `${q}.${String(frac).padStart(2, '0')}…`;
+  }
+  function gcdSteps(a, b) {
+    a = integer(a); b = integer(b);
+    let x = a < 0n ? -a : a, y = b < 0n ? -b : b;
+    if (x < y) [x, y] = [y, x];
+    const rows = [];
+    while (y > 0n) {
+      const quotient = x / y, remainder = x % y;
+      rows.push({ a: x, b: y, quotient, remainder });
+      [x, y] = [y, remainder];
+    }
+    const sharedSmallFactor = [2n, 3n, 5n, 7n, 11n].find(f => a % f === 0n && b % f === 0n) || null;
+    return { a, b, gcd: x, rows, sharedSmallFactor };
+  }
+  function inverseByTrial(e, z) {
+    e = integer(e); z = integer(z);
+    if (z < 2n) throw new Error('z must be greater than 1.');
+    if (gcd(e, z) !== 1n) throw new Error(`No modular inverse exists because GCD(${e}, ${z}) = ${gcd(e, z)} ≠ 1.`);
+    const q0 = e / z, r = e % z;
+    const trials = [];
+    let k = 0n, d = null;
+    while (k <= r + 1n) {
+      const target = 1n + k * z;
+      const divisible = target % r === 0n;
+      const candidateD = divisible ? target / r : null;
+      trials.push({ k, target, divisible, d: candidateD });
+      if (divisible) { d = candidateD; break; }
+      k++;
+    }
+    if (d === null) d = inverse(e, z);
+    const checkProduct = e * d, checkQuotient = checkProduct / z, checkMultiple = checkQuotient * z, checkRemainder = checkProduct - checkMultiple;
+    return { e, z, q0, r, k, d, trials, checkProduct, checkQuotient, checkMultiple, checkRemainder };
+  }
+  function powerShortcut(base, exponent, modulus) {
+    base = integer(base); exponent = integer(exponent); modulus = integer(modulus);
+    if (modulus <= 1n || base < 0n || base >= modulus || exponent < 1n) return null;
+    if (base === 0n) {
+      return { kind: 'zero', result: 0n, label: 'Remainder 0 shortcut', explanation: `0 multiplied by itself any number of times is always 0, so 0<sup>${exponent}</sup> mod ${modulus} = 0.` };
+    }
+    if (base === 1n) {
+      return { kind: 'one', result: 1n, label: 'Remainder 1 shortcut', explanation: `1 multiplied by itself any number of times is always 1, so 1<sup>${exponent}</sup> mod ${modulus} = 1.` };
+    }
+    if (base === modulus - 1n) {
+      const isEven = exponent % 2n === 0n;
+      const result = isEven ? 1n : modulus - 1n;
+      return { kind: 'minus_one', result, isEven, label: 'Remainder n − 1 shortcut', explanation: `${base} is 1 less than ${modulus}, so it behaves like −1 modulo ${modulus}. Raising −1 to an ${isEven ? 'even' : 'odd'} exponent (${exponent}) gives ${isEven ? '1' : `−1 ≡ ${result} (mod ${modulus})`}.` };
+    }
+    return null;
+  }
+  function renderCalculatorStep({ title, operation, dividend, modulus, quotient, remainder, answerSymbol, why, mistakeCheck }) {
+    const multiple = quotient * modulus;
+    const dec = decimalPreview(dividend, modulus);
+    return `<div class="calc-step">${title ? `<div class="calc-label">${title}</div>` : ''}<p><strong>Write on paper:</strong> <span class="math">${operation} = ${dividend}</span>; <span class="math">${dividend} = ${quotient} × ${modulus} + ${remainder}</span>; <span class="math"><strong>${answerSymbol} = ${remainder}</strong></span></p><p><strong>Basic calculator:</strong> <span class="math">${operation} = ${dividend}</span> → <span class="math">${dividend} ÷ ${modulus} = ${dec}</span> (whole-number quotient <span class="math">Q = ${quotient}</span>) → <span class="math">${quotient} × ${modulus} = ${multiple}</span> → <span class="math">${dividend} − ${multiple} = ${remainder}</span></p><p><strong>Quotient &amp; remainder:</strong> <span class="math">Q = ${quotient}</span>, <span class="math">R = ${remainder}</span></p><p><strong>Why it works:</strong> ${why}</p><p class="calc-check"><strong>Mistake check:</strong> ${mistakeCheck}</p></div>`;
+  }
+  function renderInverseGuide(e, z) {
+    e = integer(e); z = integer(z);
+    if (gcd(e, z) !== 1n) return `<div class="callout warn"><strong>No inverse exists</strong><p>GCD(${e}, ${z}) = ${gcd(e, z)} ≠ 1, so no whole number d satisfies ${e}d mod ${z} = 1.</p></div>`;
+    const inv = inverseByTrial(e, z);
+    const reducedNote = e >= z ? `<p><strong>Step 1 — Reduce e modulo z (shortcut for finding d):</strong> Divide ${e} by ${z}: <span class="math">${e} ÷ ${z} = ${decimalPreview(e, z)}</span> → whole-number quotient <span class="math">Q = ${inv.q0}</span>, so <span class="math">r = ${e} − ${inv.q0} × ${z} = <strong>${inv.r}</strong></span>. We solve <span class="math">${inv.r}d = 1 + k × ${z}</span>, while keeping the <strong>original e = ${e}</strong> for encryption.</p>` : `<p><strong>Step 1 — Reduce e modulo z:</strong> Since ${e} &lt; ${z}, <span class="math">r = ${e} mod ${z} = <strong>${inv.r}</strong></span>. Solve <span class="math">${inv.r}d = 1 + k × ${z}</span>.</p>`;
+    const trialRows = inv.trials.slice(0, 14).map(t => `<tr><td class="number">${t.k}</td><td class="math">1 + ${t.k} × ${z} = ${t.target}</td><td>${t.divisible ? `Yes: ${t.target} ÷ ${inv.r} = <strong>${t.d}</strong>` : `No (${decimalPreview(t.target, inv.r)})`}</td></tr>`).join('');
+    const extraNote = inv.trials.length > 14 ? `<p class="field-note">Continuing k up to ${inv.k} gives <span class="math">1 + ${inv.k} × ${z} = ${1n + inv.k * z}</span>, and <span class="math">${1n + inv.k * z} ÷ ${inv.r} = <strong>${inv.d}</strong></span>.</p>` : '';
+    return `<div class="calc-step"><div class="calc-label">Find private exponent d using a basic calculator</div>${reducedNote}<p><strong>Step 2 — Try k = 0, 1, 2, … until (1 + kz) ÷ r is a whole number:</strong></p><div class="table-wrap"><table><thead><tr><th scope="col">k</th><th scope="col">1 + k × ${z}</th><th scope="col">Divisible by ${inv.r}?</th></tr></thead><tbody>${trialRows}</tbody></table></div>${extraNote}<p><strong>Step 3 — Always check with the original e = ${e}:</strong> <span class="math">${e} × ${inv.d} = ${inv.checkProduct}</span>; <span class="math">${inv.checkProduct} ÷ ${z} = ${decimalPreview(inv.checkProduct, z)}</span> → <span class="math">Q = ${inv.checkQuotient}</span>; <span class="math">${inv.checkProduct} − ${inv.checkQuotient} × ${z} = ${inv.checkProduct} − ${inv.checkMultiple} = <strong>${inv.checkRemainder}</strong></span>. ✓</p><p class="calc-check"><strong>Mistake check:</strong> Use z = ${z} (not n) when finding d, and keep the original e = ${e} in the public key.</p></div>`;
+  }
   // Shared, DOM-independent formatting for assignment, practice, and print answers.
-  function renderTrace(t, { baseSymbol = 'm', resultSymbol = 'c' } = {}) {
+  function renderTrace(t, { baseSymbol = 'm', resultSymbol = 'c', method = 'auto' } = {}) {
     if (!['m', 'c'].includes(baseSymbol) || !['m', 'c'].includes(resultSymbol)) throw new Error('Use m or c for RSA message symbols.');
     const heading = `<p class="math">${resultSymbol} = ${t.base}<sup>${t.exponent}</sup> mod ${t.modulus}</p>`;
-    const legend = '<p class="field-note">A and B are temporary numbers. Q is the whole-number quotient: divide and ignore the decimal part. Q is separate from the prime q.</p>';
+    const legend = '<p class="field-note">Q is the whole-number quotient (divide and ignore the decimal part). Keep every remainder smaller than n.</p>';
+    if (method === 'squaring') {
+      const shortcut = powerShortcut(t.base, t.exponent, t.modulus);
+      if (shortcut) {
+        return `${heading}<div class="callout good"><strong>${shortcut.label}</strong><p>${shortcut.explanation}</p><p class="math"><strong>Final answer: ${resultSymbol} = ${shortcut.result}</strong></p><p class="calc-check"><strong>Mistake check:</strong> ${shortcut.result} is between 0 and ${t.modulus - 1n}. Repeated squaring gives the exact same result.</p></div>`;
+      }
+      const powers = t.selected.map(row => row.power).reverse().join(' + ');
+      const squareBlocks = t.squares.slice(1).map(row => {
+        const why = `Removing ${row.quotient} full group${row.quotient === 1n ? '' : 's'} of ${t.modulus} keeps the same remainder modulo ${t.modulus}.`;
+        const mistake = `Check ${row.remainder} &lt; ${t.modulus} and ${row.quotient} × ${t.modulus} + ${row.remainder} = ${row.dividend}. Never round Q up.`;
+        let extra = '';
+        if (row.remainder === 0n) extra = `<p class="field-note">Shortcut: remainder hit 0, so every higher square is also 0.</p>`;
+        else if (row.remainder === 1n) extra = `<p class="field-note">Shortcut: remainder hit 1, so every higher square stays 1.</p>`;
+        else if (row.remainder === t.modulus - 1n) extra = `<p class="field-note">Shortcut: remainder hit ${row.remainder} = n − 1 (like −1), so the next square will be 1.</p>`;
+        return `<section class="reduction-group"><h4>Power ${row.power} · ${baseSymbol}<sup>${row.power}</sup> mod ${t.modulus}</h4>${renderCalculatorStep({ operation: `${row.previous}²`, dividend: row.dividend, modulus: t.modulus, quotient: row.quotient, remainder: row.remainder, answerSymbol: 'R', why, mistakeCheck: mistake })}${extra}</section>`;
+      }).join('');
+      const prodBlocks = t.products.map((row, idx) => {
+        if (idx === 0) {
+          return `<section class="reduction-group"><h4>Include power ${row.power}</h4><div class="calc-step"><p><strong>Write on paper:</strong> Start with <span class="math">R = ${row.right}</span> (since <span class="math">1 × ${row.right} = ${row.right}</span>).</p><p class="calc-check"><strong>Mistake check:</strong> ${row.right} is already smaller than ${t.modulus}, so no division is needed here.</p></div></section>`;
+        }
+        return `<section class="reduction-group"><h4>Include power ${row.power}</h4>${renderCalculatorStep({ operation: `${row.left} × ${row.right}`, dividend: row.dividend, modulus: t.modulus, quotient: row.quotient, remainder: row.remainder, answerSymbol: 'R', why: `Multiplying the running remainder by the remainder for power ${row.power} and reducing keeps numbers small for a basic calculator.`, mistakeCheck: `Check ${row.remainder} &lt; ${t.modulus} and ${row.quotient} × ${t.modulus} + ${row.remainder} = ${row.dividend}.` })}</section>`;
+      }).join('');
+      return `${heading}<p>Use repeated squaring and reduce after every multiplication so your basic calculator never hits huge numbers.</p>${legend}<p class="math"><strong>Split the exponent:</strong> ${t.exponent} = ${powers}</p><h4>1. Square in smaller groups</h4><p class="math">Starting remainder: R = ${t.base} (${baseSymbol}<sup>1</sup> mod ${t.modulus}).</p>${squareBlocks}<h4>2. Multiply the selected remainders</h4><p class="math">${t.selected.map(row => `${baseSymbol}<sup>${row.power}</sup> → ${row.remainder}`).join('; ')}</p>${prodBlocks}<div class="callout good"><strong class="trace-line">Final answer: ${resultSymbol} = ${t.result}</strong><p>The last remainder R is the ${resultSymbol === 'c' ? 'encrypted message number c' : 'original message number m'}.</p></div>`;
+    }
     const direct = directReduction(t);
     if (direct) return `${heading}${legend}${reductionWorking(`${t.base}<sup>${t.exponent}</sup>`, direct, t.modulus, resultSymbol)}`;
     const powers = t.selected.map(row => row.power).reverse().join(' + ');
@@ -170,28 +260,59 @@
     { id: 'q4d', title: 'Slide Q4D · p=5, q=31, e=13', source: 'Slide 21 · D', kind: 'rsa', p: 5, q: 31, e: 13, messages: [5], prompt: 'p = 5, q = 31, e = 13, M = 5. Generate the keys, encrypt M, and decrypt the ciphertext.' },
     { id: 'encoding', title: 'Slide 14 · Four-digit encoding', source: 'Slide 14', kind: 'encoding', text: 'How are you?', prompt: 'Encode “How are you?” using slide 14: a=00 … z=25, A=26 … Z=51, 0=52 … 9=61, space=62, .=63, ,=64, ;=65, ?=66. Group two character codes into each four-digit block. Keep leading zeros. This question is encoding only.' }
   ];
+  const EASY_PRIMES = [2, 3, 5, 7, 11];
+  const EASY_EXPONENTS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  const FRIENDLY_START = { p: 5, q: 7, e: 5, m: 12 };
+  function validateEasyChoice({ p, q, e, m }) {
+    let pVal, qVal, eVal, mVal;
+    try { pVal = integer(p); } catch (_) { return { ok: false, field: 'p', error: 'Choose a prime p from 2, 3, 5, 7, 11.', validEs: [] }; }
+    try { qVal = integer(q); } catch (_) { return { ok: false, field: 'q', error: 'Choose a prime q from 2, 3, 5, 7, 11.', validEs: [] }; }
+    if (!EASY_PRIMES.map(BigInt).includes(pVal)) return { ok: false, field: 'p', error: `p = ${pVal} is not in Easy numbers. Choose a prime below 13: 2, 3, 5, 7, or 11.`, validEs: [] };
+    if (!EASY_PRIMES.map(BigInt).includes(qVal)) return { ok: false, field: 'q', error: `q = ${qVal} is not in Easy numbers. Choose a prime below 13: 2, 3, 5, 7, or 11.`, validEs: [] };
+    if (pVal === qVal) return { ok: false, field: 'q', error: `p and q must be different primes. Both are currently ${pVal}, so n = ${pVal * qVal} = p², which breaks RSA key generation.`, validEs: [] };
+    const n = pVal * qVal, z = (pVal - 1n) * (qVal - 1n);
+    const validEs = EASY_EXPONENTS.filter(cand => BigInt(cand) < n && gcd(cand, z) === 1n);
+    try { eVal = integer(e); } catch (_) { return { ok: false, field: 'e', n, z, validEs, error: `Choose a whole-number public exponent e below 13. Valid choices for p=${pVal}, q=${qVal} (n=${n}, z=${z}): ${validEs.join(', ')}.` }; }
+    if (eVal <= 1n) return { ok: false, field: 'e', n, z, validEs, error: `e = ${eVal} is invalid because RSA requires 1 < e < n (e = 1 leaves every message unchanged). Valid choices here: ${validEs.join(', ')}.` };
+    if (eVal >= 13n) return { ok: false, field: 'e', n, z, validEs, error: `e = ${eVal} is outside Easy numbers (choose e below 13). Valid choices for p=${pVal}, q=${qVal}: ${validEs.join(', ')}.` };
+    if (eVal >= n) return { ok: false, field: 'e', n, z, validEs, error: `e = ${eVal} is invalid because e must satisfy 1 < e < n. Here n = ${pVal} × ${qVal} = ${n}, so choose e < ${n}. Valid choices: ${validEs.join(', ')}.` };
+    const g = gcd(eVal, z);
+    if (g !== 1n) return { ok: false, field: 'e', n, z, validEs, error: `e = ${eVal} is invalid because GCD(${eVal}, ${z}) = ${g} ≠ 1. Both ${eVal} and ${z} are divisible by ${g}, so no modular inverse d exists for ${eVal}d mod ${z} = 1. Valid choices here: ${validEs.join(', ')}.` };
+    try { mVal = integer(m); } catch (_) { return { ok: false, field: 'm', n, z, validEs, error: `Enter a whole-number message m with 0 ≤ m < ${n}.` }; }
+    if (mVal < 0n || mVal >= n) return { ok: false, field: 'm', n, z, validEs, error: `Message m = ${mVal} is out of bounds. RSA requires 0 ≤ m < n. Here n = ${n}, so choose m from 0 to ${n - 1n}.` };
+    const key = keys(pVal, qVal, eVal);
+    return { ok: true, p: pVal, q: qVal, n, z, e: eVal, d: key.d, m: mVal, validEs, key };
+  }
   function generate(difficulty = 'beginner', id = 'generated', random = Math.random) {
+    const pick = list => list[Math.min(list.length - 1, Math.floor(random() * list.length))];
+    if (difficulty === 'easy') {
+      const pairs = EASY_PRIMES.flatMap(p => EASY_PRIMES.filter(q => q > p).map(q => [p, q]));
+      const [p, q] = pick(pairs);
+      const n = p * q, z = (p - 1) * (q - 1);
+      const e = pick(EASY_EXPONENTS.filter(cand => cand < n && gcd(cand, z) === 1n));
+      const m = n > 3 ? 2 + Math.min(n - 3, Math.floor(random() * (n - 2))) : Math.min(n - 1, Math.floor(random() * n));
+      return { id, title: 'Generated · Easy numbers', source: 'Easy numbers · primes & e below 13', kind: 'rsa', p, q, e, messages: [m], prompt: `p = ${p}, q = ${q}, e = ${e}, m = ${m}. Generate the keys, encrypt m, and decrypt c. Show every modular reduction on paper.` };
+    }
     const limit = difficulty === 'mixed' ? 200 : 77;
     const primes = [3, 5, 7, 11, 13, 17, 19, 23, 31];
     const pairs = primes.flatMap(p => primes.filter(q => q > p && p * q <= limit).map(q => [p, q]));
-    const pick = list => list[Math.min(list.length - 1, Math.floor(random() * list.length))];
     const [p, q] = pick(pairs);
     const e = pick([3, 5, 7, 11, 13].filter(e => e < p * q && gcd(e, (p - 1) * (q - 1)) === 1n));
     const m = 2 + Math.min(p * q - 3, Math.floor(random() * (p * q - 2)));
     return { id, title: 'Generated · New paper numbers', source: 'Generated practice · same RSA method as slides 11–21', kind: 'rsa', p, q, e, messages: [m], prompt: `p = ${p}, q = ${q}, e = ${e}, M = ${m}. Generate the keys, encrypt M, and decrypt. Show every modular reduction on paper.` };
   }
-  const math = { integer, gcd, isPrime, inverse, keys, trace, directReduction, renderTrace, encode, validateBlocks, solve, exercises, generate };
+  const math = { integer, gcd, isPrime, inverse, keys, trace, directReduction, renderTrace, encode, validateBlocks, solve, exercises, generate, EASY_PRIMES, EASY_EXPONENTS, FRIENDLY_START, validateEasyChoice, gcdSteps, inverseByTrial, powerShortcut };
   if (typeof module !== 'undefined' && module.exports) module.exports = math;
   root.Chapter5Math = math;
-  root.Chapter5Working = { renderTrace, renderManualPowerFiveGuide };
+  root.Chapter5Working = { renderTrace, renderManualPowerFiveGuide, renderCalculatorStep, renderInverseGuide, powerShortcut, inverseByTrial, gcdSteps };
   if (typeof document === 'undefined') return;
 
   const lessons = [
     { title: 'Public and private keys', ref: 'Slides 2–4', body: `<p>With symmetric encryption, Alice and Bob share one secret key. Before sending encrypted messages, they must get that key to each other securely. Sending the key openly would let an eavesdropper read later messages.</p><p>Asymmetric cryptography uses two mathematically related keys. The <strong>public key</strong> can be shared; the <strong>private key</strong> stays with its owner. For confidentiality, Alice uses <strong>Bob’s public key</strong> to encrypt, and Bob uses <strong>Bob’s private key</strong> to decrypt.</p><div class="flow"><span>Alice’s message</span> → <span>Bob’s public key</span> → <span>Ciphertext</span> → <span>Bob’s private key</span> → <span>Bob reads it</span></div><h3>Example</h3><p>Anyone can put a message into Bob’s “locked mailbox”; only Bob has the key to open it. Making the mailbox public does not give everyone the opening key.</p><div class="callout warn"><strong>Read the slides carefully</strong><p>A public key alone does not prove the sender’s identity. Encrypting with Bob’s key protects secrecy but does not establish that Alice sent the message, or establish integrity by itself.</p></div>`, takeaway: 'Confidentiality: recipient’s public key → recipient’s private key.' },
     { title: 'One-way & trapdoor functions', ref: 'Slides 5–8', body: `<p>A one-way function is easy to compute forward but hard to reverse for suitably large inputs. A trapdoor function has extra secret information that makes the intended reverse operation practical.</p><h3>Multiplication versus factorization</h3><p>5 × 7 = 35 is easy. Given a huge product, finding its prime factors can be much harder. RSA publishes n = pq and keeps the prime factors secret. Small examples such as 35 are easy to factor and are useful only for learning.</p><h3>Exponentiation versus discrete logarithms</h3><p>3³ mod 7 = 6 is easy to calculate. Given 3, 7, and 6, searching for an exponent x such that 3ˣ mod 7 = 6 illustrates a discrete-logarithm problem. With appropriate large groups, reversing this is hard.</p><div class="callout"><strong>Clarification</strong><p>The slides use ordinary multiplication/factoring and exponent/logarithm analogies. Ordinary calculator logarithms are not the hard cryptographic problem. RSA is associated with factoring; schemes such as Diffie–Hellman use discrete-logarithm problems.</p></div>`, takeaway: 'Easy forward + hard reverse + secret trapdoor information is the central idea.' },
     { title: 'What the algorithm names mean', ref: 'Slides 9–10', body: `<p>The slide list mixes algorithms, purposes, families, and standards. Learn what each name represents rather than treating them all as interchangeable encryption methods.</p><div class="table-wrap"><table><thead><tr><th>Name</th><th>What it is used for</th></tr></thead><tbody><tr><td>RSA</td><td>Public-key encryption and digital-signature schemes using modular arithmetic.</td></tr><tr><td>Diffie–Hellman</td><td>Key agreement: two parties derive a shared secret. It does not directly encrypt the message or authenticate the parties on its own.</td></tr><tr><td>Digital signature</td><td>A function for authenticity and integrity, implemented by schemes such as RSA signatures.</td></tr><tr><td>ElGamal</td><td>A discrete-logarithm-based public-key encryption scheme; related signature constructions also exist.</td></tr><tr><td>ECC</td><td>Elliptic-curve cryptography: a family supporting key agreement and signatures, among other constructions.</td></tr><tr><td>PKCS</td><td>Public-Key Cryptography Standards: specifications, rather than one encryption algorithm.</td></tr><tr><td>Cramer–Shoup</td><td>A public-key encryption scheme designed to resist adaptive chosen-ciphertext attacks under its assumptions.</td></tr><tr><td>KEA</td><td>Key Exchange Algorithm: a key-agreement technique.</td></tr><tr><td>LUC</td><td>A family of public-key constructions based on Lucas sequences.</td></tr></tbody></table></div><h3>Example</h3><p>“Use Diffie–Hellman to agree on an AES key” describes key agreement followed by symmetric encryption. “Use RSA to sign” describes authentication rather than secrecy.</p>`, takeaway: 'RSA is the calculation focus of this chapter. Diffie–Hellman is key agreement; PKCS is standards.' },
-    { title: 'Paper maths: mod, GCD & powers', ref: 'Supporting skills for slides 11–21', body: `<h3>1. Mod means the remainder</h3><div class="formula math">17 = 3 × 5 + 2<br>Therefore 17 mod 5 = 2.</div><p>Divide by the modulus and keep the remainder. For positive n, a remainder lies between 0 and n−1. You can reduce after every multiplication: (ab) mod n = ((a mod n)(b mod n)) mod n.</p><h3>2. GCD means greatest common divisor</h3><p>Two numbers are relatively prime when their GCD is 1. Use Euclid’s divisions: 24 = 4 × 5 + 4; 5 = 1 × 4 + 1; 4 = 4 × 1 + 0. The last nonzero remainder is 1, so GCD(24,5)=1.</p><h3>3. Find a modular inverse</h3><p>To find d, solve ed = 1 + kz for an integer k. For e=5 and z=24, try k=1: d=(1+24)/5=5. Check: 5 × 5 mod 24 = 1.</p><p>For a harder example, e=5,z=72: try k until 1+72k is divisible by 5. k=2 gives d=145/5=29.</p><h4>Easy shortcut: reduce e first</h4><p>You can use this method even when e is bigger than z. First check GCD(e,z)=1; otherwise no modular inverse exists. Keep the original e in the public key and use its remainder only to find d.</p><p><strong>Example: e=31, z=24. Find d such that 31d mod 24 = 1.</strong></p><p><strong>Step 1 — Make e smaller.</strong> Divide e by z and keep the remainder:</p><div class="formula math">31 = 1 × 24 + 7<br>So e′ = 31 mod 24 = 7.<br>Solve 7d mod 24 = 1.</div><p><strong>Step 2 — Find a multiple of 7 that is 1 more than a multiple of 24.</strong> Write 7d = 1 + 24k. Try whole-number values of k (0, 1, 2, …) until the right side divides evenly by 7. Here k=0 gives 1, which does not divide evenly by 7; continue:</p><div class="table-wrap"><table><caption>Trial table for 7d = 1 + 24k</caption><thead><tr><th scope="col">k</th><th scope="col">1 + 24k</th><th scope="col">Divisible by 7?</th></tr></thead><tbody><tr><td>1</td><td>25</td><td>No</td></tr><tr><td>2</td><td>49</td><td>Yes: 49 = 7 × 7</td></tr></tbody></table></div><div class="formula math">d = (1 + 24 × 2) ÷ 7 = 49 ÷ 7 = 7</div><p><strong>Step 3 — Check using the original e=31.</strong></p><div class="formula math">31 × 7 = 210 + 7 = 217<br>24 × 9 = 216<br>217 − 216 = 1<br>Therefore 31 × 7 mod 24 = 1. ✓</div><p><strong>Why it works:</strong> replacing 31 with 7 removes one whole group of 24. After multiplying by d, you have removed d whole groups of 24, so the remainder stays the same.</p><p>For very large numbers, reducing e still works, but trying k can take a long time. The <strong>extended Euclidean algorithm</strong> finds d faster by back-substituting Euclid’s divisions.</p><h3>4. Calculate small powers; split large powers</h3><p>When the full power fits within 12 decimal digits, calculate it directly and find the remainder in five steps:</p>${renderTrace(trace(12n, 5n, 35n))}<p>For exponent 37, write 37 = 32 + 4 + 1. Calculate powers 1, 2, 4, 8, 16, 32 by squaring each preceding remainder. Multiply only the remainders for 32, 4, and 1, reducing after each multiplication.</p>${renderManualPowerFiveGuide()}`, takeaway: 'Write dividend = quotient × modulus + remainder. Square and reduce before multiplying selected powers.' },
-    { title: 'RSA: keys, encryption & decryption', ref: 'Slides 10–24', body: `<ol><li>Choose different prime numbers p and q.</li><li>Calculate <strong>n=pq</strong> and <strong>z=(p−1)(q−1)</strong>. z is the slide notation for φ(n).</li><li>Choose e with GCD(e,z)=1. The slides require e&lt;n; this lab also excludes e=1 because it leaves every message unchanged.</li><li>Find positive d with <strong>ed mod z = 1</strong>.</li><li>Public key: <strong>(n,e)</strong>. Private key: <strong>(n,d)</strong>.</li><li>Encrypt: <strong>c=mᵉ mod n</strong>. Decrypt: <strong>m=cᵈ mod n</strong>.</li></ol><h3>Example: p=5, q=7</h3><div class="formula math">n=35, z=4 × 6=24<br>Choose e=5; GCD(5,24)=1<br>d=5 because 5 × 5 = 1 + 24<br>Public (35,5); private (35,5)<br></div><h4>Encrypt m=12</h4>${renderTrace(trace(12n, 5n, 35n))}<h4>Decrypt c=17</h4>${renderTrace(trace(17n, 5n, 35n), { baseSymbol: 'c', resultSymbol: 'm' })}<p>The same exponent can occur in these tiny examples; that is mathematically valid, but it is a weak teaching key. Question 1 does not specify e, so it has several valid answers. Always report the e you chose.</p><div class="callout warn"><p>Use n when encrypting/decrypting; use z when finding d. The decryption table on slide 17 has a copied encryption-formula heading: the correct decryption formula is m=cᵈ mod n. Do not require GCD(m,n)=1; RSA also recovers valid message values sharing a factor with n.</p></div><p>With public n,e, factoring n lets an attacker recover p,q, then z and d. Large, appropriately generated keys and secure schemes make this attack impractical under their assumptions.</p>`, takeaway: 'Key generation uses z. Encryption/decryption use n. Keep every numeric message block smaller than n.' },
+    { title: 'Paper maths: mod, GCD & powers', ref: 'Supporting skills for slides 11–21', body: `<h3>1. Mod means the remainder (basic calculator method)</h3><p>A basic calculator (+, −, ×, ÷) does not have a mod button, so find any remainder in four steps:</p><div class="formula math">17 ÷ 5 = 3.4 → whole-number quotient Q = 3<br>3 × 5 = 15<br>17 − 15 = 2<br>Therefore 17 mod 5 = 2.</div><p>Divide by the modulus, ignore the decimal part to get Q, multiply back by the modulus, then subtract. For positive n, a remainder always lies between 0 and n − 1. You can reduce after every multiplication: (ab) mod n = ((a mod n)(b mod n)) mod n.</p><h3>2. GCD means greatest common divisor</h3><p>An inverse exists <strong>only when GCD(e, z) = 1</strong> (meaning e and z share no common factor greater than 1). For tiny numbers like e &lt; 13, check small factors (2, 3, 5, 7, 11): if both e and z divide evenly by the same factor, GCD(e, z) &gt; 1 and e is invalid. When needed, use Euclid’s divisions:</p><div class="formula math">24 = 4 × 5 + 4<br>5 = 1 × 4 + 1<br>4 = 4 × 1 + 0<br>Last non-zero remainder = 1 → GCD(24, 5) = 1.</div><h3>3. Find d: reduce e first, then solve rd = 1 + kz</h3><p>First check GCD(e, z) = 1; otherwise no modular inverse exists. Next, reduce e modulo z and call this remainder <strong>r</strong>. Then solve <strong>rd = 1 + kz</strong> by trying whole numbers k = 0, 1, 2, … until (1 + kz) ÷ r is a whole number.</p><p><strong>Example: e = 31, z = 24. Find d such that 31d mod 24 = 1.</strong></p><p><strong>Step 1 — Reduce e modulo z to get r:</strong></p><div class="formula math">31 ÷ 24 = 1.29… → Q = 1<br>31 − 1 × 24 = 7 → r = 7<br>Solve 7d = 1 + 24k.</div><p><strong>Step 2 — Try k = 0, 1, 2, … until (1 + 24k) ÷ 7 is a whole number:</strong></p><div class="table-wrap"><table><caption>Trial table for 7d = 1 + 24k</caption><thead><tr><th scope="col">k</th><th scope="col">1 + 24k</th><th scope="col">Divisible by 7?</th></tr></thead><tbody><tr><td>0</td><td>1</td><td>No (1 ÷ 7 = 0.14…)</td></tr><tr><td>1</td><td>25</td><td>No (25 ÷ 7 = 3.57…)</td></tr><tr><td>2</td><td>49</td><td>Yes: 49 ÷ 7 = <strong>7</strong></td></tr></tbody></table></div><div class="formula math">d = (1 + 24 × 2) ÷ 7 = 49 ÷ 7 = 7</div><p><strong>Step 3 — Always check using the ORIGINAL e = 31:</strong></p><div class="formula math">31 × 7 = 217<br>217 ÷ 24 = 9.04… → Q = 9<br>217 − 24 × 9 = 217 − 216 = 1. ✓</div><p><strong>Important:</strong> reducing e to r is only a shortcut for finding d. Keep the <strong>original e = 31</strong> in the public key and for encryption. Replacing 31 with 7 removes one group of 24; multiplying by d removes d groups of 24, so the remainder mod 24 stays the same.</p><p>For very large numbers, trying k can take many steps; the extended Euclidean algorithm finds d faster by back-substituting Euclid’s divisions.</p><h3>4. Repeated squaring &amp; shortcuts (never compute huge powers directly)</h3><p>To compute m<sup>e</sup> mod n on a basic calculator, split the exponent into powers of 2 (1, 2, 4, 8, …), square the previous remainder, and reduce after every multiplication. For example, for 12² mod 35:</p><div class="formula math">12² = 144<br>144 ÷ 35 = 4.11… → whole-number quotient 4<br>144 − 4 × 35 = 4<br>Therefore 12² mod 35 = 4.</div>${renderTrace(trace(12n, 5n, 35n), { method: 'squaring' })}<h4>Helpful shortcuts when a remainder is 0, 1, or n − 1</h4><ul><li><strong>0:</strong> 0<sup>k</sup> mod n = 0 (multiplying 0 by itself always gives 0).</li><li><strong>1:</strong> 1<sup>k</sup> mod n = 1 (multiplying 1 by itself always gives 1; any later squares stay 1).</li><li><strong>n − 1:</strong> n − 1 behaves like −1 modulo n. Even powers give 1 (because (−1)² = 1); odd powers give n − 1. For example, 34² mod 35 = 1 because 34 ≡ −1 (mod 35).</li></ul>${renderManualPowerFiveGuide()}`, takeaway: 'Divide → whole-number Q → multiply Q × n → subtract. Reduce e to r only to find d; use repeated squaring for powers.' },
+    { title: 'RSA: keys, encryption & decryption', ref: 'Slides 10–24', body: `<h3>What each symbol means</h3><div class="table-wrap"><table><thead><tr><th>Symbol</th><th>Meaning</th></tr></thead><tbody><tr><td class="math">p, q</td><td>Two different prime numbers (kept secret).</td></tr><tr><td class="math">n</td><td>Modulus: n = p × q. Used for encryption and decryption.</td></tr><tr><td class="math">z</td><td>Totient φ(n) = (p − 1)(q − 1). Used only to choose e and find d.</td></tr><tr><td class="math">e</td><td>Public encryption exponent: 1 &lt; e &lt; n and GCD(e, z) = 1.</td></tr><tr><td class="math">d</td><td>Private decryption exponent: ed mod z = 1.</td></tr><tr><td class="math">m</td><td><strong>Original message number</strong> (plaintext block, 0 ≤ m &lt; n).</td></tr><tr><td class="math">c</td><td><strong>Encrypted message number</strong> (ciphertext block, 0 ≤ c &lt; n).</td></tr><tr><td class="math">Q, r, R</td><td>Q = whole-number quotient (separate from prime q). r or R = remainder.</td></tr></tbody></table></div><h3>The 6 RSA steps</h3><ol><li>Choose different prime numbers p and q.</li><li>Calculate <strong>n = pq</strong> and <strong>z = (p − 1)(q − 1)</strong>.</li><li>Choose e with 1 &lt; e &lt; n and GCD(e, z) = 1.</li><li>Find positive d with <strong>ed mod z = 1</strong>.</li><li>Public key: <strong>(n, e)</strong>. Private key: <strong>(n, d)</strong>.</li><li>Encrypt: <strong>c = m<sup>e</sup> mod n</strong>. Decrypt: <strong>m = c<sup>d</sup> mod n</strong>.</li></ol><h3>Friendly starting example: p = 5, q = 7, e = 5, m = 12</h3><div class="formula math">n = 5 × 7 = 35, z = 4 × 6 = 24<br>Choose e = 5; GCD(5, 24) = 1<br>Solve 5d = 1 + 24k → k = 1 gives d = 25 ÷ 5 = 5<br>Public (35, 5); private (35, 5)</div><h4>Encrypt m = 12</h4>${renderTrace(trace(12n, 5n, 35n), { method: 'squaring' })}<h4>Decrypt c = 17</h4>${renderTrace(trace(17n, 5n, 35n), { baseSymbol: 'c', resultSymbol: 'm', method: 'squaring' })}<p>The same exponent can occur in these tiny examples; that is mathematically valid, but it is a weak teaching key. Question 1 does not specify e, so it has several valid answers. Always report the e you chose.</p><div class="callout warn"><p>Use n when encrypting/decrypting; use z when finding d. The decryption table on slide 17 has a copied encryption-formula heading: the correct decryption formula is m=cᵈ mod n. Do not require GCD(m,n)=1; RSA also recovers valid message values sharing a factor with n.</p></div><p>With public n,e, factoring n lets an attacker recover p,q, then z and d. Large, appropriately generated keys and secure schemes make this attack impractical under their assumptions.</p>`, takeaway: 'm is the original message number; c is the encrypted message number. Use z for d, and n for c and m.' },
     { title: 'Letters, numbers & message blocks', ref: 'Slides 13–17', body: `<h3>Mapping 1: A=1 … Z=26</h3><p>Ignore letter case in this mapping. “love” becomes 12, 15, 22, 5. Encrypt each number separately for slide Q2. Using e=d=5,n=35:</p><div class="formula math">12 → 17; 15 → 15; 22 → 22; 5 → 10<br>Ciphertext = 17, 15, 22, 10<br>Decrypt → 12, 15, 22, 5 → “love”.</div><p>Ciphertext is a list of numbers; it need not fit back into A–Z. An unchanged value in a small example does not mean you used the wrong formula.</p><h3>Mapping 2: two-digit character codes</h3><p>a=00 … z=25; A=26 … Z=51; 0=52 … 9=61; space=62; period=63; comma=64; semicolon=65; question mark=66. This mapping is case-sensitive.</p><div class="formula math">“How are you?”<br>33 14 22 62 00 17 04 62 24 14 20 66<br>Blocks: 3314, 2262, 0017, 0462, 2414, 2066</div><p>Keep leading zeros when writing four-digit blocks, even though 0017 is numerically 17. The reference desk appends a visible space code 62 if a custom message has an odd number of characters.</p><div class="callout warn"><p>3314 cannot be encrypted with n=35. Taking 3314 mod 35 before encryption would lose the original block. Choose a suitable modulus or a different agreed encoding; this exercise only encodes the blocks.</p></div>`, takeaway: 'State the mapping, preserve block boundaries, and check each block is smaller than n.' },
     { title: 'Hybrid encryption & session keys', ref: 'Slides 27–32', body: `<p>Public-key operations are relatively expensive. Symmetric algorithms can efficiently encrypt large messages. Hybrid encryption uses both.</p><ol><li>Alice generates a random temporary session key K.</li><li>Alice encrypts the message with K using a symmetric scheme → Ciphertext1.</li><li>Alice protects K with Bob’s public key → Ciphertext2.</li><li>Alice sends both ciphertexts.</li><li>Bob uses his private key to recover K from Ciphertext2.</li><li>Bob uses K to recover the message from Ciphertext1.</li></ol><div class="flow"><span>Message + session key</span> → <span>Symmetric encryption</span> → <span>Ciphertext1</span></div><div class="flow" style="margin-top:.7rem"><span>Session key + Bob’s public key</span> → <span>Asymmetric encryption</span> → <span>Ciphertext2</span></div><h3>Example</h3><p>Alice sends a large file encrypted with AES, plus the protected AES session key. Bob performs the public-key operation on the key, not on every byte of the file. Sessions can rotate keys according to the protocol’s policy.</p><div class="callout"><p>The slide flow illustrates key transport. Real protocols also use authenticated key agreement. Hybrid encryption still needs authenticated public keys and an integrity-protecting scheme; it does not automatically stop tampering or impersonation.</p></div>`, takeaway: 'Symmetric encryption protects the message; asymmetric cryptography protects or establishes its session key.' },
     { title: 'Secrecy, signatures & both together', ref: 'Slides 33–35', body: `<div class="table-wrap"><table><thead><tr><th>Goal</th><th>Sender</th><th>Receiver</th></tr></thead><tbody><tr><td>Confidentiality</td><td>Encrypt for Bob using Bob’s public key.</td><td>Decrypt using Bob’s private key.</td></tr><tr><td>Authentication & integrity</td><td>Alice signs using Alice’s private key.</td><td>Verify using Alice’s authenticated public key.</td></tr><tr><td>Both</td><td>Alice signs, then encrypts for Bob.</td><td>Bob decrypts, then verifies Alice’s signature.</td></tr></tbody></table></div><h3>What a signature actually does</h3><p>A real signature scheme signs an encoded representation associated with a message, typically using a cryptographic hash. Verification checks it against the message. Signing is not a general way to hide a message: anyone with the public key can verify.</p><h3>Example</h3><p>A signed announcement can be public but authentic. An encrypted anonymous message can be secret without showing who sent it. A signed-and-encrypted message aims to provide both properties.</p><div class="callout"><p>The slides describe “encryption with the private key” to illustrate the direction of a signature-like RSA operation. Real RSA encryption and signature schemes have different encodings and purposes; the keys are not simply interchangeable for every algorithm.</p></div><p class="source">Clarification: <a href="https://www.rfc-editor.org/rfc/rfc8017.html#section-5" target="_blank" rel="noopener">RFC 8017: primitives and schemes</a>.</p>`, takeaway: 'Recipient’s key for secrecy; sender’s key for signing. Signing does not hide the message.' },
@@ -216,19 +337,24 @@
   const esc = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const list = values => values.map(String).join(', ');
   const STORE = 'cyberquest_chapter5_v1';
-  const fresh = () => ({ view: 'learn', lesson: 0, reviewed: [], completed: [], concepts: {}, difficulty: 'beginner', guided: { id: 'q1', generated: null, draft: {}, keyOK: false, mapOK: false, encOK: false, decOK: false, reveal: false }, exam: { generated: [], answers: {}, submitted: false }, lastScore: null });
+  const fresh = () => ({ view: 'learn', lesson: 0, reviewed: [], completed: [], concepts: {}, difficulty: 'beginner', guided: { id: 'q1', generated: null, custom: { p: '5', q: '7', e: '5', m: '12' }, draft: {}, keyOK: false, mapOK: false, encOK: false, decOK: false, reveal: false }, exam: { generated: [], answers: {}, submitted: false }, lastScore: null });
   let state = fresh(), storageAvailable = true, resetPending = false;
   try {
     const saved = JSON.parse(localStorage.getItem(STORE));
     if (saved && typeof saved === 'object' && ['learn', 'guided', 'exam', 'assignment'].includes(saved.view)) {
       // Validate stored shape rather than trusting arbitrary markup or exercise parameters.
       const defaults = fresh();
-      state = { ...defaults, view: saved.view, lesson: Number.isInteger(saved.lesson) ? Math.max(0, Math.min(9, saved.lesson)) : 0, reviewed: Array.isArray(saved.reviewed) ? saved.reviewed.filter(i => Number.isInteger(i) && i >= 0 && i < 10) : [], completed: Array.isArray(saved.completed) ? saved.completed.filter(i => typeof i === 'string') : [], concepts: saved.concepts && typeof saved.concepts === 'object' ? saved.concepts : {}, difficulty: saved.difficulty === 'mixed' ? 'mixed' : 'beginner', lastScore: typeof saved.lastScore === 'string' ? saved.lastScore : null };
-      if (saved.guided && typeof saved.guided.draft === 'object' && saved.guided.draft !== null) state.guided = { ...defaults.guided, ...saved.guided, draft: saved.guided.draft };
+      state = { ...defaults, view: saved.view, lesson: Number.isInteger(saved.lesson) ? Math.max(0, Math.min(9, saved.lesson)) : 0, reviewed: Array.isArray(saved.reviewed) ? saved.reviewed.filter(i => Number.isInteger(i) && i >= 0 && i < 10) : [], completed: Array.isArray(saved.completed) ? saved.completed.filter(i => typeof i === 'string') : [], concepts: saved.concepts && typeof saved.concepts === 'object' ? saved.concepts : {}, difficulty: ['easy', 'beginner', 'mixed'].includes(saved.difficulty) ? saved.difficulty : 'beginner', lastScore: typeof saved.lastScore === 'string' ? saved.lastScore : null };
+      if (saved.guided && typeof saved.guided.draft === 'object' && saved.guided.draft !== null) {
+        const custom = saved.guided.custom && typeof saved.guided.custom === 'object'
+          ? { p: String(saved.guided.custom.p ?? '5'), q: String(saved.guided.custom.q ?? '7'), e: String(saved.guided.custom.e ?? '5'), m: String(saved.guided.custom.m ?? '12') }
+          : defaults.guided.custom;
+        state.guided = { ...defaults.guided, ...saved.guided, custom, draft: saved.guided.draft };
+      }
       if (saved.exam && Array.isArray(saved.exam.generated) && saved.exam.answers && typeof saved.exam.answers === 'object') state.exam = saved.exam;
       const validGenerated = ex => ex && ex.kind === 'rsa' && /^generated/.test(ex.id) && ex.messages?.length === 1 && ex.messages.every(m => Number.isInteger(m) && m >= 0) && solve(ex).n <= 200n;
       if (state.guided.generated && !validGenerated(state.guided.generated)) state.guided = defaults.guided;
-      if (!exercises.some(ex => ex.id === state.guided.id) && state.guided.id !== 'generated') state.guided = defaults.guided;
+      if (!exercises.some(ex => ex.id === state.guided.id) && !['generated', 'easy-custom'].includes(state.guided.id)) state.guided = defaults.guided;
       if (state.guided.id === 'generated' && !state.guided.generated) state.guided = defaults.guided;
       if (!state.exam.generated.every(validGenerated)) state.exam = defaults.exam;
     }
@@ -266,7 +392,19 @@
       return `<div class="quiz-card"><span class="source">${q[0]} · ${q[5]}</span><h3>${q[1]}</h3>${q[2].map((option, j) => `<button class="option ${answered && choice === j ? 'active' : ''}" data-concept="${i}" data-choice="${j}" ${answered ? 'disabled' : ''}>${String.fromCharCode(65 + j)}. ${option}</button>`).join('')}${answered ? `<p class="feedback ${choice === q[3] ? 'correct' : 'incorrect'}">${choice === q[3] ? 'Correct.' : `Correct answer: ${String.fromCharCode(65 + q[3])}.`} ${q[4]}</p><button class="small" data-concept-retry="${i}">Try again</button>` : ''}</div>`;
     }).join('');
   }
-  function currentExercise() { return state.guided.id === 'generated' ? state.guided.generated : exercises.find(ex => ex.id === state.guided.id); }
+  function easyCustomExercise() {
+    const c = state.guided.custom || FRIENDLY_START;
+    const v = validateEasyChoice(c);
+    if (!v.ok) {
+      return { id: 'easy-custom', title: 'Easy numbers · choose p, q, e, m below 13', source: 'Easy numbers · primes & e below 13', kind: 'rsa', p: null, q: null, e: null, messages: [], prompt: 'Choose two different primes p and q below 13, a valid public exponent e below 13, and a small numeric message m with 0 ≤ m < n.', easyValid: v };
+    }
+    return { id: 'easy-custom', title: 'Easy numbers · choose p, q, e, m below 13', source: 'Easy numbers · primes & e below 13', kind: 'rsa', p: Number(v.p), q: Number(v.q), e: Number(v.e), messages: [Number(v.m)], prompt: `p = ${v.p}, q = ${v.q}, e = ${v.e}, m = ${v.m}. Generate the keys, encrypt m, and decrypt c. Show every modular reduction on paper.`, easyValid: v };
+  }
+  function currentExercise() {
+    if (state.guided.id === 'generated') return state.guided.generated;
+    if (state.guided.id === 'easy-custom') return easyCustomExercise();
+    return exercises.find(ex => ex.id === state.guided.id);
+  }
   function guidedKey(ex) {
     if (ex.provided) return solve(ex);
     const draft = state.guided.draft;
@@ -276,32 +414,49 @@
   }
   function traceForm(t, direction, index) {
     const baseLabel = direction === 'enc' ? 'm' : 'c', prefix = `${direction}_${index}`;
-    return `<details class="answer-details" ${index === 0 ? 'open' : ''}><summary>Block ${index + 1} · ${baseLabel}=${t.base}, exponent=${t.exponent}</summary><p class="math">${t.exponent} = ${t.selected.map(r => r.power).reverse().join(' + ')}. Reduce each square modulo ${t.modulus}.</p><div class="table-wrap"><table><thead><tr><th>Power</th><th>Paper operation</th><th>Your remainder</th></tr></thead><tbody><tr><td>${baseLabel}<sup>1</sup></td><td>Starting number</td><td class="math">${t.base}</td></tr>${t.squares.slice(1).map(r => `<tr><td>${baseLabel}<sup>${r.power}</sup></td><td>Square the remainder for power ${r.power / 2n}; reduce mod ${t.modulus}</td><td>${input(`${prefix}_sq_${r.power}`, `Block ${index + 1}: ${baseLabel} power ${r.power} remainder`)}</td></tr>`).join('')}</tbody></table></div><p class="muted">Combine the selected powers (${t.selected.map(r => r.power).join(', ')}). Reduce after each multiplication.</p>${t.products.slice(1).map((r, j) => input(`${prefix}_prod_${j + 1}`, `Accumulated remainder after multiplying power ${r.power}`)).join('')}${input(`${prefix}_final`, direction === 'enc' ? `Ciphertext c for block ${index + 1}` : `Recovered plaintext m for block ${index + 1}`)}</details>`;
+    const shortcut = powerShortcut(t.base, t.exponent, t.modulus);
+    const shortcutTip = shortcut ? `<p class="field-note">Tip: ${baseLabel} = ${t.base} is a special value (0, 1, or n − 1). Check if a shortcut applies before multiplying.</p>` : '';
+    return `<details class="answer-details" ${index === 0 ? 'open' : ''}><summary>Block ${index + 1} · ${baseLabel}=${t.base}, exponent=${t.exponent}</summary><p class="math">${t.exponent} = ${t.selected.map(r => r.power).reverse().join(' + ')}. For each row: square the previous remainder, divide by ${t.modulus}, drop the decimal for Q, multiply Q × ${t.modulus}, and subtract.</p>${shortcutTip}<div class="table-wrap"><table><thead><tr><th>Power</th><th>Basic-calculator operation</th><th>Your remainder</th></tr></thead><tbody><tr><td>${baseLabel}<sup>1</sup></td><td>Starting number</td><td class="math">${t.base}</td></tr>${t.squares.slice(1).map(r => `<tr><td>${baseLabel}<sup>${r.power}</sup></td><td>Square remainder for ${baseLabel}<sup>${r.power / 2n}</sup>, then reduce mod ${t.modulus}</td><td>${input(`${prefix}_sq_${r.power}`, `Block ${index + 1}: ${baseLabel} power ${r.power} remainder`)}</td></tr>`).join('')}</tbody></table></div><p class="muted">Multiply the selected powers (${t.selected.map(r => r.power).join(', ')}) one at a time, reducing mod ${t.modulus} after each multiplication.</p>${t.products.slice(1).map((r, j) => input(`${prefix}_prod_${j + 1}`, `Accumulated remainder after multiplying power ${r.power}`)).join('')}${input(`${prefix}_final`, direction === 'enc' ? `Ciphertext c for block ${index + 1}` : `Recovered plaintext m for block ${index + 1}`)}</details>`;
+  }
+  function renderEasyBuilder(v) {
+    const c = state.guided.custom || FRIENDLY_START;
+    const pButtons = EASY_PRIMES.map(val => `<button type="button" class="${String(c.p) === String(val) ? 'active' : ''}" aria-pressed="${String(c.p) === String(val)}" data-easy-p="${val}">${val}</button>`).join('');
+    const qButtons = EASY_PRIMES.map(val => `<button type="button" class="${String(c.q) === String(val) ? 'active' : ''}" aria-pressed="${String(c.q) === String(val)}" data-easy-q="${val}">${val}</button>`).join('');
+    const eButtons = EASY_EXPONENTS.map(val => `<button type="button" class="${String(c.e) === String(val) ? 'active' : ''}" aria-pressed="${String(c.e) === String(val)}" data-easy-e="${val}">${val}</button>`).join('');
+    const quickMs = [0, 1, 2, 12];
+    if (v.n && v.n > 2n && !quickMs.includes(Number(v.n - 1n))) quickMs.push(Number(v.n - 1n));
+    const mButtons = quickMs.filter(m => !v.n || BigInt(m) < v.n).map(val => `<button type="button" class="small ${String(c.m) === String(val) ? 'active' : ''}" data-easy-m="${val}">m = ${val}${v.n && BigInt(val) === v.n - 1n ? ' (n−1)' : ''}</button>`).join('');
+    return `<section class="panel" aria-label="Easy numbers builder"><div class="step-head"><div><div class="step-num">Easy numbers · custom builder</div><h3>Choose p, q, and e below 13</h3></div><button type="button" class="small primary" data-action="load-friendly-start">Friendly start (p=5, q=7, e=5, m=12)</button></div><p class="source">Your choices p, q, and e stay below 13, while calculated values n, z, d, and ciphertext c may exceed 13. Invalid choices are never changed silently—we explain why below.</p><div class="two-col"><div><label>Prime p (below 13)</label><div class="choice-group" role="group" aria-label="Choose prime p">${pButtons}</div></div><div><label>Prime q (different prime below 13)</label><div class="choice-group" role="group" aria-label="Choose prime q">${qButtons}</div></div></div><div style="margin-top:1rem"><label>Public exponent e (below 13, with 1 &lt; e &lt; n and GCD(e, z) = 1)</label><div class="choice-group" role="group" aria-label="Choose public exponent e">${eButtons}</div></div><div style="margin-top:1rem"><label for="easy-m-input">Numeric message m (0 ≤ m &lt; n)</label><div class="control-row" style="margin-bottom:.4rem"><input id="easy-m-input" type="text" inputmode="numeric" autocomplete="off" data-easy-m-input="true" value="${esc(c.m)}" style="max-width:160px"><div class="choice-group" role="group" aria-label="Quick message presets">${mButtons}</div></div></div>${v.ok ? `<div class="callout good"><strong>Ready to practise</strong><p class="math">p = ${v.p}, q = ${v.q}, e = ${v.e}, m = ${v.m} (0 ≤ m &lt; ${v.n}). Valid e below 13 for (${v.p}, ${v.q}): ${v.validEs.join(', ')}.</p><p class="field-note">Note: calculated n = ${v.n}, z, d, and ciphertext c may exceed 13.</p></div>` : `<div class="callout warn" role="alert"><strong>Unavailable or invalid choice</strong><p>${esc(v.error)}</p></div>`}</section>`;
   }
   function renderGuided() {
     const ex = currentExercise(), g = state.guided;
-    $('exercise-select').innerHTML = [...exercises, ...(g.generated ? [g.generated] : [])].map(e => `<option value="${e.id}" ${e.id === g.id ? 'selected' : ''}>${esc(e.title)}</option>`).join('');
+    const easyStub = { id: 'easy-custom', title: 'Easy numbers · choose p, q, e, m below 13' };
+    $('exercise-select').innerHTML = [easyStub, ...exercises, ...(g.generated ? [g.generated] : [])].map(e => `<option value="${e.id}" ${e.id === g.id ? 'selected' : ''}>${esc(e.title)}</option>`).join('');
     $('difficulty').value = state.difficulty;
-    let html = `<section class="panel"><div class="eyebrow">${esc(ex.source)}</div><h2>${esc(ex.title)}</h2><p class="exercise-prompt">${esc(ex.prompt)}</p><p class="source">Work on paper first. Enter whole numbers; use commas or spaces between blocks.</p></section>`;
+    let html = `<section class="panel"><div class="eyebrow">${esc(ex.source)}</div><h2>${esc(ex.title)}</h2><p class="exercise-prompt">${esc(ex.prompt)}</p><p class="source">Work on paper with a basic calculator (+, −, ×, ÷). Enter whole numbers; use commas or spaces between blocks.</p><details class="answer-details"><summary>Symbol &amp; basic-calculator reference</summary><p class="math"><strong>p, q:</strong> secret primes &nbsp;|&nbsp; <strong>n = pq:</strong> modulus &nbsp;|&nbsp; <strong>z = (p−1)(q−1):</strong> totient for d</p><p class="math"><strong>e:</strong> public exponent &nbsp;|&nbsp; <strong>d:</strong> private exponent &nbsp;|&nbsp; <strong>m:</strong> original message number &nbsp;|&nbsp; <strong>c:</strong> encrypted message number</p><p><strong>Remainder on a basic calculator:</strong> divide → drop decimal for whole-number quotient Q → multiply Q × modulus → subtract.</p></details></section>`;
+    if (ex.id === 'easy-custom') {
+      html += renderEasyBuilder(ex.easyValid);
+      if (!ex.easyValid.ok) { $('guided-content').innerHTML = html; return; }
+    }
     if (ex.kind === 'encoding') {
       html += `<section class="panel"><div class="step-num">Encoding only</div><h3>Write the six four-digit blocks</h3>${input('blocks', 'Four-digit blocks (keep leading zeros)')}<label>Optional modulus n to check block sizes<input type="text" inputmode="numeric" data-field="block_n" value="${esc(g.draft.block_n || '')}"></label><div class="actions"><button data-action="check-blocks" class="primary">Check encoding</button></div><div id="blocks-status" class="status" aria-live="polite"></div>${hint('blocks-hint', 'Find each case-sensitive two-digit code. A space is 62. Pair consecutive codes without dropping zeros. For RSA, each resulting block must be strictly smaller than n.')}</section>`;
     } else {
-      if (!ex.provided) html += `<section class="panel"><div class="step-num">Step 1 · Key generation</div><h3>Build the public and private keys</h3><div class="grid-fields">${input('n', 'n = pq')}${input('z', 'z = (p−1)(q−1)')}${input('e', ex.e ? 'e (given)' : 'Choose e', g.draft, ex.e, Boolean(ex.e))}${input('d', 'd: ed mod z = 1')}</div><div class="actions"><button data-action="check-keys" class="primary">Check keys & continue</button></div><div id="key-status" class="status" aria-live="polite">${g.keyOK ? 'Keys checked. Continue below.' : ''}</div>${hint('key-hint', 'Multiply p by q for n; multiply p−1 by q−1 for z. Choose 1&lt;e&lt;n with GCD(e,z)=1.<br><br><strong>Easy way to find d:</strong> reduce e first: e′ = e mod z. Solve e′d = 1 + kz by trying whole-number k=0,1,2,… until 1+kz divides evenly by e′. Then d=(1+kz)/e′.<br><br>For e=31,z=24, e′=7. Try k=1: 25 is not divisible by 7. Try k=2: 49 ÷ 7 = 7, so d=7.<br><br>Check with the original e: 31 × 7 = 217 = 9 × 24 + 1. Keep the original e in your public key. For large values, use the extended Euclidean algorithm.')}</section>`;
+      if (!ex.provided) html += `<section class="panel"><div class="step-num">Step 1 · Key generation</div><h3>Build the public and private keys</h3><div class="grid-fields">${input('n', 'n = pq')}${input('z', 'z = (p−1)(q−1)')}${input('e', ex.e ? 'e (given)' : 'Choose e', g.draft, ex.e, Boolean(ex.e))}${input('d', 'd: ed mod z = 1')}</div><div class="actions"><button data-action="check-keys" class="primary">Check keys & continue</button></div><div id="key-status" class="status" aria-live="polite">${g.keyOK ? 'Keys checked. Continue below.' : ''}</div>${hint('key-hint', 'Multiply p by q for n; multiply p−1 by q−1 for z. Choose 1&lt;e&lt;n with GCD(e,z)=1 (an inverse exists only when GCD(e,z)=1).<br><br><strong>Easy way to find d:</strong> reduce e modulo z first: call this remainder r. Then solve rd = 1 + kz by trying k=0, 1, 2, … until (1 + kz) ÷ r is a whole number.<br><br>For e=31, z=24: r = 31 mod 24 = 7. Try k=1: 25 ÷ 7 is not whole. Try k=2: 49 ÷ 7 = 7, so d=7.<br><br>Always check with the original e: 31 × 7 = 217; 217 − 24 × 9 = 1. Keep the original e in your public key.')}</section>`;
       else html += '<div class="callout good"><strong>Keys supplied</strong><p>Public (143,37), private (143,13). Begin with the encryption; key generation is not required.</p></div>';
       let result = null;
       try { if (g.keyOK || ex.provided) result = guidedKey(ex); } catch (_) { g.keyOK = false; g.mapOK = false; g.encOK = false; g.decOK = false; }
       if (result && ex.kind === 'key') html += `<div class="callout good"><strong>Correct keys</strong><p class="math">Public (${result.n},${result.e}); private (${result.n},${result.d}).</p><p>You can now try Q2 using the same e and d.</p></div>`;
       if (result && ex.kind !== 'key') {
         if (ex.text) html += `<section id="map-section" class="panel"><div class="step-num">Step 2 · Encoding</div><h3>Convert “${esc(ex.text)}” with A=1 … Z=26</h3>${input('mapping', 'Plaintext number list')}<button data-action="check-mapping" class="primary">Check mapping</button><div id="map-status" class="status" aria-live="polite">${g.mapOK ? 'Mapping checked. Continue below.' : ''}</div>${hint('map-hint', 'Count A=1, B=2, … Z=26. Use one numeric block for each letter. Do not use the slide 14 two-digit mapping in this question.')}</section>`;
-        if (!ex.text || g.mapOK) html += `<section id="encryption-section" class="panel"><div class="step-num">${ex.text ? 'Step 3' : 'Step 2'} · Encryption</div><h3>Use the public key (${result.n}, ${result.e})</h3><p>Calculate c=m<sup>e</sup> mod n. Enter each remainder, then the ciphertext.</p>${result.messages.map((m, i) => traceForm(m.encryption, 'enc', i)).join('')}<button data-action="check-encryption" class="primary">Check encryption</button><div id="enc-status" class="status" aria-live="polite">${g.encOK ? 'Encryption checked. Decryption is unlocked below.' : ''}</div>${hint('enc-hint', 'Square the previous remainder, then divide by n and keep the remainder. Multiply only the powers that sum to e. If a result equals the starting number, check the arithmetic rather than assuming it is wrong.')}</section>`;
-        if (g.encOK && (!ex.text || g.mapOK)) html += `<section id="decryption-section" class="panel"><div class="step-num">${ex.text ? 'Step 4' : 'Step 3'} · Decryption</div><h3>Use the private key (${result.n}, ${result.d})</h3><p class="math">Ciphertext: ${list(result.messages.map(m => m.c))}</p><p>Calculate m=c<sup>d</sup> mod n. The modulus is still n.</p>${result.messages.map((m, i) => traceForm(m.decryption, 'dec', i)).join('')}${ex.text ? input('recovered_word', 'Recovered word') : ''}<button data-action="check-decryption" class="primary">Check decryption</button><div id="dec-status" class="status" aria-live="polite">${g.decOK ? 'Correct. Encryption and decryption complete!' : ''}</div>${hint('dec-hint', 'Start from the ciphertext and use d as the exponent. Square and reduce exactly as in encryption. The recovered number should match the original message block.')}</section>`;
+        if (!ex.text || g.mapOK) html += `<section id="encryption-section" class="panel"><div class="step-num">${ex.text ? 'Step 3' : 'Step 2'} · Encryption</div><h3>Use the public key (${result.n}, ${result.e})</h3><p>Calculate c=m<sup>e</sup> mod n. Enter each remainder, then the ciphertext.</p>${result.messages.map((m, i) => traceForm(m.encryption, 'enc', i)).join('')}<button data-action="check-encryption" class="primary">Check encryption</button><div id="enc-status" class="status" aria-live="polite">${g.encOK ? 'Encryption checked. Decryption is unlocked below.' : ''}</div>${hint('enc-hint', 'Square the previous remainder, divide by n, take the whole-number quotient Q, multiply Q × n, and subtract. Multiply only the powers that sum to e. Check shortcuts if a remainder is 0, 1, or n − 1.')}</section>`;
+        if (g.encOK && (!ex.text || g.mapOK)) html += `<section id="decryption-section" class="panel"><div class="step-num">${ex.text ? 'Step 4' : 'Step 3'} · Decryption</div><h3>Use the private key (${result.n}, ${result.d})</h3><p class="math">Ciphertext: ${list(result.messages.map(m => m.c))}</p><p>Calculate m=c<sup>d</sup> mod n. The modulus is still n.</p>${result.messages.map((m, i) => traceForm(m.decryption, 'dec', i)).join('')}${ex.text ? input('recovered_word', 'Recovered word') : ''}<button data-action="check-decryption" class="primary">Check decryption</button><div id="dec-status" class="status" aria-live="polite">${g.decOK ? 'Correct. Encryption and decryption complete!' : ''}</div>${hint('dec-hint', 'Start from the ciphertext c and use d as the exponent. Square and reduce exactly as in encryption. The recovered number m should match the original message block.')}</section>`;
       } else if (ex.kind !== 'key') html += '<div class="empty-state">Check the keys above to unlock the message calculations.</div>';
     }
     html += `<section class="panel"><div class="step-head"><div><h3>Worked solution</h3><p class="muted">Reveal when you are ready to compare your paper steps.</p></div><button data-action="reveal">${g.reveal ? 'Hide solution' : 'Reveal solution'}</button></div><div id="guided-solution" ${g.reveal ? '' : 'hidden'}>${g.reveal ? guidedSolution(ex) : ''}</div><div class="actions"><button data-action="print-guided">Print this question</button><button data-action="print-guided-key">Print its answer key</button><button data-action="retry-guided">Clear this attempt</button></div></section>`;
     $('guided-content').innerHTML = html;
   }
   function traceSolution(t, baseSymbol, resultSymbol) {
-    return renderTrace(t, { baseSymbol, resultSymbol });
+    return renderTrace(t, { baseSymbol, resultSymbol, method: 'squaring' });
   }
   function solution(ex, chosenE, chosenD) {
     if (ex.kind === 'encoding') {
@@ -309,7 +464,7 @@
       return `<p>Character codes: ${encoded.codes.join(' ')}</p><p class="math">Blocks: ${encoded.blockStrings.join(', ')}</p><p>0017 represents the number 17, but its four-digit width preserves the two character codes. For all of these blocks together, n must be greater than 3314.</p>`;
     }
     const r = solve(ex, chosenE, chosenD);
-    let html = ex.provided ? '<p>Use the supplied keys; no key generation is needed.</p>' : `<div class="formula math">n=${r.p} × ${r.q}=${r.n}<br>z=(${r.p}−1)(${r.q}−1)=${r.z}<br>e=${r.e}; GCD(${r.e},${r.z})=1<br>d=${r.d}; ${r.e} × ${r.d}=${r.e * r.d}=${(r.e * r.d - 1n) / r.z} × ${r.z}+1<br>Public (${r.n},${r.e}); private (${r.n},${r.d})</div>`;
+    let html = ex.provided ? '<p>Use the supplied keys; no key generation is needed.</p>' : `<div class="formula math">n=${r.p} × ${r.q}=${r.n}<br>z=(${r.p}−1)(${r.q}−1)=${r.z}<br>e=${r.e}; GCD(${r.e},${r.z})=1<br>d=${r.d}; ${r.e} × ${r.d}=${r.e * r.d}=${(r.e * r.d - 1n) / r.z} × ${r.z}+1<br>Public (${r.n},${r.e}); private (${r.n},${r.d})</div>${renderInverseGuide(r.e, r.z)}`;
     if (!ex.e) html += '<p class="source">This is one valid choice. Other e,d pairs satisfying the conditions are also accepted. The default example uses e=5.</p>';
     if (ex.text) html += `<p>Encoding: “${ex.text}” → ${list(ex.messages)} (A=1 … Z=26).</p>`;
     r.messages.forEach((m, i) => { html += `<h3>Block ${i + 1} · Encrypt ${m.m}</h3>${traceSolution(m.encryption, 'm', 'c')}<h3>Block ${i + 1} · Decrypt ${m.c}</h3>${traceSolution(m.decryption, 'c', 'm')}`; });
@@ -356,7 +511,7 @@
     if (!valid) { status(statusId, `Some entries need another look (${checked} arithmetic entries checked). Check the marked fields; reduce each result modulo n.`, false); return; }
     state.guided[direction === 'enc' ? 'encOK' : 'decOK'] = true;
     renderGuided(); status(statusId, direction === 'enc' ? 'Correct. Decryption is now unlocked.' : 'Correct. Your message is recovered; this exercise is complete.', true);
-    if (direction === 'dec') complete(ex.id === 'generated' ? `generated-${ex.p}-${ex.q}-${ex.e}-${ex.messages[0]}` : ex.id);
+    if (direction === 'dec') complete(ex.id === 'generated' ? `generated-${ex.p}-${ex.q}-${ex.e}-${ex.messages[0]}` : ex.id === 'easy-custom' ? `easy-${ex.p}-${ex.q}-${ex.e}-${ex.messages[0]}` : ex.id);
     save();
   }
   function checkBlocks() {
@@ -369,7 +524,7 @@
     status('blocks-status', 'Correct encoding. These are message blocks, not RSA ciphertext.', true); complete('encoding');
   }
   function newGuided(ex) {
-    state.guided = { id: ex.id, generated: ex.id === 'generated' ? ex : state.guided.generated, draft: {}, keyOK: false, mapOK: false, encOK: false, decOK: false, reveal: false };
+    state.guided = { id: ex.id, generated: ex.id === 'generated' ? ex : state.guided.generated, custom: state.guided.custom || { ...FRIENDLY_START }, draft: {}, keyOK: false, mapOK: false, encOK: false, decOK: false, reveal: false };
     renderGuided(); save();
   }
 
@@ -434,8 +589,12 @@
     $('print-area').innerHTML = `<div class="print-controls"><button data-action="close-print">← Back to study</button><button data-action="print-now">Print / Save as PDF</button><span>Preview · ${withAnswers ? 'worked answers' : 'questions only'}</span></div><h1>${title}</h1><p>ICT 304 · Show each multiplication and modular reduction on paper.</p>${withAnswers ? '' : '<p>Name: ________________________ &nbsp; Date: ______________</p>'}${!withAnswers && !useExam ? '<p>Public (n,e); private (n,d). n=pq; z=(p−1)(q−1). ed mod z=1. c=mᵉ mod n; m=cᵈ mod n.</p>' : ''}${items.map((ex, i) => {
       let answer = '';
       if (withAnswers) {
-        const row = grade?.rows.find(row => row.ex.id === ex.id);
-        answer = row?.r && ex.kind !== 'encoding' ? solution(ex, row.r.e, row.r.d) : (items.length === 1 ? guidedSolution(ex) : solution(ex));
+        if (ex.easyValid && !ex.easyValid.ok) {
+          answer = `<div class="callout warn"><p>${esc(ex.easyValid.error)}</p></div>`;
+        } else {
+          const row = grade?.rows.find(row => row.ex.id === ex.id);
+          answer = row?.r && ex.kind !== 'encoding' ? solution(ex, row.r.e, row.r.d) : (items.length === 1 ? guidedSolution(ex) : solution(ex));
+        }
       }
       return `<section class="print-question"><h3>${i + 1}. ${esc(ex.title)}</h3><p>${esc(useExam ? examPrompt(ex) : ex.prompt)}</p><p>${esc(ex.source)}</p>${withAnswers ? answer : '<p>Answer: ______________________________________________________</p><div class="work-box"></div>'}</section>`;
     }).join('')}${useExam ? [0,8].map(i => `<section class="print-question"><h3>Concept · ${concepts[i][0]}</h3><p>${concepts[i][1]}</p>${withAnswers ? `<p>${concepts[i][4]}</p>` : `<p>${concepts[i][2].map((option, j) => `${String.fromCharCode(65+j)}. ${option}`).join('<br>')}</p><p>Answer: __________</p>`}</section>`).join('') : ''}`;
@@ -463,12 +622,18 @@
       'check-keys': checkKeys, 'check-mapping': checkMapping, 'check-encryption': () => checkTrace('enc'), 'check-decryption': () => checkTrace('dec'), 'check-blocks': checkBlocks,
       reveal: () => { state.guided.reveal = !state.guided.reveal; renderGuided(); save(); },
       'retry-guided': () => newGuided(currentExercise()),
+      'load-friendly-start': () => { state.guided.custom = { p: '5', q: '7', e: '5', m: '12' }; newGuided({ id: 'easy-custom' }); },
       'print-guided': () => printMaterial([currentExercise()], false),
       'print-guided-key': () => printMaterial([currentExercise()], true),
       'close-print': () => { document.body.classList.remove('print-preview'); $('print-worksheet').focus(); },
       'print-now': () => root.print()
     };
     if (actions[button.dataset.action]) actions[button.dataset.action]();
+    if (button.dataset.easyP) { state.guided.custom = { ...(state.guided.custom || FRIENDLY_START), p: button.dataset.easyP }; newGuided({ id: 'easy-custom' }); }
+    if (button.dataset.easyQ) { state.guided.custom = { ...(state.guided.custom || FRIENDLY_START), q: button.dataset.easyQ }; newGuided({ id: 'easy-custom' }); }
+    if (button.dataset.easyE) { state.guided.custom = { ...(state.guided.custom || FRIENDLY_START), e: button.dataset.easyE }; newGuided({ id: 'easy-custom' }); }
+    if (button.dataset.easyM !== undefined) { state.guided.custom = { ...(state.guided.custom || FRIENDLY_START), m: button.dataset.easyM }; newGuided({ id: 'easy-custom' }); }
+    if (button.id === 'use-easy-numbers') { state.difficulty = 'easy'; newGuided({ id: 'easy-custom' }); }
     if (button.id === 'lesson-prev') { state.lesson--; renderLesson(); save(); }
     if (button.id === 'lesson-reviewed') { if (!state.reviewed.includes(state.lesson)) state.reviewed.push(state.lesson); state.lesson = Math.min(lessons.length - 1, state.lesson + 1); renderLesson(); save(); }
     if (button.id === 'encoding-show') {
@@ -499,6 +664,15 @@
   });
   document.addEventListener('input', event => {
     const el = event.target;
+    if (el.dataset.easyMInput) {
+      const pos = el.selectionStart;
+      state.guided.custom = { ...(state.guided.custom || FRIENDLY_START), m: el.value };
+      state.guided.draft = {}; state.guided.keyOK = false; state.guided.mapOK = false; state.guided.encOK = false; state.guided.decOK = false; state.guided.reveal = false;
+      renderGuided(); save();
+      const restored = $('easy-m-input');
+      if (restored) { restored.focus(); if (pos !== null) restored.setSelectionRange(pos, pos); }
+      return;
+    }
     if (el.dataset.field) {
       state.guided.draft[el.dataset.field] = el.value;
       if (['n','z','e','d'].includes(el.dataset.field) && !el.readOnly) {
@@ -514,7 +688,12 @@
     if (el.dataset.examField && !state.exam.submitted) state.exam.answers[el.dataset.examField] = el.value;
     if (el.dataset.field || el.dataset.examField) save();
   });
-  $('exercise-select').addEventListener('change', event => newGuided(event.target.value === 'generated' ? state.guided.generated : exercises.find(ex => ex.id === event.target.value)));
+  $('exercise-select').addEventListener('change', event => {
+    const val = event.target.value;
+    if (val === 'generated') newGuided(state.guided.generated);
+    else if (val === 'easy-custom') newGuided({ id: 'easy-custom' });
+    else newGuided(exercises.find(ex => ex.id === val));
+  });
   $('difficulty').addEventListener('change', event => { state.difficulty = event.target.value; save(); });
   $('encoding-mapping').addEventListener('change', () => { $('encoding-message').value = $('encoding-mapping').value === 'blocks' ? 'How are you?' : 'love'; $('encoding-result').innerHTML = ''; });
   $('exam-form').addEventListener('submit', event => { event.preventDefault(); state.exam.submitted = true; const grade = gradeExam(); state.lastScore = `${grade.correct} / ${grade.total}`; renderExam(); save(); $('exam-review').scrollIntoView({ behavior: 'smooth', block: 'start' }); });

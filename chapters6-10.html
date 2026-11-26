@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ICT 304 Chapters 6–10 and Practical Labs 1–5 study hub: micro-lessons, simulated lab troubleshooting, guided RSA signature & Base64 practice, and evidence-based active recall.">
+  <title>Chapters 6–10 &amp; Labs · Exam Study Hub | CyberQuest</title>
+  <style>
+    :root{color-scheme:dark;--bg:#090f1c;--panel:#111b2e;--line:#26344d;--muted:#a6b4ca;--text:#edf3ff;--cyan:#69e0ed;--purple:#a99cff;--green:#72e3b1;--red:#ffabb8}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan)}button,input,select{font:inherit}button,.button{border:1px solid var(--line);border-radius:10px;background:#19263d;color:var(--text);padding:.55rem .95rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;line-height:1.4}button:hover,.button:hover{background:#253755;border-color:#60759a}button.primary,.button.primary{background:#b8f0ec;color:#082b32;border-color:#b8f0ec;font-weight:700}button.active{background:#29254e;border-color:var(--purple);color:#e6e1ff}button.small{padding:.35rem .7rem;font-size:.85rem}button.text{background:transparent;color:var(--cyan);border-color:transparent}button.good{border-color:var(--green);background:#112a29}button.bad{border-color:var(--red);background:#341822}input,select{background:#0b1425;border:1px solid #536580;color:white;border-radius:8px;padding:.5rem .65rem;max-width:100%}input[type=text]{width:100%}label{display:block;color:var(--muted);font-size:.9rem}h1,h2,h3{line-height:1.2;letter-spacing:-.02em}h1{font-size:clamp(2rem,4.5vw,3.3rem);margin:.6rem 0 1rem}h2{font-size:1.55rem;margin:0 0 .8rem}h3{font-size:1.15rem;margin:1rem 0 .6rem}p{margin:.55rem 0 .9rem}small,.muted{color:var(--muted)}code{font-family:Consolas,"Courier New",monospace;background:#0b1425;padding:.1rem .35rem;border-radius:5px;font-size:.92em}.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:.73rem;color:var(--cyan);font-weight:750}.tag{display:inline-block;border:1px solid var(--line);padding:.15rem .55rem;border-radius:100px;font-size:.75rem;color:var(--muted);margin-right:.3rem}[hidden]{display:none!important}.skip{position:absolute;left:12px;top:-100px;background:white;color:black;padding:12px;z-index:100}.skip:focus{top:10px}
+    header{border-bottom:1px solid var(--line);background:#0e1728}header .wrap{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding-block:1rem;flex-wrap:wrap}.brand{font-weight:900;letter-spacing:.06em;text-decoration:none;color:white}.brand span{color:var(--cyan)}.wrap{max-width:1200px;margin:auto;padding:0 24px}.top-links{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;font-size:.85rem}
+    .hero{padding:2.5rem 0 1.6rem;display:grid;grid-template-columns:1.6fr 1fr;gap:2.5rem;align-items:center}.hero>*{min-width:0}.hero p{color:var(--muted);max-width:650px}.hero-note{border-left:2px solid var(--cyan);padding:1rem 1.4rem;background:#101d2f}.stats{display:flex;flex-wrap:wrap;gap:1.5rem;margin-top:1rem;font-size:.85rem;color:var(--muted)}.stats strong{color:var(--text)}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:1rem 0;border-block:1px solid var(--line);margin-bottom:1.8rem}.tabs,.tools{display:flex;gap:.5rem;flex-wrap:wrap}
+    .lesson-layout{display:grid;grid-template-columns:270px minmax(0,1fr);gap:1.5rem}.lesson-nav{display:grid;align-content:start;gap:.45rem;position:sticky;top:16px}.lesson-nav button{text-align:left;justify-content:flex-start;background:transparent;font-size:.9rem}.lesson-nav button.active{background:#242641}
+    .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1.4rem;margin-bottom:1.1rem}.callout{border-left:3px solid var(--purple);background:#201f39;padding:.95rem 1.15rem;margin:.9rem 0;border-radius:0 10px 10px 0}.callout.good{border-color:var(--green);background:#112a29}.callout.warn{border-color:#edc27a;background:#30281e}.callout p:last-child{margin-bottom:0}
+    .table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;margin:.6rem 0}th,td{text-align:left;border-bottom:1px solid var(--line);padding:.6rem .5rem;vertical-align:top;font-size:.92rem}th{color:var(--muted);font-size:.8rem}
+    .step-head{display:flex;justify-content:space-between;gap:1rem;align-items:start;flex-wrap:wrap}.step-num{color:var(--purple);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-right:.5rem}.exercise-prompt{font-size:1.05rem;color:#dce7fa}.option{display:block;width:100%;text-align:left;justify-content:flex-start;margin:.45rem 0;font-size:.93rem}.quiz-card{border-top:1px solid var(--line);padding:1.1rem 0}.quiz-card:first-child{border-top:none;padding-top:0}.hint{margin-top:.6rem;padding:.85rem;background:#20243c;border-radius:8px;color:#dcd6fc}.feedback{margin-top:.6rem;font-size:.92rem}.correct{color:var(--green)}.incorrect{color:var(--red)}
+    .control-row{display:flex;flex-wrap:wrap;gap:1rem;align-items:end;margin-bottom:1rem}.control-row label{flex:1;min-width:160px}.actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem}.status{font-size:.92rem;margin-top:.65rem}.status.error{color:var(--red)}.status.success{color:var(--green)}.storage-notice{color:#edc27a;margin:1rem 0;font-size:.85rem}.empty-state{padding:1.5rem;text-align:center;border:1px dashed var(--line);border-radius:12px;color:var(--muted)}
+    footer{border-top:1px solid var(--line);padding:1.5rem 0;color:var(--muted);font-size:.8rem;margin-top:2rem}#print-area{display:none}
+    @media(max-width:820px){.hero{grid-template-columns:minmax(0,1fr);gap:1rem}.lesson-layout{grid-template-columns:minmax(0,1fr)}.lesson-nav{position:static;grid-template-columns:1fr 1fr}}
+    @media(max-width:520px){.wrap{padding-inline:16px}.lesson-nav{grid-template-columns:1fr}.tabs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);width:100%}.tabs button{font-size:.82rem;padding:.5rem .4rem}}
+    @media print{*{color:black!important;background:white!important;box-shadow:none!important}body>header,body>main,body>footer,body>.skip{display:none!important}#print-area{display:block!important;font:10.5pt/1.4 Georgia,serif}#print-area .print-question{break-inside:avoid;border-bottom:1px solid #aaa;padding:10pt 0}#print-area .work-box{height:75pt;border:1px solid #aaa;margin-top:8pt}@page{size:A4;margin:15mm}}
+  </style>
+  <script src="smart-search.js" defer></script>
+  <script src="chapters6-10-data.js?v=20261126-2" defer></script>
+  <script src="chapters6-10.js?v=20261126-2" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main-content">Skip to study content</a>
+  <header>
+    <div class="wrap">
+      <a class="brand" href="index.html">CYBER<span>QUEST</span></a>
+      <div class="top-links">
+        <a id="dash-link" class="button small" href="index.html">Dashboard</a>
+        <button id="back-btn" type="button" class="small">← Back</button>
+        <button id="lang-toggle" type="button" class="small">TH / EN</button>
+        <a class="button small primary" href="ICT304_A4_CheatSheet.pdf" target="_blank" rel="noopener">A4 Cheat Sheet PDF ↗</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap" id="main-content">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">ICT 304 / Chapters 06–10 &amp; Practical Labs</div>
+        <h1>One objective at a time.<br>Practice immediately.</h1>
+        <p>Audit-verified micro-lessons for Chapters 6–10 and Labs 1–4, with explicit objectives, prerequisites, simple analogies (and their limits), simulated IOS troubleshooting drills, guided RSA signature checks, and evidence-based progress.</p>
+        <div class="stats">
+          <span><strong id="stat-lessons">0 / 16</strong> lessons viewed/practised</span>
+          <span><strong id="stat-mastered">0 / 22</strong> independent quiz checks</span>
+          <span><strong id="stat-revisit">0</strong> items in revisit list</span>
+          <span><strong>Ch 5</strong> on <a href="chapter5.html">Chapter 5 RSA Lab ↗</a></span>
+        </div>
+      </div>
+      <aside class="hero-note">
+        <div class="eyebrow">Evidence &amp; Coverage Status</div>
+        <p><strong>Progress states:</strong> Unseen → Viewed → Attempted → Helped → Independent ✓ (2+ independent checks = Mastered).</p>
+        <p><strong>Pending:</strong> Lab 5 (ACLs) has no <code>.pkt</code>/<code>.txt</code> in <code>lab/</code>; Ch 8 Wireshark has no <code>.pcap</code>. Lab drills use authored simulated output.</p>
+      </aside>
+    </section>
+
+    <div class="toolbar">
+      <nav class="tabs" aria-label="Study sections">
+        <button id="tab-lessons" type="button" data-view="lessons" class="active" aria-current="page">01 · Micro-Lessons (Ch 6–10)</button>
+        <button id="tab-labs" type="button" data-view="labs">02 · Lab CLI &amp; Simulated Drills</button>
+        <button id="tab-tools" type="button" data-view="tools">03 · Guided RSA &amp; Base64</button>
+        <button id="tab-quiz" type="button" data-view="quiz">04 · Active Recall &amp; Revisit List</button>
+      </nav>
+      <div class="tools">
+        <button id="print-worksheet" type="button" class="small">Print blank worksheet</button>
+        <button id="print-answers" type="button" class="small">Print worked key</button>
+        <button id="reset-progress" type="button" class="small">Reset progress</button>
+      </div>
+    </div>
+
+    <p id="storage-notice" class="storage-notice" hidden>Browser storage is unavailable. Progress will stay only while this page is open.</p>
+
+    <section id="view-lessons" class="view">
+      <div class="lesson-layout">
+        <nav id="chapter-nav" class="lesson-nav" aria-label="Chapters 6 to 10"></nav>
+        <div id="lesson-content"></div>
+      </div>
+    </section>
+
+    <section id="view-labs" class="view" hidden>
+      <div class="panel">
+        <div class="eyebrow">Simulated Troubleshooting Drills · Labs 1–4</div>
+        <h2>Diagnose IOS Mode, Link, Trunk &amp; Port-Security Faults</h2>
+        <p class="muted">The CLI outputs below are <strong>authored simulated examples</strong> based on <code>Chapter 9.1</code>, <code>Chapter 9.2</code>, and <code>lab/Lab4 - Port Security Configuration.txt</code> — not executed Packet Tracer runs.</p>
+        <div id="lab-drills-container"></div>
+      </div>
+
+      <div class="panel">
+        <div class="eyebrow">Labs 1–4 Verified · Lab 5 Pending</div>
+        <h2>Cisco IOS Command Reference</h2>
+        <div class="control-row">
+          <label for="lab-search">Search Lab Commands (uses <code>smart-search.js</code>)
+            <input id="lab-search" type="text" placeholder="Type keywords (e.g. trunk, sticky, ssh, Lab 4, acl)...">
+          </label>
+        </div>
+        <div class="callout">
+          <strong>Pending Lab Coverage</strong>
+          <p><strong>Lab 5 (Access Control Lists, Ch 9.2 p. 90):</strong> Topology and goal (block <code>192.168.10.0/24</code> → <code>192.168.30.0/24</code>) are in the slides, but no <code>.pkt</code> or <code>.txt</code> solution file was supplied in <code>lab/</code>.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Lab</th><th>Command</th><th>IOS Mode</th><th>Purpose</th><th>Verification</th><th>Common Mistake</th></tr>
+            </thead>
+            <tbody id="lab-cmd-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-tools" class="view" hidden>
+      <div class="panel">
+        <div class="eyebrow">Chapter 6 · Guided RSA Signature Step-Checker</div>
+        <h2>Check Intermediate Steps: n, φ(n), d, and Signature S</h2>
+        <p class="muted">Work through the Chapter 6 Slide 17 exercise on paper first (<code>p = 13, q = 17, e = 7, H = 180</code>), then check your intermediate values below. Use progressive hints before revealing the solution.</p>
+        <div class="control-row">
+          <label>Prime p <input id="sig-p" type="text" value="13"></label>
+          <label>Prime q <input id="sig-q" type="text" value="17"></label>
+          <label>Public e <input id="sig-e" type="text" value="7"></label>
+          <label>Hash H <input id="sig-h" type="text" value="180"></label>
+        </div>
+        <div class="control-row">
+          <label>Your n = p·q <input id="sig-ans-n" type="text" placeholder="e.g. 221"></label>
+          <label>Your φ(n) = (p−1)(q−1) <input id="sig-ans-z" type="text" placeholder="e.g. 192"></label>
+          <label>Your Private d (e·d ≡ 1 mod φ(n)) <input id="sig-ans-d" type="text" placeholder="e.g. 55"></label>
+          <label>Your Signature S = H^d mod n <input id="sig-ans-s" type="text" placeholder="e.g. 158"></label>
+        </div>
+        <div class="actions">
+          <button id="sig-check-steps" type="button" class="primary">Check My Steps</button>
+          <button id="sig-next-hint" type="button">Progressive Hint</button>
+          <button id="sig-show-solution" type="button" class="text">Show Solution</button>
+          <button id="sig-new-exercise" type="button">New RSA Exercise</button>
+        </div>
+        <div id="sig-hints"></div>
+        <div id="sig-output" class="status" aria-live="polite"></div>
+      </div>
+
+      <div class="panel">
+        <div class="eyebrow">Chapter 7 · Base64 Practice</div>
+        <h2>Base64 Encoder / Decoder</h2>
+        <p class="muted">Verify the Chapter 7 Slide 37 exercises (<code>Base64</code>, <code>Hacker</code>, <code>INFOSEC</code>, <code>Encrypt</code>, <code>RnV0dXJl</code>, <code>QW5nZWw=</code>, <code>SW1hZ2luZQ==</code>, <code>RGllSGFyZA==</code>) and check <code>=</code> / <code>==</code> padding.</p>
+        <div class="control-row">
+          <label>Mode
+            <select id="b64-mode">
+              <option value="encode">Encode (Text → Base64)</option>
+              <option value="decode">Decode (Base64 → Text)</option>
+            </select>
+          </label>
+          <label>Input
+            <input id="b64-input" type="text" value="INFOSEC">
+          </label>
+          <button id="b64-run" type="button" class="primary">Run Base64</button>
+        </div>
+        <div id="b64-output" class="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section id="view-quiz" class="view" hidden>
+      <div class="panel">
+        <div class="eyebrow">Active Recall · Balanced Bloom Mix &amp; Simple Revisit List</div>
+        <h2>Test Recall, Calculation, Application &amp; Troubleshooting</h2>
+        <div class="control-row">
+          <label for="quiz-filter">Filter by Chapter, Mixed Practice, or Revisit List
+            <select id="quiz-filter">
+              <option value="all">Mixed Practice (All 22 Questions)</option>
+              <option value="revisit">Simple Revisit List (Attempted / Solved with Help)</option>
+              <option value="ch6">Chapter 6 · Digital Signatures &amp; Hashes</option>
+              <option value="ch7">Chapter 7 · Key Management, PKI &amp; Base64</option>
+              <option value="ch8">Chapter 8 · TLS, PGP, VPN &amp; IPsec</option>
+              <option value="ch9">Chapter 9 · IOS, VLANs, Port Security &amp; ACLs</option>
+              <option value="ch10">Chapter 10 · Resiliency, RAID, Backups &amp; Physical</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div id="quiz-container" class="panel"></div>
+    </section>
+  </main>
+
+  <section id="print-area" aria-label="Printable worksheet"></section>
+  <footer>
+    <div class="wrap">ICT 304 CyberQuest · Grounded in Phase 1 audit of Chapters 5–10 &amp; Labs 1–4. Original PDFs preserved unchanged.</div>
+  </footer>
+</body>
+</html>

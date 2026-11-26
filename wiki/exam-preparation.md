@@ -12,6 +12,16 @@ The user said they would give the prompt below to AGY. This records the intended
 
 ## Current evidence and status
 
+### CLI-only exam lab update
+
+The user subsequently supplied AGY's trainer/cheat-sheet implementation report and is starting to study. An independent review reran all eight suites (8,437 checks) and checked the single-page PDF, but reproduced two CLI-checker false passes and identified remaining source-review gaps plus a TLS wording correction. See [CLI trainer review](cli-trainer-review.md). Guided study and real Packet Tracer practice can begin; website success badges should not certify the real configuration until these issues are corrected.
+
+**Latest user clarification:** the CLI-practice handoff has not yet been sent to AGY. The [consolidated AGY goal](agy-cli-exam-brief.md) now includes the website trainer AND updating the existing cheat-sheet HTML/PDF with Follow → Recall → Apply → Troubleshoot → Record mistakes, plus useful configuration and verification commands for the six CLI patterns. The sheet must still cover Chapters 5–10 and RSA on exactly one A4 front side. This goal revision does not itself implement the trainer or regenerate the sheet.
+
+The user identified `lab/Labs for exams no GUI/` as the likely tested practice set and stated that the professor permits CLI configuration only. The folder contains 11 activities: router-to-LAN, initial switch setup, VLANs, trunks, two SSH/password activities, ACL demonstration, numbered standard ACLs, named standard ACLs, standard ACL modification, and port security. This adds standard-ACL practice beyond the original four labs; it does not establish that the old course Lab 5 or Wireshark captures are now supplied.
+
+After the user signed into Packet Tracer, Exercises 1 and 11 were read through their displayed instructions, with partial readings of 2 and 10. No network configuration was executed or original activity file saved during this inspection. See [CLI exam memory guide](cli-exam-memory-guide.md) and [AGY implementation brief](agy-cli-exam-brief.md). Immediate next step: source-grounded CLI recall practice, with exact coverage review of all 11 before implementation claims.
+
 ### Follow-up on 2026-11-26
 
 The user supplied an AGY transcript and clarified that they want **AI agent skills from GitHub that improve teaching in the website**. The earlier Phase 2 shortlist was mainly study software and libraries, so a teaching-skill review is now the immediate focus. See [Teaching skills from GitHub](teaching-agent-skills.md).

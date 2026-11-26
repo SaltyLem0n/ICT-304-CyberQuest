@@ -125,3 +125,19 @@ Update the wiki with reproduction/fix evidence and state the real publication st
   - **Dashboard (`index.html`):** Verified `CHAPTERS 06–10 & LABS` and `EXAM CHEAT SHEET` cards alongside existing Chapter 3–5 cards, with `"Labs 1–4 verified, Lab 5 pending"` and `"Draft (Lab 5 Pending)"` flags preserved.
   - **Chapters 6–10 & Labs (`chapters6-10.html`):** Verified all 5 chapter tabs (17 lessons), preserved missing-material banner (`Lab 5 (ACLs) has no .pkt / .txt in lab/; Ch 8 Wireshark has no .pcap`), Lab CLI search/filter (`"sticky"` → 1 row, `"acl"` → 2 rows, clear → 20 rows) and 4 simulated drills, Mixed Quiz (22 questions, immediate correct/incorrect feedback & revisit counter), Guided RSA checker (`(13, 17, 7, 180)` → `n=221, φ(n)=192, d=55, S=158` verified, `New RSA Exercise` → `(17, 19, 5, 42)`), and Base64 encoder (`INFOSEC` → `SU5GT1NFQw==`).
   - **Draft Cheat-Sheet Links:** Verified `cheatsheet.html` (HTTP 200, `"DRAFT · Pending: Lab 5 (ACLs) .pkt/.txt & Ch 8 .pcap"`) and `ICT304_A4_CheatSheet.pdf` (`application/pdf`, 250,869 bytes, no 404).
+
+### CLI-Only Exam Practice & Revised A4 Cheat Sheet (2026-11-26, Local Only)
+- **CLI-Only Exam Trainer ([cli-trainer.html](../cli-trainer.html), [cli-trainer-data.js](../cli-trainer-data.js), [cli-trainer.js](../cli-trainer.js)):**
+  - Linked from [index.html](../index.html) and [chapters6-10.html](../chapters6-10.html).
+  - Covers all 11 `.pka` activities in `lab/Labs for exams no GUI/` with honest source review status: Ex 1 & 11 (`reviewed`), Ex 2 & 10 (`partial`), Ex 3–9 (`filename_only`), plus separate self-reported Real Packet Tracer execution tracking (`untested_in_pt`, `practised_with_help`, `passed_independently_in_pt`).
+  - Implements the 5-step memory routine (`Follow once → Recall → Apply → Troubleshoot → Record mistakes`) and 5-step device workflow (`Read → Inspect → Configure → Verify → Save`) across 6 reusable patterns (`P1 Basic Setup/LAN`, `P2 VLANs`, `P3 Trunks`, `P4 SSH`, `P5 Standard IPv4 ACLs`, `P6 Port Security`), each with a worked example, a labeled coherent website-authored variant, simulated troubleshooting output, printable multi-page worksheets, and persistent mistake log.
+  - **Semantic IOS Checker before/after examples:**
+    - Rejects typed CLI prompts (`R1(config)# ...`), wrong IOS mode (`ip address` in `(config)#`), missing `no shutdown`, plain `login` instead of `login local` on VTY, `switchport trunk allowed vlan` overwrite without `add`, `switchport port-security` before `switchport mode access`, subnet mask (`255.255.255.0`) inside ACL rules instead of wildcard (`0.0.0.255`), unattached/wrong-direction ACLs, and ineffective ACL rule order (`permit` before `deny`).
+- **Revised One-Sided A4 Cheat Sheet ([cheatsheet.html](../cheatsheet.html), [ICT304_A4_CheatSheet.pdf](../ICT304_A4_CheatSheet.pdf)):**
+  - Preserves Chapters 5–10 and RSA worked mini-example while adding the 5-step memory routine, 5-step device workflow, IOS mode/prompt key, and all 6 CLI pattern skeletons + verification commands.
+  - Verified via headless Chrome + `pypdf`: **1 page**, `594.96 × 841.92 pt` (`210 × 297 mm`, A4 portrait), `232,286` bytes, visually inspected PNG with zero clipping or overflow.
+  - Updated gap status: notes Ex 7–10 supply Standard IPv4 ACLs while Extended ACLs, Course Lab 5 `.pkt`/`.txt`, and Ch 8 `.pcap` remain pending/unconfirmed.
+- **Verification & Limitations:**
+  - All 8 Node test suites pass locally (8,437 checks total, including 44 new checks in [tests/cli-trainer.test.js](../tests/cli-trainer.test.js)).
+  - Local HTTP browser verification (`http://127.0.0.1:8765`, desktop `1280×800` + mobile `390×844`) passed with 0 console errors and 0 404s; added `.table-wrap` horizontal scrolling in `cli-trainer.html`/`cli-trainer.js` for mobile table fit.
+  - **Publication status:** **Local only** (changes since `a291d03` have NOT been committed or pushed to GitHub Pages).

@@ -370,7 +370,7 @@
           body: [
             '<strong>Layer Mapping (p. 2):</strong> App/Pres: <code>HTTPS, SSH, PGP, S/MIME</code>; Session/Transport: <code>SSL/TLS</code>; Network: <code>IPsec</code>; Data Link: <code>PPTP, L2F, L2TP</code>.',
             '<strong>HTTP (80) vs HTTPS (443):</strong> Status codes: 1xx Info, 2xx Success, 3xx Redirect, 4xx Client Error, 5xx Server Error.',
-            '<strong>TLS 1.3 (RFC 8446, 2018):</strong> SSL 2/3 &amp; TLS 1.0/1.1 deprecated. TLS 1.3 allows only <strong>5 AEAD cipher suites</strong> (e.g., <code>TLS_AES_128_GCM_SHA256</code>) and enforces <strong>Forward Secrecy</strong> (removed static RSA key exchange, RC4, 3DES, CBC).'
+            '<strong>TLS 1.3 (RFC 8446, 2018):</strong> SSL 2/3 &amp; TLS 1.0/1.1 deprecated. TLS 1.3 allows only <strong>5 AEAD cipher suites</strong> (e.g., <code>TLS_AES_128_GCM_SHA256</code>) and uses <strong>(EC)DHE for Forward Secrecy</strong> on certificate handshakes (PSK-only <code>psk_ke</code> and 0-RTT have exceptions; static RSA key exchange, RC4, 3DES, and CBC were removed).'
           ],
           auditNote: {
             ref: 'Ch 8, p. 10',
@@ -389,7 +389,7 @@
             ],
             correctIndex: 0,
             optionFeedback: [
-              'Correct! TLS 1.3 mandates ephemeral (ECDHE/DHE) key exchange for Forward Secrecy (RSA is still allowed for authentication/signatures).',
+              'Correct! TLS 1.3 uses ephemeral (ECDHE/DHE) key exchange for Forward Secrecy on certificate handshakes (PSK-only psk_ke and 0-RTT are exceptions; RSA is still allowed for authentication/signatures).',
               'RSA certificates are still used for server authentication in TLS 1.3.',
               'TLS runs over TCP (443 for HTTPS); QUIC uses UDP.'
             ]

@@ -7,6 +7,14 @@ Visit the deployed application on GitHub Pages:
 
 ---
 
+## CLI-only exam practice
+
+Open the [CLI exam trainer](https://saltylem0n.github.io/ICT-304-CyberQuest/cli-trainer.html) from the dashboard or the Chapters 6–10 labs section. It includes six configuration patterns, command recall, authored variants, troubleshooting, worksheets, and a mistake log. Practise the actual networks in Packet Tracer alongside the website.
+
+The activity index distinguishes source coverage: Exercises 1 and 11 have reviewed instructions, 2 and 10 are partially reviewed, and 3–9 await internal instruction review. Authored templates are labelled separately. The one-page A4 reference includes Chapters 5–10, RSA, the memory routine and CLI command patterns.
+
+Run `node tests/cli-trainer.test.js` for trainer regression checks. See [the memory guide](wiki/cli-exam-memory-guide.md) and [the implementation review](wiki/cli-trainer-review.md) for scope and validation details.
+
 ## Chapter 3: guided practice paper
 
 Open [Chapter 3 guided practice](https://saltylem0n.github.io/ICT-304-CyberQuest/chapter3-practice.html) from the Chapter 3 card.

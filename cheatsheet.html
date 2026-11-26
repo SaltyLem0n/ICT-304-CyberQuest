@@ -2,20 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ICT 304 Exam Cheat Sheet (1x A4 Front Only - DRAFT)</title>
+  <title>ICT 304 Exam Cheat Sheet (1x A4 Front Only)</title>
   <style>
     @page {
       size: A4 portrait;
-      margin: 6.5mm 7mm;
+      margin: 5.5mm 6mm;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: "Segoe UI", Arial, Helvetica, sans-serif;
-      font-size: 7.4pt;
-      line-height: 1.24;
+      font-size: 7.5pt;
+      line-height: 1.26;
       color: #111;
       background: #fff;
-      width: 196mm;
+      width: 198mm;
     }
     .header {
       display: flex;
@@ -23,30 +23,40 @@
       align-items: baseline;
       border-bottom: 1.5pt solid #111;
       padding-bottom: 2px;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
     .header h1 {
-      font-size: 10.5pt;
+      font-size: 9.8pt;
       font-weight: 800;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.01em;
     }
     .draft-badge {
-      font-size: 7pt;
+      font-size: 6.6pt;
       font-weight: 700;
-      border: 1pt solid #111;
+      border: 0.9pt solid #111;
       padding: 1px 4px;
       background: #eee;
     }
+    .strip {
+      display: grid;
+      grid-template-columns: 1.28fr 0.72fr;
+      gap: 4px;
+      border: 0.75pt solid #222;
+      background: #f5f5f5;
+      padding: 2px 4px;
+      margin-bottom: 3.5px;
+      font-size: 6.7pt;
+    }
     .grid {
       display: grid;
-      grid-template-columns: 1.08fr 0.96fr 0.96fr;
-      gap: 4.5px;
+      grid-template-columns: 1.02fr 0.94fr 1.04fr;
+      gap: 4px;
       align-items: start;
     }
     .col {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3.5px;
     }
     .box {
       border: 0.75pt solid #333;
@@ -62,28 +72,28 @@
       border-bottom: 0.75pt solid #333;
       margin: -3px -4.5px 3px -4.5px;
       padding: 1.5px 4.5px;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.02em;
     }
     .box h3 {
-      font-size: 7.2pt;
+      font-size: 7.3pt;
       font-weight: 700;
       margin-top: 2.5px;
       border-bottom: 0.4pt dotted #888;
     }
-    p, li { margin-bottom: 1.5px; }
+    p, li { margin-bottom: 1.4px; }
     ul { padding-left: 10px; }
     code {
       font-family: Consolas, "Courier New", monospace;
-      font-size: 6.8pt;
-      background: #f2f2f2;
-      padding: 0 1.5px;
+      font-size: 6.95pt;
+      background: #f1f1f1;
+      padding: 0 1.2px;
       border-radius: 1px;
     }
     .formula {
       font-family: Consolas, "Courier New", monospace;
       font-size: 7pt;
-      background: #f5f5f5;
-      border-left: 2pt solid #222;
+      background: #f6f6f6;
+      border-left: 1.8pt solid #222;
       padding: 2px 4px;
       margin: 2px 0;
     }
@@ -91,11 +101,11 @@
       width: 100%;
       border-collapse: collapse;
       margin: 2px 0;
-      font-size: 6.8pt;
+      font-size: 6.85pt;
     }
     th, td {
       border: 0.5pt solid #666;
-      padding: 1px 2.5px;
+      padding: 1px 2px;
       text-align: left;
       vertical-align: top;
     }
@@ -103,12 +113,12 @@
     .warn {
       border: 0.75pt dashed #222;
       background: #f7f7f7;
-      padding: 2px 3.5px;
+      padding: 1.8px 3.5px;
       margin-top: 2px;
-      font-size: 6.9pt;
+      font-size: 6.5pt;
     }
     @media screen {
-      body { margin: 12px auto; border: 1px solid #ccc; padding: 7mm; }
+      body { margin: 10px auto; border: 1px solid #ccc; padding: 6mm; }
     }
     @media print {
       body { width: auto; margin: 0; border: none; padding: 0; }
@@ -117,8 +127,13 @@
 </head>
 <body>
   <div class="header">
-    <h1>ICT 304 EXAM REFERENCE · CHAPTERS 5–10 &amp; LABS 1–4 (FRONT SIDE ONLY)</h1>
-    <span class="draft-badge">DRAFT · Pending: Lab 5 (ACLs) .pkt/.txt &amp; Ch 8 .pcap</span>
+    <h1>ICT 304 EXAM REFERENCE · CHAPTERS 5–10 &amp; CLI LABS (1× A4 FRONT ONLY)</h1>
+    <span class="draft-badge">11 .pka (Ex 1,11 full · 2,10 partial · 3–9 name) | Pending: Lab 5 .pkt, Ch8 .pcap</span>
+  </div>
+
+  <div class="strip">
+    <div><b>5-Step Memory Routine:</b> 1. Follow/explain → 2. Recall hidden cmds → 3. Apply new values → 4. Troubleshoot → 5. Log (symptom/cause/check/fix)</div>
+    <div><b>Device Workflow:</b> Read → Inspect → Configure → Verify → Save</div>
   </div>
 
   <div class="grid">
@@ -127,48 +142,46 @@
       <section class="box">
         <h2>Ch 5 · Public Key Cryptography &amp; RSA</h2>
         <div class="formula">
-          1. Pick primes <b>p, q</b> (p ≠ q) → <b>n = p·q</b>, <b>z = φ(n) = (p−1)(q−1)</b><br>
-          2. Choose <b>e</b>: 1 &lt; e &lt; z, gcd(e, z) = 1 → Public Key <b>PU = (n, e)</b><br>
-          3. Find <b>d</b>: <b>e·d ≡ 1 (mod z)</b> → Private Key <b>PR = (n, d)</b><br>
-          4. Enc (0 ≤ m &lt; n): <b>c = m<sup>e</sup> mod n</b> | Dec: <b>m = c<sup>d</sup> mod n</b>
+          1. Primes <b>p, q</b> (p≠q) → <b>n = p·q</b>, <b>z = φ(n) = (p−1)(q−1)</b><br>
+          2. Pick <b>e</b>: 1&lt;e&lt;z, gcd(e,z)=1 → Public <b>PU=(n,e)</b><br>
+          3. Find <b>d</b>: <b>e·d ≡ 1 (mod z)</b> → Private <b>PR=(n,d)</b><br>
+          4. Enc (0≤m&lt;n): <b>c = m<sup>e</sup> mod n</b> | Dec: <b>m = c<sup>d</sup> mod n</b>
         </div>
-        <p><b>Trapdoor:</b> Multiplication easy, factoring <i>n</i> hard. Textbook RSA keys are interchangeable only for raw (m<sup>e</sup>)<sup>d</sup> ≡ (m<sup>d</sup>)<sup>e</sup> (mod n) (not general ECC/OAEP/PSS).</p>
+        <p><b>Trapdoor:</b> Mult easy, factoring <i>n</i> hard. Textbook RSA keys swap only for raw (m<sup>e</sup>)<sup>d</sup> ≡ (m<sup>d</sup>)<sup>e</sup> (mod n).</p>
         <ul>
-          <li><b>Confidentiality:</b> Encrypt with <b>PU<sub>B</sub></b>, decrypt with <b>PR<sub>B</sub></b>.</li>
-          <li><b>Auth / Integrity:</b> Sign with <b>PR<sub>A</sub></b>, verify with <b>PU<sub>A</sub></b>.</li>
-          <li><b>Hybrid:</b> Random symmetric <b>session key K</b> encrypts data (fast); <b>PU<sub>B</sub></b> encrypts <i>K</i>. Still needs PKI/CA against <b>MitM</b>.</li>
+          <li><b>Confidentiality:</b> Enc <b>PU<sub>B</sub></b>, dec <b>PR<sub>B</sub></b>. <b>Auth/Int:</b> Sign <b>PR<sub>A</sub></b>, verify <b>PU<sub>A</sub></b>.</li>
+          <li><b>Hybrid:</b> Random <b>session key K</b> encrypts data; <b>PU<sub>B</sub></b> encrypts <i>K</i>. Needs PKI/CA vs <b>MitM</b>.</li>
         </ul>
 
         <h3>Modular Inverse (Extended Euclidean: z &amp; e)</h3>
-        <p>Write <code>z = 1·z + 0·e</code>, <code>e = 0·z + 1·e</code>. At each division <code>r<sub>i−1</sub> = q·r<sub>i</sub> + r<sub>i+1</sub></code>, subtract <code>q × (row i)</code> from <code>(row i−1)</code>. When remainder = 1, coeff of <i>e</i> mod <i>z</i> is <b>d</b> (if negative, add <i>z</i>).</p>
+        <p>Start <code>z=1·z+0·e</code>, <code>e=0·z+1·e</code>. For <code>r<sub>i−1</sub>=q·r<sub>i</sub>+r<sub>i+1</sub></code>, subtract <code>q×row(i)</code> from <code>row(i−1)</code>. At rem=1, coeff of <i>e</i> mod <i>z</i> is <b>d</b> (if &lt;0, +<i>z</i>).</p>
 
         <h3>Repeated Squaring (Square &amp; Multiply)</h3>
-        <p>Split exponent into powers of 2 (e.g. <code>173 = 128+32+8+4+1</code>). Square &amp; reduce mod <b>n</b> each step; multiply selected powers mod <b>n</b>.</p>
+        <p>Split exponent into powers of 2 (<code>173=128+32+8+4+1</code>). Square &amp; reduce mod <b>n</b> each step; multiply chosen powers mod <b>n</b>.</p>
 
         <h3>Checked Mini RSA Example</h3>
         <div class="formula">
-          <b>Keygen:</b> p=3, q=11 → n=33, z=2×10=20. Pick e=3 (gcd(3,20)=1).<br>
-          Inv: 20=6×3+2 (2=1·20−6·3); 3=1×2+1 (1=−1·20+7·3) → <b>d=7</b> (3×7=21≡1 mod 20).<br>
+          <b>Keygen:</b> p=3, q=11 → n=33, z=2×10=20. e=3 (gcd(3,20)=1).<br>
+          Inv: 20=6×3+2 (1·20−6·3); 3=1×2+1 (−1·20+7·3) → <b>d=7</b>.<br>
           <b>Enc m=4:</b> c = 4<sup>3</sup> mod 33 = 64 mod 33 = <b>31</b>.<br>
-          <b>Dec c=31 (d=7=4+2+1):</b> 31<sup>1</sup>≡31; 31<sup>2</sup>=961≡4; 31<sup>4</sup>≡4<sup>2</sup>=16 (mod 33).<br>
+          <b>Dec c=31 (d=7=4+2+1):</b> 31<sup>1</sup>≡31; 31<sup>2</sup>≡4; 31<sup>4</sup>≡16 (mod 33).<br>
           m = (31×4×16) mod 33 = 1984 mod 33 = <b>4</b> (60×33=1980, rem 4) ✓
         </div>
-        <p><b>Pitfalls:</b> Use <b>z</b> ONLY to find <i>d</i>; use <b>n</b> for all enc/dec! Keep <b>m &lt; n</b>; never concatenate a whole name into one block &gt; <i>n</i>.</p>
+        <p><b>Pitfalls:</b> Use <b>z</b> ONLY for <i>d</i>; use <b>n</b> for enc/dec! Keep <b>m&lt;n</b>; never pack a whole name &gt; <i>n</i>.</p>
       </section>
 
       <section class="box">
         <h2>Ch 6 · Digital Signatures &amp; Hash Functions</h2>
-        <p><b>E-Sig ≠ Digital Sig:</b> Digital sig = cryptographic <b>hash H(M)</b> signed with <b>PR<sub>A</sub></b>. Properties: Authentic, Unforgeable, Non-Reusable, Unalterable, Non-Repudiable. Provides <b>Auth + Integrity + Non-Repudiation</b> (not confidentiality).</p>
-        <p><b>Digital Envelope:</b> <code>E<sub>K</sub>(M) || E<sub>PU_B</sub>(K) || E<sub>PR_A</sub>(H(M))</code> → Confidentiality + Integrity + Auth.</p>
+        <p><b>E-Sig ≠ Digital Sig:</b> Sig = <b>H(M)</b> signed with <b>PR<sub>A</sub></b> (Authentic, Unforgeable, Non-Reusable, Unalterable, Non-Repudiable) → <b>Auth+Int+Non-Repud</b> (not confidentiality).</p>
+        <p><b>Envelope:</b> <code>E<sub>K</sub>(M) || E<sub>PU_B</sub>(K) || E<sub>PR_A</sub>(H(M))</code>.</p>
         <table>
           <tr><th>Hash</th><th>Bits/Hex</th><th>Status &amp; Key Fact</th></tr>
-          <tr><td><b>MD5</b></td><td>128b / 32</td><td>Broken (2004 Wang &amp; Yu collision). Avoid.</td></tr>
+          <tr><td><b>MD5</b></td><td>128b / 32</td><td>Broken (2004 Wang/Yu collision). Avoid.</td></tr>
           <tr><td><b>SHA-1</b></td><td>160b / 40</td><td>Deprecated (2017 SHAttered collision).</td></tr>
           <tr><td><b>SHA-256</b></td><td>256b / 64</td><td><b>Recommended</b> (TLS, certs, FIM, HMAC).</td></tr>
-          <tr><td><b>SHA-3</b></td><td>224–512b</td><td>Sponge design; resists length-extension.</td></tr>
+          <tr><td><b>SHA-3</b></td><td>224–512b</td><td>Sponge; resists length-extension.</td></tr>
         </table>
-        <p><b>Avalanche:</b> 1-bit input flip (<code>bat</code>→<code>cat</code>) changes ~50% output bits. Hashing is one-way compression, NOT encryption.</p>
-        <p><b>Win Lab:</b> CMD <code>certutil -hashfile f.txt SHA256</code> | PS <code>Get-FileHash f.txt</code> (default SHA256; text needs UTF-8 bytes first).</p>
+        <p><b>Avalanche:</b> 1-bit flip changes ~50% bits. Hash = one-way, NOT encryption. Win: <code>certutil -hashfile f SHA256</code> | PS <code>Get-FileHash f</code>.</p>
       </section>
     </div>
 
@@ -179,96 +192,87 @@
         <table>
           <tr><th>Method</th><th>Online?</th><th>Weakness / Note</th></tr>
           <tr><td>Announcement</td><td>No</td><td>Anyone can forge / MitM</td></tr>
-          <tr><td>Public Directory</td><td>Lookup</td><td>Directory tampering breaks trust</td></tr>
-          <tr><td><b>KDC</b> (e.g. Kerberos)</td><td>Always</td><td>Bottleneck / SPOF; Kerberos port 88 (AS+TGS)</td></tr>
-          <tr><td><b>CA / PKI</b></td><td>Offline</td><td>Solves KDC SPOF; needs CRL / OCSP check</td></tr>
+          <tr><td>Public Dir</td><td>Lookup</td><td>Directory tampering breaks trust</td></tr>
+          <tr><td><b>KDC</b> (Kerberos)</td><td>Always</td><td>SPOF/bottleneck; port 88 (AS+TGS)</td></tr>
+          <tr><td><b>CA / PKI</b></td><td>Offline</td><td>Solves KDC SPOF; check CRL / OCSP</td></tr>
         </table>
-        <p><b>X.509 Cert:</b> (1) Subject Public Key, (2) Subject ID + Validity, (3) CA Signature. Cert is <b>plaintext signed</b> by CA (verified with CA's PU, not decrypted). Win tool: <code>certmgr.msc</code>.</p>
-        <h3>Base64 Encoding (RFC 4648)</h3>
-        <p>Maps <b>3 bytes (24b) → four 6-bit chars</b>: <code>0–25=A–Z</code>, <code>26–51=a–z</code>, <code>52–61=0–9</code>, <code>62=+</code>, <code>63=/</code>. <b>Pad:</b> 2B left → <code>=</code>; 1B left → <code>==</code>.</p>
-        <p><b>Ex:</b> <code>Man</code>→<code>TWFu</code>, <code>an</code>→<code>YW4=</code>, <code>G</code>→<code>Rw==</code>. <code>certutil -encode</code> adds <code>BEGIN/END CERTIFICATE</code> lines; PS <code>[Convert]::ToBase64String(...)</code> does not.</p>
+        <p><b>X.509 Cert:</b> Subject PU + ID/Validity + CA Sig. Signed plaintext (verify w/ CA PU, not decrypted). Win: <code>certmgr.msc</code>.</p>
+        <p><b>Base64 (RFC 4648):</b> <b>3B (24b) → four 6b chars</b> (<code>A–Z,a–z,0–9,+,/</code>). Pad: 2B→<code>=</code>, 1B→<code>==</code>. <code>Man</code>→<code>TWFu</code>, <code>an</code>→<code>YW4=</code>, <code>G</code>→<code>Rw==</code>.</p>
       </section>
 
       <section class="box">
         <h2>Ch 8 · TLS 1.3, PGP, VPN &amp; IPsec</h2>
-        <p><b>Layers:</b> App: HTTPS (443), SSH, PGP, S/MIME | Transp: SSL/TLS | Net: IPsec | Link: PPTP, L2TP.</p>
-        <p><b>TLS 1.3 (RFC 8446):</b> SSL 2/3 &amp; TLS 1.0/1.1 deprecated. TLS 1.3 allows only <b>5 AEAD suites</b> (e.g. <code>TLS_AES_128_GCM_SHA256</code>) + mandatory <b>Forward Secrecy</b> (removed static RSA key exchange, RC4, 3DES, CBC).</p>
-        <p><b>PGP:</b> Hybrid + signature using <b>Key Ring</b> &amp; decentralized <b>Web of Trust</b> (no CA).</p>
-        <p><b>IPsec (Layer 3):</b> <b>AH</b> (auth+int, NO enc) vs <b>ESP</b> (enc+auth+int). Key setup: <b>IKE</b>.</p>
+        <p><b>Layers:</b> App: HTTPS(443), SSH, PGP | Transp: TLS | Net: IPsec | Link: PPTP/L2TP.</p>
+        <p><b>TLS 1.3 (RFC 8446):</b> <b>5 AEAD suites</b>; (EC)DHE gives forward secrecy (PSK-only <code>psk_ke</code> &amp; 0-RTT have exceptions; no static RSA kex, RC4, 3DES, CBC, SSL/TLS≤1.1).</p>
+        <p><b>PGP:</b> Hybrid + sig via <b>Key Ring</b> &amp; <b>Web of Trust</b> (no CA).</p>
+        <p><b>IPsec (L3, IKE):</b> <b>AH</b> (auth+int) vs <b>ESP</b> (enc+auth+int).</p>
         <table>
-          <tr><th>IPsec Mode</th><th>Encrypts</th><th>Use Case</th><th>Traffic Analysis</th></tr>
-          <tr><td><b>Transport</b></td><td>Payload only</td><td>Host-to-Host</td><td>Vulnerable (IP hdr visible)</td></tr>
-          <tr><td><b>Tunnel</b></td><td>Whole IP pkt + new hdr</td><td>Site-to-Site VPN</td><td>Protected (only GW IPs)</td></tr>
+          <tr><th>Mode</th><th>Encrypts</th><th>Use Case</th><th>Traffic Analysis</th></tr>
+          <tr><td><b>Transport</b></td><td>Payload only</td><td>Host-Host</td><td>IP hdr visible</td></tr>
+          <tr><td><b>Tunnel</b></td><td>Full IP pkt + new hdr</td><td>Site-Site</td><td>Only GW IPs visible</td></tr>
         </table>
       </section>
 
       <section class="box">
         <h2>Ch 10 · Resiliency &amp; Site Security</h2>
-        <p><b>Availability</b> = (Total − Downtime) / Total. <b>99%</b>=3.65d/yr | <b>99.9%</b>=8.76h/yr | <b>99.99%</b>=52.6m/yr | <b>99.999%</b>=5.26m/yr.</p>
-        <p><b>HA vs FT:</b> <b>HA</b> = standby failover (sec–min downtime, lower cost); <b>FT</b> = active-active real-time mirror (0 downtime, $$$).</p>
-        <p><b>RAID:</b> <b>RAID 0</b> = striping, min 2 disks, <b>0 fault tolerance</b>. <b>RAID 1</b> = mirroring, 50% cap, tolerates 1 disk failure (<i>not a backup!</i>). Multi-switch paths need <b>STP</b>.</p>
+        <p><b>Avail:</b> 99%=3.65d | 99.9%=8.76h | 99.99%=52.6m | 99.999%=5.26m/yr. <b>HA</b>=failover; <b>FT</b>=0 downtime.</p>
+        <p><b>RAID:</b> <b>0</b>=stripe, 0 FT | <b>1</b>=mirror, 50% cap (<i>not backup!</i>). Multi-switch links need <b>STP</b>.</p>
         <table>
           <tr><th>Backup</th><th>Backs up</th><th>Restore Sets</th><th>Arch Bit</th></tr>
-          <tr><td><b>Full</b></td><td>All data</td><td>1 (Full)</td><td>Cleared</td></tr>
-          <tr><td><b>Incremental</b></td><td>Since last any</td><td>Full + all Inc (slow)</td><td>Cleared</td></tr>
-          <tr><td><b>Differential</b></td><td>Since last Full</td><td><b>2</b> (Full + latest Diff)</td><td>Not cleared</td></tr>
+          <tr><td><b>Full</b></td><td>All</td><td>1 (Full)</td><td>Cleared</td></tr>
+          <tr><td><b>Incremental</b></td><td>Since last any</td><td>Full + all Inc</td><td>Cleared</td></tr>
+          <tr><td><b>Differential</b></td><td>Since last Full</td><td><b>2</b> (Full + latest)</td><td>Not cleared</td></tr>
         </table>
-        <p><b>3-2-1-1-0:</b> 3 copies, 2 media, 1 offsite, <b>+1 immutable/air-gapped</b>, 0 errors. Don't mix Inc &amp; Diff.</p>
-        <p><b>Sites:</b> <b>Hot</b> (instant, $$$) | <b>Warm</b> (hours–days, manual cfg, $$) | <b>Cold</b> (empty, days–wks, $).</p>
-        <p><b>Physical (5 Ds):</b> Deter, Detect, Deny, Delay, Defend. <b>Guard</b>=Preventive; <b>CCTV</b>=Detective. <b>Mantrap</b> stops tailgating. <b>PDS</b>=sealed metal conduit. <b>Faraday/TEMPEST</b>=blocks EM leaks.</p>
+        <p><b>3-2-1-1-0:</b> 3 copies, 2 media, 1 offsite, <b>1 immutable/air-gap</b>, 0 err. <b>Sites:</b> Hot / Warm / Cold.</p>
+        <p><b>Physical (5 Ds):</b> Deter, Detect, Deny, Delay, Defend. Mantrap stops tailgating; PDS=metal conduit; Faraday=EM block.</p>
       </section>
     </div>
 
-    <!-- COLUMN 3: CHAPTER 9 & LABS 1-5 -->
+    <!-- COLUMN 3: 6 CLI PATTERNS & MODE NAVIGATION -->
     <div class="col">
       <section class="box">
-        <h2>Ch 9.1 · Cisco IOS, Labs 1–3</h2>
-        <p><b>Modes:</b> <code>&gt;</code> (User) → <code>enable</code> → <code>#</code> (Priv) → <code>conf t</code> → <code>(config)#</code> → <code>(config-if)#</code> / <code>(config-line)#</code>.</p>
-        <p><b>Memory:</b> <code>running-config</code> = <b>RAM</b> (volatile); <code>startup-config</code> = <b>NVRAM</b>; IOS/<code>vlan.dat</code> = <b>Flash</b>. Save: <code>copy run start</code>. Wipe: <code>erase startup-config</code> + <code>reload</code> (switches also need <code>delete vlan.dat</code>).</p>
-        <h3>Lab 1 &amp; 2: Hardening, IP &amp; SSH</h3>
-        <ul>
-          <li><code>hostname SW1</code> | <code>enable secret class</code> | <code>service password-encryption</code></li>
-          <li><code>security passwords min-length 8</code> (plural!) | <code>banner motd #...#</code></li>
-          <li><b>Router IF:</b> <code>ip address &lt;ip&gt; &lt;mask&gt;</code> + <code>no shutdown</code></li>
-          <li><b>Switch SVI:</b> <code>int vlan 99</code> → <code>ip add ...</code> → <code>no shut</code>; global <code>ip default-gateway &lt;gw&gt;</code></li>
-          <li><b>SSH:</b> <code>hostname</code> → <code>ip domain-name ICT304</code> → <code>crypto key generate rsa general-keys modulus 1024</code> → <code>username u password p</code> → <code>line vty 0 4</code> → <code>login local</code> → <code>transport input ssh</code>.</li>
-        </ul>
-        <p><b><code>show ip int brief</code> Status/Proto:</b> <code>admin down/down</code>=<code>shut</code> | <code>down/down</code>=L1 cable/peer | <code>up/down</code>=L2 mismatch | <code>up/up</code>=OK.</p>
-        <h3>Lab 3: VLANs &amp; 802.1Q Trunks</h3>
-        <p><b>VLAN = Broadcast Domain = Subnet.</b> VLAN 1 = default/native/mgmt (cannot delete). Ranges: 2–1001 Normal, 1006–4094 Extended.</p>
-        <ul>
-          <li>Create: <code>vlan 10</code> → <code>name Faculty</code></li>
-          <li>Access: <code>int fa0/1</code> → <code>switchport mode access</code> → <code>switchport access vlan 10</code></li>
-          <li>Trunk: <code>int g0/1</code> → <code>switchport mode trunk</code> → <code>switchport trunk allowed vlan 10,20,99</code> (must match both ends!)</li>
-          <li>Verify: <code>show vlan brief</code>, <code>show int trunk</code>, <code>show int status</code>, <code>show int fa0/1 switchport</code>.</li>
-        </ul>
-      </section>
+        <h2>Cisco IOS CLI · Modes &amp; 6 Exam Patterns</h2>
+        <p><b>Prompts (never type!):</b> <code>&gt;</code> User → <code>enable</code> → <code>#</code> Priv → <code>configure terminal</code> → <code>(config)#</code> Global → <code>(config-if)#</code> IF | <code>(config-line)#</code> Line | <code>(config-std-nacl)#</code> Named ACL. <code>exit</code>=up 1; <code>end</code>=to <code>#</code>. <b>Save:</b> <code>copy running-config startup-config</code>. (<i>Note: <code>;</code> below separates cmds visually only.</i>)</p>
 
-      <section class="box">
-        <h2>Ch 9.2 · Port Security (Lab 4) &amp; ACLs (Lab 5)</h2>
-        <p><b>LAN Attacks:</b> MAC flooding (fills CAM → acts like hub), DHCP/DNS spoofing (MitM), DHCP starvation.</p>
-        <h3>Lab 4: Switch Port Security (Access Ports Only)</h3>
+        <h3>P1 · Basic Setup &amp; Addressing (Ex 1, 2)</h3>
         <div class="formula">
-          int fa0/1 | switchport mode access<br>
-          switchport port-security<br>
-          switchport port-security maximum 2<br>
-          switchport port-security mac-address sticky <i>(or static MAC)</i><br>
-          switchport port-security violation {protect|restrict|shutdown}
+          (config)# <code>hostname &lt;NAME&gt;</code> ; <code>enable secret &lt;PW&gt;</code> ; <code>banner motd #&lt;MSG&gt;#</code><br>
+          (config)# <code>line console 0</code> → <code>password &lt;PW&gt;</code> ; <code>login</code><br>
+          Router IF: <code>interface &lt;IF&gt;</code> → <code>ip address &lt;IP&gt; &lt;MASK&gt;</code> ; <code>no shutdown</code><br>
+          Switch SVI: <code>interface vlan &lt;ID&gt;</code> → <code>ip address ...</code> ; <code>no shut</code> ; (config)# <code>ip default-gateway &lt;GW&gt;</code>
         </div>
-        <ul>
-          <li><b>MAC Types:</b> Static (manual), Dynamic (lost on reload), Sticky (learned → running-config; save to startup-config!).</li>
-          <li><b>Modes:</b> <b>Protect</b> (drop, no log), <b>Restrict</b> (drop + notify), <b>Shutdown</b> (default: <code>err-disabled</code>; fix: <code>shut</code> then <code>no shut</code>).</li>
-          <li>Verify: <code>show port-security [int fa0/1 | address]</code>, <code>show int status</code>.</li>
-        </ul>
-        <h3>ACLs &amp; Lab 5 (Pending .pkt/.txt)</h3>
-        <ul>
-          <li>Top-down, first match wins, <b>implicit deny all</b> at end.</li>
-          <li><b>Standard (1–99):</b> Source IP only → place near <b>destination</b>.</li>
-          <li><b>Extended (100–199):</b> Src/Dst/Proto/Port → place near <b>source</b>. Must include <code>tcp</code>/<code>udp</code> (e.g. <code>permit tcp ... eq 80</code>).</li>
-          <li>Apply: <code>int g0/0</code> → <code>ip access-group 100 in</code> (inbound saves routing lookup).</li>
-        </ul>
+        <p><b>Check:</b> <code>show ip interface brief</code>, <code>show running-config</code>, <code>show ip route</code>. Router IF ≠ L2 SVI; IP uses <b>subnet mask</b>, not wildcard.</p>
+
+        <h3>P2 · VLANs (Ex 3) &amp; P3 · Trunks (Ex 4)</h3>
+        <div class="formula">
+          (config)# <code>vlan &lt;ID&gt;</code> → <code>name &lt;EXACT_NAME&gt;</code> | <code>int &lt;PORT&gt;</code> → <code>switchport mode access</code> ; <code>switchport access vlan &lt;ID&gt;</code><br>
+          Trunk: <code>int &lt;UPLINK&gt;</code> → <code>switchport mode trunk</code> ; <code>switchport trunk native vlan &lt;ID&gt;</code> ; <code>switchport trunk allowed vlan &lt;LIST&gt;</code>
+        </div>
+        <p><b>Check:</b> <code>show vlan brief</code>, <code>show interfaces trunk</code>. Re-running <code>allowed vlan</code> <b>replaces</b> list unless <code>add</code> is used.</p>
+
+        <h3>P4 · SSH v2 &amp; Secure VTY (Ex 5, 6)</h3>
+        <div class="formula">
+          (config)# <code>hostname &lt;NAME&gt;</code> ; <code>ip domain-name &lt;DOM&gt;</code> ; <code>username &lt;U&gt; secret &lt;PW&gt;</code> ; <code>crypto key generate rsa</code> (prompt: e.g. <code>1024</code>) ; <code>ip ssh version 2</code><br>
+          (config)# <code>line vty &lt;0 4|0 15&gt;</code> → <code>login local</code> ; <code>transport input ssh</code>
+        </div>
+        <p><b>Check:</b> <code>show ip ssh</code> | Client: <code>ssh -l &lt;U&gt; &lt;IP&gt;</code>. Use <code>login local</code> (not <code>login</code>); block Telnet.</p>
+
+        <h3>P5 · Standard IPv4 ACLs (Ex 8–10; Ex 7 unconfirmed)</h3>
+        <div class="formula">
+          Num: <code>access-list &lt;1-99&gt; {permit|deny} &lt;SRC&gt; &lt;WC&gt;</code><br>
+          Named: <code>ip access-list standard &lt;NAME&gt;</code> → <code>10 deny host &lt;IP&gt;</code> ; <code>no 10</code> (edit)<br>
+          Attach: <code>int &lt;IF&gt;</code> → <code>ip access-group &lt;ACL&gt; {in|out}</code>
+        </div>
+        <p><b>Check:</b> <code>show access-lists</code>, <code>show ip interface &lt;IF&gt;</code>. Src-only, <b>first match</b>, <b>implicit deny</b> (no <code>permit any</code> unless tasked), <code>/24</code> WC=<code>0.0.0.255</code>, <code>in/out</code> relative to router IF.</p>
+
+        <h3>P6 · Port Security (Ex 11)</h3>
+        <div class="formula">
+          <code>int range f0/1 - 2</code> → <code>switchport mode access</code> ; <code>switchport port-security</code> ; <code>... maximum &lt;N&gt;</code> ; <code>... mac-address sticky</code> ; <code>... violation {protect|restrict|shutdown}</code>
+        </div>
+        <p><b>Check:</b> <code>show port-security [address | interface &lt;IF&gt;]</code>. <b>Protect</b>=drop; <b>Restrict</b>=drop+report; <b>Shutdown</b>=err-disable (<code>shut</code>/<code>no shut</code>). Only shut unused ports when topology allows.</p>
+
         <div class="warn">
-          <b>Draft Notice:</b> Lab 5 topology (Ch 9.2 p. 90: block <code>192.168.10.0/24 → 192.168.30.0/24</code>) is shown in slides, but Lab 5 <code>.pkt</code>/<code>.txt</code> &amp; Ch 8 <code>.pcap</code> are missing from <code>lab/</code>.
+          <b>Coverage Note:</b> Ex 8–10 supply Standard ACLs; Ex 7 scope, Extended ACLs, Course Lab 5 <code>.pkt/.txt</code> &amp; Ch 8 <code>.pcap</code> remain unconfirmed/pending. Cable/PC-GUI steps need accommodation.
         </div>
       </section>
     </div>

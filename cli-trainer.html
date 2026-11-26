@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLI-Only Packet Tracer Exam Trainer · CyberQuest</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #10b981;
+      --cyan: #38bdf8;
+      --warn: #f59e0b;
+      --err: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    a { color: var(--cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      background: #020617;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand { font-weight: 800; letter-spacing: 0.05em; color: #fff; font-size: 1.1rem; }
+    .brand span { color: var(--accent); }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .button {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+    .button.small { padding: 5px 10px; font-size: 0.8rem; }
+    .button.primary { background: var(--accent); color: #022c22; border-color: var(--accent); }
+    .button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 2px;
+    }
+    main { max-width: 1120px; margin: 0 auto; padding: 20px 16px 48px; }
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+    .hero h1 { margin: 0 0 6px; font-size: 1.45rem; }
+    .routine-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .routine-box {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+    }
+    .routine-box h2 { margin: 0 0 6px; font-size: 0.9rem; color: var(--cyan); }
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: #334155;
+      color: var(--text);
+    }
+    .badge.ok { background: #064e3b; color: #6ee7b7; }
+    .badge.warn { background: #78350f; color: #fcd34d; }
+    .badge.info { background: #0c4a6e; color: #7dd3fc; }
+    .pattern-nav, .mode-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .pill-btn, .mode-btn {
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+    .pill-btn.active, .mode-btn.active {
+      border-color: var(--accent);
+      background: #064e3b;
+      color: #ecfdf5;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+    .scenario-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .cue {
+      background: #0f172a;
+      border-left: 3px solid var(--accent);
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+    .notice {
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin: 10px 0;
+      font-size: 0.88rem;
+    }
+    .notice.warn { background: rgba(245, 158, 11, 0.14); border: 1px solid rgba(245, 158, 11, 0.45); }
+    .notice.info { background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.4); }
+    .table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.86rem; }
+    th, td { border: 1px solid var(--border); padding: 7px 9px; text-align: left; vertical-align: top; }
+    th { background: #0f172a; color: var(--cyan); }
+    code, pre { font-family: Consolas, "Courier New", monospace; }
+    code { background: #0f172a; padding: 1px 5px; border-radius: 4px; font-size: 0.84rem; }
+    .ios-pre {
+      background: #020617;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      color: #a7f3d0;
+    }
+    .cmd-block {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+    }
+    .recall-row {
+      display: grid;
+      grid-template-columns: 170px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .cli-input, .cli-textarea, .mistake-grid input, select {
+      width: 100%;
+      background: #020617;
+      color: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: Consolas, monospace;
+      font-size: 0.88rem;
+    }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .feedback { margin-top: 10px; padding: 10px 12px; border-radius: 8px; font-size: 0.9rem; }
+    .feedback.ok { background: rgba(16, 185, 129, 0.16); border: 1px solid var(--accent); }
+    .feedback.err { background: rgba(239, 68, 68, 0.16); border: 1px solid var(--err); }
+    .feedback.warn { background: rgba(245, 158, 11, 0.16); border: 1px solid var(--warn); }
+    .ts-options { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .ts-opt-btn {
+      text-align: left;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #0f172a;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .ts-opt-btn:hover { border-color: var(--cyan); }
+    .mistake-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .mini { font-size: 0.8rem; color: var(--muted); }
+    .flag-note { color: #fcd34d; margin-top: 4px; }
+    .worksheet-block {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .write-box {
+      border: 1px dashed var(--border);
+      min-height: 95px;
+      padding: 8px;
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    @media (max-width: 680px) {
+      .recall-row { grid-template-columns: 1fr; }
+    }
+    @media print {
+      body { background: #fff; color: #000; }
+      .topbar, .pattern-nav, .mode-tabs, .stats-row, .mistake-card, #cli-print-worksheets { display: none !important; }
+      .card, .hero, .worksheet-block { background: #fff; color: #000; border: 1px solid #444; break-inside: avoid; }
+      .write-box { border: 1px solid #666; min-height: 110px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">CYBER<span>QUEST</span> · CLI EXAM TRAINER</a>
+    <nav class="nav-links" aria-label="Primary navigation">
+      <a class="button small" href="index.html">Dashboard</a>
+      <a class="button small" href="chapters6-10.html">Chapters 6–10 &amp; Labs</a>
+      <a class="button small primary" href="ICT304_A4_CheatSheet.pdf" target="_blank" rel="noopener">A4 Cheat Sheet PDF ↗</a>
+      <a class="button small" href="cheatsheet.html">Cheat Sheet HTML</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>CLI-Only Packet Tracer Exam Memory &amp; Recall Trainer</h1>
+      <p class="mini">Grounded in <code>lab/Labs for exams no GUI/</code> (11 <code>.pka</code> activities). Configuration uses Cisco IOS CLI only — no Config-tab GUI tutorials. Website checks coach recall; Packet Tracer verifies real network behavior.</p>
+      <div class="routine-grid">
+        <div class="routine-box">
+          <h2>5-Step Memory Routine (How to Practise)</h2>
+          <ol style="margin:0; padding-left:18px;">
+            <li><strong>Follow once:</strong> type worked example &amp; explain each command</li>
+            <li><strong>Recall:</strong> hide commands &amp; reconstruct from requirements</li>
+            <li><strong>Apply:</strong> repeat with coherent new addresses/ports/policies</li>
+            <li><strong>Troubleshoot:</strong> find faults using simulated <code>show</code> output</li>
+            <li><strong>Record mistakes:</strong> symptom → cause → verify cmd → fix</li>
+          </ol>
+        </div>
+        <div class="routine-box">
+          <h2>5-Step Device Workflow (While Configuring)</h2>
+          <p style="margin:0;"><strong>Read</strong> (task table) → <strong>Inspect</strong> (<code>show</code> existing config) → <strong>Configure</strong> (exact IOS mode) → <strong>Verify</strong> (allowed &amp; denied checks) → <strong>Save</strong> (<code>copy running-config startup-config</code>).</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="stats-row">
+      <div id="cli-stats-bar"></div>
+      <button type="button" id="cli-reset-progress" class="button small">Reset CLI Trainer Progress</button>
+    </div>
+
+    <nav id="cli-pattern-nav" class="pattern-nav" aria-label="Six Reusable CLI Patterns"></nav>
+
+    <div class="mode-tabs" role="tablist" aria-label="Learning Modes">
+      <button type="button" class="mode-btn" data-cli-mode="learn">1 · Learn</button>
+      <button type="button" class="mode-btn" data-cli-mode="recall">2 · Recall Blanks</button>
+      <button type="button" class="mode-btn" data-cli-mode="configure">3 · Configure from Requirements</button>
+      <button type="button" class="mode-btn" data-cli-mode="troubleshoot">4 · Troubleshoot Output</button>
+      <button type="button" class="mode-btn" data-cli-mode="index">11-Activity Coverage Index</button>
+      <button type="button" class="mode-btn" data-cli-mode="worksheets">Printable Worksheets</button>
+    </div>
+
+    <div id="cli-workspace"></div>
+  </main>
+
+  <script src="cli-trainer-data.js" defer></script>
+  <script src="cli-trainer.js" defer></script>
+</body>
+</html>

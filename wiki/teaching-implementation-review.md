@@ -117,4 +117,11 @@ Update the wiki with reproduction/fix evidence and state the real publication st
   - `tests/chapter5-math.test.js`: 5333 checks passed
   - `tests/chapter5-working.test.js`: 31 checks passed
   - `tests/chapters6-10.test.js`: 361 checks passed (including solution→reload→submit, repeated-submission single-credit, and `New RSA Exercise` cycling tests)
-- **Publication status:** Local only; nothing committed or pushed to GitHub Pages.
+- **Publication status:** Published to `origin/main` (`afc3b6b`) and verified live on GitHub Pages.
+
+### Live GitHub Pages Verification (2026-11-26)
+- **Commit & Remote:** `afc3b6b` (`afc3b6b5624ae5fdbec7d4c61f95ba5ccd11caf0`) pushed to `https://github.com/SaltyLem0n/ICT-304-CyberQuest.git` (`main`). Excluded unrelated downloads (`drive-download-20261126T061943Z-1-001.zip`), handoff doc (`agy_handoff_architecture_documentation.md`), course PDFs (`Chapter 6–10` / CyberQuest export), and raw `lab/` binaries.
+- **Live URL:** `https://saltylem0n.github.io/ICT-304-CyberQuest/` (verified in headless browser, zero console errors, zero 404s / failed network requests):
+  - **Dashboard (`index.html`):** Verified `CHAPTERS 06–10 & LABS` and `EXAM CHEAT SHEET` cards alongside existing Chapter 3–5 cards, with `"Labs 1–4 verified, Lab 5 pending"` and `"Draft (Lab 5 Pending)"` flags preserved.
+  - **Chapters 6–10 & Labs (`chapters6-10.html`):** Verified all 5 chapter tabs (17 lessons), preserved missing-material banner (`Lab 5 (ACLs) has no .pkt / .txt in lab/; Ch 8 Wireshark has no .pcap`), Lab CLI search/filter (`"sticky"` → 1 row, `"acl"` → 2 rows, clear → 20 rows) and 4 simulated drills, Mixed Quiz (22 questions, immediate correct/incorrect feedback & revisit counter), Guided RSA checker (`(13, 17, 7, 180)` → `n=221, φ(n)=192, d=55, S=158` verified, `New RSA Exercise` → `(17, 19, 5, 42)`), and Base64 encoder (`INFOSEC` → `SU5GT1NFQw==`).
+  - **Draft Cheat-Sheet Links:** Verified `cheatsheet.html` (HTTP 200, `"DRAFT · Pending: Lab 5 (ACLs) .pkt/.txt & Ch 8 .pcap"`) and `ICT304_A4_CheatSheet.pdf` (`application/pdf`, 250,869 bytes, no 404).

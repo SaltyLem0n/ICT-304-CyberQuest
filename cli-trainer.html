@@ -226,6 +226,19 @@
       font-size: 0.8rem;
       color: var(--muted);
     }
+    [hidden] { display: none !important; }
+    .guide-card { max-width: 980px; margin-inline: auto; }
+    .guide-step { border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-block: 18px; }
+    .guide-context { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .guide-command { font-size: 1.05rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .guide-card progress { width: 100%; accent-color: var(--cyan); }
+    .guide-card details { margin-block: 12px; }
+    .guide-card summary { cursor: pointer; color: var(--cyan); }
+    #cli-guide-form { display: grid; gap: 8px; margin-top: 18px; }
+    .guide-checklist { display: grid; gap: 12px; }
+    .guide-checklist label { display: flex; align-items: baseline; gap: 8px; }
+    button:disabled { opacity: .45; cursor: default; }
+    .guide-card, .guide-step { min-width: 0; overflow-wrap: anywhere; }
     @media (max-width: 680px) {
       .recall-row { grid-template-columns: 1fr; }
     }
@@ -278,6 +291,7 @@
     <nav id="cli-pattern-nav" class="pattern-nav" aria-label="Six Reusable CLI Patterns"></nav>
 
     <div class="mode-tabs" role="tablist" aria-label="Learning Modes">
+      <button type="button" class="mode-btn" data-cli-mode="guide">Step-by-step Guide · Ex 1–11</button>
       <button type="button" class="mode-btn" data-cli-mode="learn">1 · Learn</button>
       <button type="button" class="mode-btn" data-cli-mode="recall">2 · Recall Blanks</button>
       <button type="button" class="mode-btn" data-cli-mode="configure">3 · Configure from Requirements</button>
@@ -289,6 +303,8 @@
     <div id="cli-workspace"></div>
   </main>
 
+  <script src="cli-walkthrough-data.js" defer></script>
+  <script src="cli-guide.js" defer></script>
   <script src="cli-trainer-data.js" defer></script>
   <script src="cli-trainer.js" defer></script>
 </body>

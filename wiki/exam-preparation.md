@@ -12,6 +12,10 @@ The user said they would give the prompt below to AGY. This records the intended
 
 ## Current evidence and status
 
+### CLI trainer published
+
+The reviewed trainer and revised A4 reference were pushed to `main` in `745f618` on 2026-11-26. GitHub Pages deployment succeeded; live assets were checked against the release and the trainer's Learn/Recall views were opened successfully. See [publication evidence](cli-trainer-review.md#live-publication-confirmed). Prior "local only" notes below describe earlier handoffs, not current publication status.
+
 ### CLI-only exam lab update
 
 The user subsequently supplied AGY's trainer/cheat-sheet implementation report and is starting to study. An independent review reran all eight suites (8,437 checks) and checked the single-page PDF, but reproduced two CLI-checker false passes and identified remaining source-review gaps plus a TLS wording correction. See [CLI trainer review](cli-trainer-review.md). Guided study and real Packet Tracer practice can begin; website success badges should not certify the real configuration until these issues are corrected.
@@ -150,3 +154,8 @@ Provide the audit, repository shortlist, website changes and validation results,
 
 Start with Phase 1.
 ```
+
+
+## Command-by-command update (2026-11-27)
+
+All 11 student-visible Packet Tracer instruction documents reviewed. The website now has individual activity walkthroughs, optional typing checks, saved progress and separate guided completion. Nine suites pass (9,846 checks). Full real-device activity runs remain unverified after an automation input failure on an isolated copy. See [delivery evidence and source fingerprints](cli-walkthroughs.md).

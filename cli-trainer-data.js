@@ -1,16 +1,16 @@
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory();
+    module.exports = factory(require('./cli-walkthrough-data.js'));
   } else {
-    root.CLI_TRAINER_DATA = factory();
+    root.CLI_TRAINER_DATA = factory(root.CLI_WALKTHROUGHS);
   }
-}(typeof self !== 'undefined' ? self : this, function () {
+}(typeof self !== 'undefined' ? self : this, function (WALKTHROUGHS) {
   'use strict';
 
   const SOURCE_META = {
     folder: 'lab/Labs for exams no GUI/',
-    reviewedNote: 'Packet Tracer 9.0.1 instruction text was fully read for Exercises 1 and 11, partially read for Exercises 2 and 10, and inventoried by filename for Exercises 3–9. Because .pka files are encrypted Packet Tracer binaries, Exercises 3–9 cannot be read without opening them in Packet Tracer, and no live Packet Tracer device execution has been recorded by the website.',
-    pendingNote: 'Course Lab 5 (.pkt/.txt) and Ch 8 Wireshark (.pcap) remain missing from lab/. This folder supplies Standard IPv4 ACL activities (Ex 8–10); Exercise 7 (ACL Demonstration) scope and Extended ACLs are unconfirmed until inspected in Packet Tracer.'
+    reviewedNote: 'All 11 student-visible activity instructions reviewed in Packet Tracer 9.0.1. Exact activity guides and authored practice scenarios are separate; full device execution of the guides is not verified.',
+    pendingNote: 'Course Lab 5 (.pkt/.txt) and Ch 8 Wireshark (.pcap) remain missing. Exercise 7 is confirmed standard ACL 11; Exercises 8–10 configure standard IPv4 ACLs.'
   };
 
   const MEMORY_ROUTINE = [
@@ -35,7 +35,7 @@
       filename: 'Exercise 1 - Connect a Router to a LAN.pka',
       patternId: 'p1_basic_lan',
       sourceStatus: 'reviewed',
-      sourceDetail: 'Full displayed instructions read in Packet Tracer 9.0.1.',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
       nonCliFlags: ['Switch management SVIs are not configured in this activity; inability to ping switches is expected, not a router failure.'],
       notes: 'Configure R1/R2 GigabitEthernet LAN interfaces (e.g., R1 G0/0 192.168.10.1/24), add descriptions, inspect OSPF/interfaces without reconfiguring OSPF, test connectivity, and save to NVRAM.'
     },
@@ -43,8 +43,8 @@
       ex: 2,
       filename: 'Exercise 2 -Configure Initial Switch Settings.pka',
       patternId: 'p1_basic_lan',
-      sourceStatus: 'partial',
-      sourceDetail: 'Portions of displayed instructions read in Packet Tracer 9.0.1.',
+      sourceStatus: 'reviewed',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
       nonCliFlags: ['Check whether PC IP addressing or console cable connection is required via GUI/topology before CLI terminal access.'],
       notes: 'Initial switch hostname, enable secret, console password/login, MOTD banner, optional SVI/default-gateway if tasked, and save running-config.'
     },
@@ -52,8 +52,8 @@
       ex: 3,
       filename: 'Exercise 3 - VLAN Configuration.pka',
       patternId: 'p2_vlans',
-      sourceStatus: 'filename_only',
-      sourceDetail: 'Inventoried by filename only; internal .pka instructions awaiting review.',
+      sourceStatus: 'reviewed',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
       nonCliFlags: ['Verify exact VLAN IDs, case-sensitive VLAN names, and PC-facing access ports in Packet Tracer before grading.'],
       notes: 'Create and name VLANs, assign access ports, verify with show vlan brief.'
     },
@@ -61,8 +61,8 @@
       ex: 4,
       filename: 'Exercise 4 - Configure Trunks.pka',
       patternId: 'p3_trunks',
-      sourceStatus: 'filename_only',
-      sourceDetail: 'Inventoried by filename only; internal .pka instructions awaiting review.',
+      sourceStatus: 'reviewed',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
       nonCliFlags: ['Verify native VLAN ID and whether an allowed-VLAN list is required on both trunk ends.'],
       notes: 'Configure switchport mode trunk, native VLAN, optional allowed VLAN list, verify with show interfaces trunk.'
     },
@@ -70,8 +70,8 @@
       ex: 5,
       filename: 'Exercise 5 - Packet Tracer - Configure Secure Passwords and SSH.pka',
       patternId: 'p4_ssh',
-      sourceStatus: 'filename_only',
-      sourceDetail: 'Inventoried by filename only; internal .pka instructions awaiting review.',
+      sourceStatus: 'reviewed',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
       nonCliFlags: ['Check whether the image requires specific RSA modulus size (e.g., 1024) and security passwords min-length.'],
       notes: 'Configure hostname, domain-name, strong passwords, local user, RSA keys, SSH v2, VTY login local + transport input ssh.'
     },
@@ -79,8 +79,8 @@
       ex: 6,
       filename: 'Exercise 6 - Configure SSH.pka',
       patternId: 'p4_ssh',
-      sourceStatus: 'filename_only',
-      sourceDetail: 'Inventoried by filename only; internal .pka instructions awaiting review.',
+      sourceStatus: 'reviewed',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
       nonCliFlags: ['Verify management IP/SVI reachability and supported client SSH syntax (ssh -l <user> <ip>).'],
       notes: 'Focused SSH setup and VTY restriction (no Telnet), tested with show ip ssh and client SSH login.'
     },
@@ -88,17 +88,17 @@
       ex: 7,
       filename: 'Exercise 7 - ACL Demonstration.pka',
       patternId: 'p5_acls',
-      sourceStatus: 'filename_only',
-      sourceDetail: 'Inventoried by filename only; determine standard vs extended scope when opened in Packet Tracer.',
-      nonCliFlags: ['Do not assume this demonstration is standard-ACL-only until its instructions are inspected in Packet Tracer.'],
+      sourceStatus: 'reviewed',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
+      nonCliFlags: ['Confirmed standard ACL 11 on R1 Serial0/0/0 out. Preserve supplied WAN addressing/routing.'],
       notes: 'ACL observation/demonstration activity; trace packet path and verify permitted vs denied flows.'
     },
     {
       ex: 8,
       filename: 'Exercise 8 - Configure Numbered Standard IPv4 ACLs.pka',
       patternId: 'p5_acls',
-      sourceStatus: 'filename_only',
-      sourceDetail: 'Inventoried by filename only; internal .pka instructions awaiting review.',
+      sourceStatus: 'reviewed',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
       nonCliFlags: ['Check exact topology interfaces and allowed/blocked subnets inside Packet Tracer.'],
       notes: 'Numbered standard IPv4 ACL (1–99), wildcard mask, interface attachment (in/out), verification with show access-lists.'
     },
@@ -106,8 +106,8 @@
       ex: 9,
       filename: 'Exercise 9 - Configure Named Standard IPv4 ACLs.pka',
       patternId: 'p5_acls',
-      sourceStatus: 'filename_only',
-      sourceDetail: 'Inventoried by filename only; internal .pka instructions awaiting review.',
+      sourceStatus: 'reviewed',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
       nonCliFlags: ['Verify exact case-sensitive ACL name required by Packet Tracer grading.'],
       notes: 'Named standard IPv4 ACL (ip access-list standard <NAME>), ordered rules, interface attachment, verification.'
     },
@@ -115,8 +115,8 @@
       ex: 10,
       filename: 'Exercise 10 - Configure and Modify Standard IPv4 ACLs.pka',
       patternId: 'p5_acls',
-      sourceStatus: 'partial',
-      sourceDetail: 'Portions of displayed instructions read in Packet Tracer 9.0.1.',
+      sourceStatus: 'reviewed',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
       nonCliFlags: ['Inspect existing sequence numbers with show access-lists before removing or inserting entries.'],
       notes: 'Create/apply standard ACL and modify existing entries by sequence number without breaking rule order.'
     },
@@ -125,7 +125,7 @@
       filename: 'Exercise 11 - Implement Port Security.pka',
       patternId: 'p6_port_security',
       sourceStatus: 'reviewed',
-      sourceDetail: 'Full displayed instructions read in Packet Tracer 9.0.1.',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
       nonCliFlags: ['Disconnecting/reconnecting a rogue PC cable is a physical/GUI test action, not an IOS CLI command; flag for professor accommodation if GUI is restricted.'],
       notes: 'F0/1 and F0/2: access mode, port-security, max 1, sticky MAC, violation restrict; shut down unused ports f0/3 - 24, g0/1 - 2; verify with show port-security.'
     }
@@ -966,7 +966,11 @@
     }
   ];
 
+  ACTIVITIES.forEach(a => {
+    a.notes = WALKTHROUGHS.find(g => g.ex === a.ex).scope;
+  });
   return {
+    WALKTHROUGHS,
     SOURCE_META,
     MEMORY_ROUTINE,
     DEVICE_WORKFLOW,

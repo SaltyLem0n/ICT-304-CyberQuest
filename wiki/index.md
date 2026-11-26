@@ -9,3 +9,5 @@
 Start with the exam preparation plan when resuming this work. Original course PDFs, current source files, and verified results remain the evidence for technical claims.
 
 - [CLI trainer study-readiness review](cli-trainer-review.md): independent test/PDF checks, two reproduced false passes, pending activity-source review, and a cheat-sheet correction.
+
+- [Command-by-command CLI walkthroughs](cli-walkthroughs.md): current implementation, exact activity coverage, tests, source fingerprints and real-device verification limitations.

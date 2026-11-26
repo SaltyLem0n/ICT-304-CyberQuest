@@ -2,6 +2,8 @@
 
 Prepared: 2026-11-26 (Asia/Bangkok).
 
+**Implementation update (2026-11-27):** the original brief below is historical. All 11 instruction documents have now been reviewed, and the step-by-step trainer is implemented. See [current delivery, tests and remaining real-device verification](cli-walkthroughs.md).
+
 Revised before handoff: the user confirmed this CLI-practice brief **has not yet been sent to AGY**. This version consolidates the website trainer and the requested cheat-sheet additions. Earlier CyberQuest work is separate; do not infer that this follow-up has already been implemented.
 
 ```text

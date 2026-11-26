@@ -2,6 +2,14 @@
 
 Reviewed: 2026-11-26 (Asia/Bangkok).
 
+## Live publication confirmed
+
+On 2026-11-26, published the reviewed CLI trainer and revised cheat sheet to the existing GitHub Pages site in commit `745f6180d49a6a9db2ceffa709d35c31cb21d82d`. [Pages build and deployment](https://github.com/SaltyLem0n/ICT-304-CyberQuest/actions/runs/45859874215) completed successfully.
+
+Live HTTP checks returned 200 for the dashboard, trainer HTML and both trainer scripts, Chapters 6–10 HTML/data, editable cheat sheet and PDF. Their downloaded bytes matched local release files (normalizing text line endings). The live trainer was opened in the in-app browser; Learn and Recall Blanks rendered successfully, then it was left open in Learn. Existing activity-source limitations remain visible. This deployment does not complete the pending internal review of all 11 activities.
+
+Live trainer: <https://saltylem0n.github.io/ICT-304-CyberQuest/cli-trainer.html>.
+
 ## Latest independent recheck after fixes
 
 All eight current Node suites were independently rerun: **8,445 checks passed** (CLI trainer: 52). Both original counterexamples were rerun against the actual exported checker: the post-configuration shutdown is rejected, and console-local authentication no longer satisfies required VTY settings. The TLS qualification appears in the regenerated PDF. Its page count/dimensions were rechecked and a fresh Poppler rendering inspected: one A4 page, no obvious clipping or overflow, with enlarged typography.
@@ -96,3 +104,8 @@ Run the relevant regression suites, document source-review/execution status hone
    - Added regression tests in [tests/cli-trainer.test.js](../tests/cli-trainer.test.js) (52 checks) covering `shutdown` after `no shutdown`, `dirtySinceSave`, typo/unparsed command rejection, `console 0` vs `vty 0 4` isolation, switch basic setup, and named ACL sequence modification.
    - **All 8 Node test suites pass locally (8,445 checks total).**
    - **Publication status:** **Local only**; changes have not been committed or pushed to GitHub Pages.
+
+
+## Command-by-command update (2026-11-27)
+
+All 11 student-visible Packet Tracer instruction documents reviewed. The website now has individual activity walkthroughs, optional typing checks, saved progress and separate guided completion. Nine suites pass (9,846 checks). Full real-device activity runs remain unverified after an automation input failure on an isolated copy. See [delivery evidence and source fingerprints](cli-walkthroughs.md).

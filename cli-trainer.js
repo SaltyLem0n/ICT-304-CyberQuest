@@ -1,8 +1,8 @@
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory();
+    module.exports = factory(require('./cli-guide.js'));
   } else {
-    root.CliTrainerModule = factory();
+    root.CliTrainerModule = factory(root.CLI_GUIDE_UI);
     if (typeof document !== 'undefined') {
       document.addEventListener('DOMContentLoaded', () => {
         if (root.CLI_TRAINER_DATA) {
@@ -12,7 +12,7 @@
       });
     }
   }
-}(typeof self !== 'undefined' ? self : this, function () {
+}(typeof self !== 'undefined' ? self : this, function (guideUI) {
   'use strict';
 
   const STORAGE_KEY = 'ict304_cli_trainer_v1';
@@ -680,10 +680,11 @@
     constructor(data) {
       this.data = data;
       this.activePatternId = data.PATTERNS[0].id;
-      this.activeMode = 'learn';
+      this.activeMode = 'guide';
       this.useVariant = false;
       this.scenarioIndex = 0;
       this.state = this.loadState();
+      this.activeExercise = this.state.lastGuide || 1;
     }
 
     loadState() {
@@ -694,7 +695,9 @@
         attempts: {},
         verified: {},
         mistakes: [],
-        realPt: {}
+        realPt: {},
+        walkthroughs: {},
+        lastGuide: 1
       };
       try {
         const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
@@ -707,7 +710,9 @@
           attempts: parsed.attempts || {},
           verified: parsed.verified || {},
           mistakes: Array.isArray(parsed.mistakes) ? parsed.mistakes : [],
-          realPt: parsed.realPt || {}
+          realPt: parsed.realPt || {},
+          walkthroughs: parsed.walkthroughs || {},
+          lastGuide: Number(parsed.lastGuide) || 1
         };
       } catch (_) {
         return def;
@@ -811,7 +816,9 @@
         attempts: {},
         verified: {},
         mistakes: [],
-        realPt: {}
+        realPt: {},
+        walkthroughs: {},
+        lastGuide: 1
       };
       this.saveState();
     }
@@ -902,6 +909,7 @@
     renderPatternNav() {
       const nav = document.getElementById('cli-pattern-nav');
       if (!nav) return;
+      nav.hidden = this.activeMode === 'guide';
       nav.innerHTML = this.data.PATTERNS.map(p => {
         const active = p.id === this.activePatternId ? 'active' : '';
         return `<button type="button" class="pill-btn ${active}" data-pattern-id="${p.id}">
@@ -927,6 +935,7 @@
     renderWorkspace() {
       const host = document.getElementById('cli-workspace');
       if (!host) return;
+      if (this.activeMode === 'guide') { this.renderGuide(host); return; }
       const p = this.getActivePattern();
       const sc = this.getActiveScenario();
 
@@ -1277,6 +1286,8 @@
       }
     }
   }
+
+  guideUI.install(CliTrainerApp);
 
   return {
     STORAGE_KEY,

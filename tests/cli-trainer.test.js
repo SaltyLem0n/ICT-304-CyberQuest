@@ -10,9 +10,9 @@ function ok(cond, msg) {
 
 // 1. Data & honest source-status inventory checks
 ok(Array.isArray(data.ACTIVITIES) && data.ACTIVITIES.length === 11, 'All 11 .pka activities inventoried');
-ok(data.ACTIVITIES.filter(a => a.sourceStatus === 'reviewed').length === 2, 'Only Ex 1 and 11 marked full reviewed');
-ok(data.ACTIVITIES.filter(a => a.sourceStatus === 'partial').length === 2, 'Only Ex 2 and 10 marked partial');
-ok(data.ACTIVITIES.filter(a => a.sourceStatus === 'filename_only').length === 7, 'Remaining 7 marked filename_only');
+ok(data.ACTIVITIES.filter(a => a.sourceStatus === 'reviewed').length === 11, 'All student-visible instructions reviewed');
+ok(data.ACTIVITIES.filter(a => a.sourceStatus === 'partial').length === 0, 'No partial source reviews remain');
+ok(data.ACTIVITIES.filter(a => a.sourceStatus === 'filename_only').length === 0, 'No filename-only source reviews remain');
 ok(Array.isArray(data.PATTERNS) && data.PATTERNS.length === 6, 'All 6 reusable patterns defined');
 ok(data.MEMORY_ROUTINE.length === 5 && data.DEVICE_WORKFLOW.length === 5, '5-step memory routine and 5-step workflow defined');
 

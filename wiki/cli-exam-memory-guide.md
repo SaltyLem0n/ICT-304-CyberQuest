@@ -2,6 +2,8 @@
 
 Prepared: 2026-11-26 (Asia/Bangkok).
 
+**Current update (2026-11-27):** all 11 student-visible instructions have now been reviewed and command-by-command website guides implemented. See [walkthrough delivery and verification](cli-walkthroughs.md). The earlier evidence narrative below is retained as history; full Packet Tracer execution is still unverified.
+
 ## Scope and evidence
 
 The professor requires CLI configuration. The user identified `lab/Labs for exams no GUI/` as the likely exam-practice set. It contains 11 `.pka` activities. Filenames establish topic coverage, not the exact exam questions or their weightings.

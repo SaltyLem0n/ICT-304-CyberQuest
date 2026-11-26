@@ -57,4 +57,6 @@ SHA-256 fingerprints identify the local sources reviewed; source binaries and fu
 
 ## Publication
 
-Pending final Pages deployment verification.
+Published implementation commit `693ee86f43f91853b54424e95372eabcf69dd11e` to `main`. GitHub Pages workflow [45868285088](https://github.com/SaltyLem0n/ICT-304-CyberQuest/actions/runs/45868285088) completed successfully. Public HTML and all four trainer/guide JavaScript assets returned HTTP 200 and matched local source text. Live browser verified the default guide, Exercise 10 selection and return to Exercise 1 with no console errors observed.
+
+Study here: [CLI exam trainer](https://saltylem0n.github.io/ICT-304-CyberQuest/cli-trainer.html). This verifies website deployment and controls, not complete execution of the eleven Packet Tracer activities.

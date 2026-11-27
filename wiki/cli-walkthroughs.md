@@ -60,3 +60,61 @@ SHA-256 fingerprints identify the local sources reviewed; source binaries and fu
 Published implementation commit `693ee86f43f91853b54424e95372eabcf69dd11e` to `main`. GitHub Pages workflow [45868285088](https://github.com/SaltyLem0n/ICT-304-CyberQuest/actions/runs/45868285088) completed successfully. Public HTML and all four trainer/guide JavaScript assets returned HTTP 200 and matched local source text. Live browser verified the default guide, Exercise 10 selection and return to Exercise 1 with no console errors observed.
 
 Study here: [CLI exam trainer](https://saltylem0n.github.io/ICT-304-CyberQuest/cli-trainer.html). This verifies website deployment and controls, not complete execution of the eleven Packet Tracer activities.
+
+## Hybrid A4 Cheat-Sheet Revision (2026-11-27, Local Only)
+
+- **Backups preserved locally:** [cheatsheet.backup-2026-11-26.html](../cheatsheet.backup-2026-11-26.html) and [ICT304_A4_CheatSheet.backup-2026-11-26.pdf](../ICT304_A4_CheatSheet.backup-2026-11-26.pdf).
+- **Updated hybrid reference:** [cheatsheet.html](../cheatsheet.html) and [ICT304_A4_CheatSheet.pdf](../ICT304_A4_CheatSheet.pdf) now combine:
+  - **A. Key Vocabulary & Meanings** (`TERM → plain meaning → purpose/distinction`) for PKI, CA, KDC, Digital Signature, Hash, ACL, Wildcard Mask, VLAN, Trunk, Native VLAN, SVI, VTY, SSH, HA vs FT, and MitM, plus explicit RSA symbol definitions (`p, q, n, φ(n), e, d, m, c`).
+  - **B. Calculations & Decision Rules** covering Ch 5 RSA (keygen, Extended Euclidean mod inverse, repeated squaring, checked mini-example `p=3, q=11, e=3, d=7, m=4→31→4`, textbook vs OAEP/PSS distinction, `φ(n)` vs `n` pitfall) and Ch 6–10 comparisons.
+  - **C. Cisco IOS CLI Procedures** (`TASK → Mode → Commands → Verify`) aligned with all 11 reviewed activities (Ex 3 voice VLAN 150 + CoS trust, Ex 4 no allowed-VLAN restriction, Ex 5 `security passwords min-length 10` / `login block-for` / `exec-timeout 6 0`, Ex 7 standard ACL 11 detach/delete, Ex 10 in-place seq `30`/`40`, Ex 11 physical cable note).
+- **Updated labels:** Removed outdated partial/filename-only/Ex-7-unconfirmed claims; states `Ex 1–11 PT 9.0.1 instructions reviewed (runs unverified) | Missing: Lab 5 .pkt/.txt, Ch8 .pcap | Ext ACLs unconfirmed`.
+- **Print & math verification:** `pypdf` confirms **1 page**, `594.96 × 841.92 pt` (`210 × 297 mm`, A4 portrait), `268,131` bytes, `7,900` extracted characters; grayscale PNG inspected with zero clipping or overlap.
+- **Publication status:** **Local only**; not committed or pushed to GitHub Pages.
+
+## Professor Update: VTY ACLs & Cheat-Sheet Review Fixes (2026-11-27, Local Only)
+
+- **Confirmed additional scope:** Controlling remote device access on VTY lines with ACLs (`access-class <ACL> in` under `line vty`), kept distinct from the 11 original `.pka` activities (`prof-vty-acl` supplementary ID; no invented Exercise 12).
+- **Screenshot evidence vs authored/inferred config:**
+  - *Observed in screenshots:* R1 (Cisco 2811), SW1/SW2 (Cisco 2960-24TT), PC1 (`192.168.10.10`), PC2 (`192.168.10.20`), PC3 (`192.168.11.10`); PC1 `telnet 192.168.10.1` opens and logs in with `username admin`; PC2 `telnet 192.168.10.1` and PC3 `telnet 192.168.11.1` are refused.
+  - *Inferred / Authored:* Router interface IP mapping (`Fa0/0` `192.168.10.1/24`, `Fa0/1` `192.168.11.1/24`), subnet masks (`/24`), chosen ACL `#10` (`access-list 10 permit host 192.168.10.10` + `access-list 10 deny any`), practice password `cisco123`, `login local`, `transport input telnet` (isolated Telnet demo matching screenshot), and `access-class 10 in` on `line vty 0 4`.
+- **Website & checker additions ([cli-walkthrough-data.js](../cli-walkthrough-data.js), [cli-guide.js](../cli-guide.js), [cli-trainer-data.js](../cli-trainer-data.js), [cli-trainer.js](../cli-trainer.js)):**
+  - Added supplementary guide `Professor Update: Control Device Access with VTY ACLs` (`prof-vty-acl`, 24 steps) with topology/evidence table, baseline Telnet/line inspection, separated interactive login/save responses, and post-ACL verification (`show access-lists`, `show running-config`, `show users`, PC1/PC2/PC3 Telnet + PC2→PC3 ICMP ping check).
+  - Added Pattern 5 scenario `p5_vty_acl` (Recall Blanks + Configure from Requirements) and 7 simulated troubleshooting cases (`extraTroubleshoot`).
+  - Extended `evaluateCliSubmission` to track `access-class` per VTY line separately from interface `ip access-group`, enforce `in` direction and full VTY range coverage, and reject subnet-wide permits (`192.168.10.0 0.0.0.255`), unattached ACLs, `permit any` bypasses, and `ip access-group` on VTY.
+- **Cheat-sheet backup & fixes ([cheatsheet.html](../cheatsheet.html), [ICT304_A4_CheatSheet.pdf](../ICT304_A4_CheatSheet.pdf)):**
+  - Preserved backup at [cheatsheet.backup-2026-11-27.html](../cheatsheet.backup-2026-11-27.html) and [ICT304_A4_CheatSheet.backup-2026-11-27.pdf](../ICT304_A4_CheatSheet.backup-2026-11-27.pdf).
+  - Added compact VTY ACL reminder (`access-class 10 in` vs `ip access-group`, implicit `deny any`, protect all VTY lines, PC1 allowed / PC2–PC3 denied).
+  - Resolved previous review findings: explicit Standard ACL `{host <IP>|<NET> <WC>|any}` syntax, VLAN as L2 broadcast domain (not `= subnet`), broadened HA/FT definitions, qualified PKI/SSH/ESP claims, expanded acronyms, and clarified that Extended ACL theory is in Ch 9.2 slides (no `.pka` activity verified).
+  - Regenerated PDF: **1 page**, `594.96 × 841.92 pt` (`210 × 297 mm`, A4 portrait), `276,158` bytes; grayscale PNG visually inspected with zero clipping or overlap.
+- **Verification & publication status:**
+  - All 9 Node test suites pass (**9,856 checks total**); local browser verified (`http://127.0.0.1:8766`, 0 console errors, 0 404s).
+  - Full end-to-end Packet Tracer execution of the VTY ACL topology remains unverified.
+  - **Publication status:** **Local only**; nothing committed or pushed.
+
+
+## Codex follow-up fixes (2026-11-27, Local Only)
+
+This supersedes the earlier implementation-readiness claims for the VTY checker and 24-step supplementary walkthrough.
+
+- **Effective VTY configuration:** `evaluateCliSubmission` now stores settings per individual VTY number. Later overlapping selections replace the selected lines’ settings; equivalent split ranges are accepted. Incoming/outgoing access-class settings are independent. Plain `login` replaces `login local` and later transport changes take effect. Single-line selections and removing an access-class are supported. Console misuse is rejected.
+- **Reproduced regression:** a valid host-only solution followed by ACL 11 `permit any`, `line vty 0 3`, and `access-class 11 in` previously passed. It now fails for lines 0–3. Restoring ACL 10 passes; configuring the same required coverage with ranges 0–1 and 2–4 passes. Tests also cover separate directions, removal, authentication/transport overrides and invalid ranges.
+- **Walkthrough revision 2:** the supplementary guide now contains **59 steps**. Its inferred/authored table includes PC default gateways. Isolated topology preparation and router-interface/login/transport configuration come before baseline authentication from all three PCs. Baseline sessions are closed; ACL application comes next; new permitted and denied sessions test both router addresses. `show users` follows an actual permitted login step; routed ICMP is compared before/after; console save finishes the sequence. These are expected lab results, not newly executed Packet Tracer results.
+- **Progress preservation:** original Exercise 1–11 records and mastery evidence are preserved. The reordered supplementary guide uses `prof-vty-acl@2`; prior `prof-vty-acl` progress remains stored separately rather than being misattributed to different steps.
+- **Executable repairs:** troubleshooting Cases 1 and 4 now show console command sequences that remove the offending sequence before adding/preserving the host permit. Behavioral tests verify the broad/permit-any rules are actually removed. The existing ACL attachment and final deny policy are preserved.
+- **Cheat sheet:** corrected global-to-line/interface mode transitions; expanded full port-security and SVI commands; added placeholder/optional-argument meanings. Rebalanced the three columns by moving setup and port security into spare space, increased normal body text to **7.3 pt**, glossary/command/table text to approximately **6.9 pt**, and labels to approximately **6.5 pt** (subscripts are smaller). Further qualified KDC/CA availability, SSH host authentication and HA/FT definitions.
+- **Artifact checks:** regenerated `ICT304_A4_CheatSheet.pdf` from final HTML; **1 A4 page**, **594.96 × 841.92 pt**, **281,659 bytes**. Extracted HTML/PDF character content matches; all PDF text lies within the page; final grayscale image visually inspected without clipping or overlap. Previous HTML/PDF copies retained at `tmp/pdfs/before-codex-vty-fixes.*`.
+- **Validation:** all **9 suites pass, 9,879 checks total** (CLI trainer 72; walkthrough 1,414; unchanged suites 8,393). Local browser verified rejection of the reproduced bypass, revised guide/command feedback, reload/resume, and visible repair commands with no console errors observed. At 390×844, the addressing table scrolls horizontally within the card; the page itself does not overflow.
+- **Publication and remaining execution:** these changes are local only, with no commit, push or deployment. Full Packet Tracer device execution is still unverified. Missing course Lab 5 files and Chapter 8 capture remain missing.
+
+
+## User acceptance and AGY handoff (2026-11-27)
+
+The user reported completing the Packet Tracer practice and confirmed: **“i have done it, your guide is good to go.”** Current status is **guide user-validated**. This supersedes the earlier blanket execution-unverified wording for the user's guide practice. It is user confirmation, not an independently captured automated run; no per-exercise scores or detailed logs are claimed.
+
+Continue from [the AGY handoff](agy-handoff-vty-hybrid.md). Preserve the accepted fixes, original activity progress and the one-sided A4 hybrid layout. Latest fixes are still local and unpublished; no new publication authorization was given by this handoff request.
+
+### Status-Label Reconciliation (2026-11-27, Local Only)
+- Updated current-status labels in [cheatsheet.html](../cheatsheet.html), [cli-walkthrough-data.js](../cli-walkthrough-data.js), [cli-trainer-data.js](../cli-trainer-data.js), and [chapters6-10.html](../chapters6-10.html) to reflect **Packet Tracer guide: user-validated (automated PT run not captured)**, keeping earlier unverified notes as dated history and preserving missing-material facts (Course Lab 5 `.pkt`/`.txt` & Ch 8 `.pcap` absent; Extended ACL theory in Ch 9.2 without a verified `.pka` activity).
+- Regenerated [ICT304_A4_CheatSheet.pdf](../ICT304_A4_CheatSheet.pdf): **1 page**, `594.96 × 841.92 pt` (`210 × 297 mm`), `281,465` bytes; grayscale preview inspected with zero clipping/overlap.
+- All 9 Node test suites pass locally (**9,879 checks**). Publication status remains **local only**.

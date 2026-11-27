@@ -29,19 +29,27 @@
     return { passed, message: passed ? 'Command matches this device and step. Run it in Packet Tracer and inspect the result.' : 'That does not match this step. Check the device, mode, interface, addresses and rule order shown above.' };
   }
   function install(App) {
+    App.prototype.allGuides = function () {
+      return [...this.data.WALKTHROUGHS, ...(this.data.WALKTHROUGHS.supplementary || [])];
+    };
     App.prototype.guideRecord = function () {
       this.state.walkthroughs = map(this.state.walkthroughs);
-      const g = this.data.WALKTHROUGHS.find(x => x.ex === this.activeExercise) || this.data.WALKTHROUGHS[0];
+      const all = this.allGuides();
+      const g = all.find(x => String(x.ex) === String(this.activeExercise)) || all[0];
       this.activeExercise = g.ex;
-      const r = map(this.state.walkthroughs[g.ex]);
+      // A reordered lesson starts a new revision without overwriting its previous
+      // confirmations or any of the original eleven activity records.
+      const progressKey = g.revision ? `${g.ex}@${g.revision}` : g.ex;
+      const r = map(this.state.walkthroughs[progressKey]);
       r.index = Number.isInteger(r.index) ? Math.max(0, Math.min(r.index, g.steps.length - 1)) : 0;
       r.done = map(r.done); r.typed = map(r.typed); r.checklist = map(r.checklist);
-      this.state.walkthroughs[g.ex] = r;
+      this.state.walkthroughs[progressKey] = r;
       return { g, r, step: g.steps[r.index] };
     };
     App.prototype.chooseGuide = function (ex) {
-      if (!this.data.WALKTHROUGHS.some(x => x.ex === Number(ex))) return;
-      this.activeExercise = Number(ex); this.state.lastGuide = this.activeExercise;
+      const match = this.allGuides().find(x => String(x.ex) === String(ex));
+      if (!match) return;
+      this.activeExercise = match.ex; this.state.lastGuide = this.activeExercise;
       this.guideRecord(); this.saveState();
     };
     App.prototype.moveGuide = function (direction) {
@@ -61,17 +69,26 @@
       this.saveState(); return result;
     };
     App.prototype.restartGuide = function () {
-      this.state.walkthroughs[this.activeExercise] = { index: 0, done: {}, typed: {}, checklist: {} };
+      const { g } = this.guideRecord();
+      const key = g.revision ? `${g.ex}@${g.revision}` : g.ex;
+      this.state.walkthroughs[key] = { index: 0, done: {}, typed: {}, checklist: {} };
       this.saveState();
     };
     App.prototype.renderGuide = function (host) {
       const { g, r, step } = this.guideRecord();
       const esc = x => this.esc(x);
       const done = g.steps.filter((_, i) => r.done[i]).length;
+      const sup = this.data.WALKTHROUGHS.supplementary || [];
+      const topoHtml = g.topologyTable ? `<p class="mini">On small screens, scroll the addressing table sideways.</p><div class="table-wrap guide-topology"><table><thead><tr><th>Device</th><th>Interface</th><th>IP / Mask</th><th>Default gateway</th><th>Evidence Status</th></tr></thead><tbody>${g.topologyTable.map(row => `<tr><td><strong>${esc(row.device)}</strong></td><td><code>${esc(row.iface)}</code></td><td><code>${esc(row.ip)}</code></td><td>${esc(row.gateway || '—')}</td><td>${esc(row.status)}</td></tr>`).join('')}</tbody></table></div>` : '';
       host.innerHTML = `<section class="card guide-card" aria-labelledby="guide-title">
-        <label for="cli-guide-select"><strong>Choose your Packet Tracer exercise</strong></label>
-        <select id="cli-guide-select">${this.data.WALKTHROUGHS.map(x => `<option value="${x.ex}" ${x.ex === g.ex ? 'selected' : ''}>Exercise ${x.ex} · ${esc(x.title)}</option>`).join('')}</select>
-        <h2 id="guide-title">Exercise ${g.ex} · ${esc(g.title)}</h2><p>${esc(g.scope)}</p>
+        <label for="cli-guide-select"><strong>Choose your Packet Tracer exercise or update</strong></label>
+        <select id="cli-guide-select">
+          <optgroup label="Original Activities (Ex 1–11)">${this.data.WALKTHROUGHS.map(x => `<option value="${x.ex}" ${String(x.ex) === String(g.ex) ? 'selected' : ''}>Exercise ${x.ex} · ${esc(x.title)}</option>`).join('')}</optgroup>
+          ${sup.length ? `<optgroup label="Professor Update (Supplementary)">${sup.map(x => `<option value="${esc(x.ex)}" ${String(x.ex) === String(g.ex) ? 'selected' : ''}>${esc(x.title)}</option>`).join('')}</optgroup>` : ''}
+        </select>
+        <h2 id="guide-title">${g.isSupplementary ? '' : `Exercise ${g.ex} · `}${esc(g.title)}</h2><p>${esc(g.scope)}</p>
+        ${g.revision && this.state.walkthroughs[g.ex] ? '<p class="notice info">The step order was revised. Earlier guided progress is retained separately; this revision starts with setup.</p>' : ''}
+        ${topoHtml}
         <details><summary>Source and verification status</summary><p class="mini">${esc(g.source)}. ${esc(g.executionStatus)} Expected results below are teaching guidance. The website does not run IOS or observe Packet Tracer.</p></details>
         <p class="guide-progress">Step ${r.index + 1} of ${g.steps.length} · ${done} confirmed · ${Object.keys(r.typed).length} typed checks ${r.completed ? '· Guided walkthrough complete' : ''}</p>
         <progress max="${g.steps.length}" value="${done}" aria-label="Steps you confirmed"></progress>

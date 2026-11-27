@@ -9,7 +9,7 @@
 
   const SOURCE_META = {
     folder: 'lab/Labs for exams no GUI/',
-    reviewedNote: 'All 11 student-visible activity instructions reviewed in Packet Tracer 9.0.1. Exact activity guides and authored practice scenarios are separate; full device execution of the guides is not verified.',
+    reviewedNote: 'All 11 student-visible activity instructions reviewed in Packet Tracer 9.0.1. Exact activity guides and authored practice scenarios are separate; Packet Tracer guide: user-validated (automated PT run not captured).',
     pendingNote: 'Course Lab 5 (.pkt/.txt) and Ch 8 Wireshark (.pcap) remain missing. Exercise 7 is confirmed standard ACL 11; Exercises 8–10 configure standard IPv4 ACLs.'
   };
 
@@ -35,7 +35,7 @@
       filename: 'Exercise 1 - Connect a Router to a LAN.pka',
       patternId: 'p1_basic_lan',
       sourceStatus: 'reviewed',
-      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; Packet Tracer guide: user-validated (no automated PT log captured).',
       nonCliFlags: ['Switch management SVIs are not configured in this activity; inability to ping switches is expected, not a router failure.'],
       notes: 'Configure R1/R2 GigabitEthernet LAN interfaces (e.g., R1 G0/0 192.168.10.1/24), add descriptions, inspect OSPF/interfaces without reconfiguring OSPF, test connectivity, and save to NVRAM.'
     },
@@ -44,7 +44,7 @@
       filename: 'Exercise 2 -Configure Initial Switch Settings.pka',
       patternId: 'p1_basic_lan',
       sourceStatus: 'reviewed',
-      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; Packet Tracer guide: user-validated (no automated PT log captured).',
       nonCliFlags: ['Check whether PC IP addressing or console cable connection is required via GUI/topology before CLI terminal access.'],
       notes: 'Initial switch hostname, enable secret, console password/login, MOTD banner, optional SVI/default-gateway if tasked, and save running-config.'
     },
@@ -53,7 +53,7 @@
       filename: 'Exercise 3 - VLAN Configuration.pka',
       patternId: 'p2_vlans',
       sourceStatus: 'reviewed',
-      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; Packet Tracer guide: user-validated (no automated PT log captured).',
       nonCliFlags: ['Verify exact VLAN IDs, case-sensitive VLAN names, and PC-facing access ports in Packet Tracer before grading.'],
       notes: 'Create and name VLANs, assign access ports, verify with show vlan brief.'
     },
@@ -62,7 +62,7 @@
       filename: 'Exercise 4 - Configure Trunks.pka',
       patternId: 'p3_trunks',
       sourceStatus: 'reviewed',
-      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; Packet Tracer guide: user-validated (no automated PT log captured).',
       nonCliFlags: ['Verify native VLAN ID and whether an allowed-VLAN list is required on both trunk ends.'],
       notes: 'Configure switchport mode trunk, native VLAN, optional allowed VLAN list, verify with show interfaces trunk.'
     },
@@ -71,7 +71,7 @@
       filename: 'Exercise 5 - Packet Tracer - Configure Secure Passwords and SSH.pka',
       patternId: 'p4_ssh',
       sourceStatus: 'reviewed',
-      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; Packet Tracer guide: user-validated (no automated PT log captured).',
       nonCliFlags: ['Check whether the image requires specific RSA modulus size (e.g., 1024) and security passwords min-length.'],
       notes: 'Configure hostname, domain-name, strong passwords, local user, RSA keys, SSH v2, VTY login local + transport input ssh.'
     },
@@ -80,7 +80,7 @@
       filename: 'Exercise 6 - Configure SSH.pka',
       patternId: 'p4_ssh',
       sourceStatus: 'reviewed',
-      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; Packet Tracer guide: user-validated (no automated PT log captured).',
       nonCliFlags: ['Verify management IP/SVI reachability and supported client SSH syntax (ssh -l <user> <ip>).'],
       notes: 'Focused SSH setup and VTY restriction (no Telnet), tested with show ip ssh and client SSH login.'
     },
@@ -89,7 +89,7 @@
       filename: 'Exercise 7 - ACL Demonstration.pka',
       patternId: 'p5_acls',
       sourceStatus: 'reviewed',
-      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; Packet Tracer guide: user-validated (no automated PT log captured).',
       nonCliFlags: ['Confirmed standard ACL 11 on R1 Serial0/0/0 out. Preserve supplied WAN addressing/routing.'],
       notes: 'ACL observation/demonstration activity; trace packet path and verify permitted vs denied flows.'
     },
@@ -98,7 +98,7 @@
       filename: 'Exercise 8 - Configure Numbered Standard IPv4 ACLs.pka',
       patternId: 'p5_acls',
       sourceStatus: 'reviewed',
-      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; Packet Tracer guide: user-validated (no automated PT log captured).',
       nonCliFlags: ['Check exact topology interfaces and allowed/blocked subnets inside Packet Tracer.'],
       notes: 'Numbered standard IPv4 ACL (1–99), wildcard mask, interface attachment (in/out), verification with show access-lists.'
     },
@@ -107,7 +107,7 @@
       filename: 'Exercise 9 - Configure Named Standard IPv4 ACLs.pka',
       patternId: 'p5_acls',
       sourceStatus: 'reviewed',
-      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; Packet Tracer guide: user-validated (no automated PT log captured).',
       nonCliFlags: ['Verify exact case-sensitive ACL name required by Packet Tracer grading.'],
       notes: 'Named standard IPv4 ACL (ip access-list standard <NAME>), ordered rules, interface attachment, verification.'
     },
@@ -116,7 +116,7 @@
       filename: 'Exercise 10 - Configure and Modify Standard IPv4 ACLs.pka',
       patternId: 'p5_acls',
       sourceStatus: 'reviewed',
-      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; Packet Tracer guide: user-validated (no automated PT log captured).',
       nonCliFlags: ['Inspect existing sequence numbers with show access-lists before removing or inserting entries.'],
       notes: 'Create/apply standard ACL and modify existing entries by sequence number without breaking rule order.'
     },
@@ -125,7 +125,7 @@
       filename: 'Exercise 11 - Implement Port Security.pka',
       patternId: 'p6_port_security',
       sourceStatus: 'reviewed',
-      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; device execution unverified.',
+      sourceDetail: 'Student-visible instructions reviewed in Packet Tracer 9.0.1; Packet Tracer guide: user-validated (no automated PT log captured).',
       nonCliFlags: ['Disconnecting/reconnecting a rogue PC cable is a physical/GUI test action, not an IOS CLI command; flag for professor accommodation if GUI is restricted.'],
       notes: 'F0/1 and F0/2: access mode, port-security, max 1, sticky MAC, violation restrict; shut down unused ports f0/3 - 24, g0/1 - 2; verify with show port-security.'
     }
@@ -828,6 +828,57 @@
             ],
             requireVerifyCmds: ['show access-lists']
           }
+        },
+        {
+          id: 'p5_vty_acl',
+          label: 'Professor Update: Authored VTY ACL (Telnet Demo)',
+          isVariant: true,
+          promptText: 'Authored reproduction of the professor screenshot: configure R1 with username admin secret cisco123, standard ACL 10 permitting ONLY PC1 (192.168.10.10) and denying any, apply access-class 10 in on line vty 0 4 with login local and transport input telnet, and verify with show access-lists and show running-config.',
+          solution: [
+            'enable',
+            'configure terminal',
+            'username admin secret cisco123',
+            'access-list 10 permit host 192.168.10.10',
+            'access-list 10 deny any',
+            'line vty 0 4',
+            'login local',
+            'transport input telnet',
+            'access-class 10 in',
+            'end',
+            'show access-lists',
+            'show running-config'
+          ],
+          recallBlanks: [
+            { prompt: 'R1(config)#', answer: 'username admin secret cisco123', hint: 'Authored local account for admin' },
+            { prompt: 'R1(config)#', answer: 'access-list 10 permit host 192.168.10.10', hint: 'Permit PC1 only (not 192.168.10.0/24)' },
+            { prompt: 'R1(config)#', answer: 'access-list 10 deny any', hint: 'Explicitly deny PC2, PC3, and all others' },
+            { prompt: 'R1(config)#', answer: 'line vty 0 4', hint: 'Select VTY lines (check show line for full range)' },
+            { prompt: 'R1(config-line)#', answer: 'login local', hint: 'Authenticate against local username database' },
+            { prompt: 'R1(config-line)#', answer: 'transport input telnet', hint: 'Isolated Telnet demo (use ssh for SSH labs)' },
+            { prompt: 'R1(config-line)#', answer: 'access-class 10 in', hint: 'Filter incoming VTY sessions (not ip access-group)' }
+          ],
+          spec: {
+            deviceType: 'router',
+            requireEnable: true,
+            requiredUsername: 'admin',
+            aclType: 'numbered',
+            aclId: '10',
+            orderedAclRules: [
+              { action: 'permit', target: 'host 192.168.10.10' },
+              { action: 'deny', target: 'any' }
+            ],
+            requiredVtyRange: '0 4',
+            requireLoginLocal: true,
+            requiredTransport: 'telnet',
+            requiredVtyAcl: {
+              aclId: '10',
+              direction: 'in',
+              vtyRanges: ['0 4'],
+              forbidSubnetTargets: ['192.168.10.0 0.0.0.255'],
+              forbidPermitAnyBeforeHost: true
+            },
+            requireVerifyCmds: ['show access-lists', 'show running-config']
+          }
         }
       ],
       troubleshoot: {
@@ -842,7 +893,60 @@
         ],
         correctIndex: 1,
         explanation: 'ACLs are evaluated top-down (first match wins). Putting permit 192.168.10.0/24 before deny host 192.168.10.50 shadows the deny rule.'
-      }
+      },
+      extraTroubleshoot: [
+        {
+          id: 'vty_ts_1',
+          title: 'Case 1 · Permitting whole subnet accidentally allows PC2',
+          output: 'R1# show access-lists\nStandard IP access list 10\n    10 permit 192.168.10.0 0.0.0.255 (4 matches)\n    20 deny any',
+          cause: '192.168.10.0 0.0.0.255 matches both PC1 (.10.10) and PC2 (.10.20).',
+          fix: 'From the console, remove the existing sequence 10 before inserting the host-only permit at sequence 10. Merely adding a permit host command leaves the broad subnet permit in place. Keep sequence 20 deny any and the VTY attachment.',
+          repairCommands: ['enable', 'configure terminal', 'ip access-list standard 10', 'no 10', '10 permit host 192.168.10.10', 'end', 'show access-lists', 'show running-config']
+        },
+        {
+          id: 'vty_ts_2',
+          title: 'Case 2 · ACL created but not attached to VTY',
+          output: 'R1# show running-config | section line vty\nline vty 0 4\n login local\n transport input telnet',
+          cause: 'ACL 10 exists globally, but "access-class 10 in" was omitted under line vty.',
+          fix: 'Enter line vty 0 4 (and all supported VTY ranges) and run "access-class 10 in".'
+        },
+        {
+          id: 'vty_ts_3',
+          title: 'Case 3 · access-class applied to wrong line or wrong direction',
+          output: 'line console 0\n access-class 10 in\nline vty 0 4\n access-class 10 out',
+          cause: 'Placed on console 0 or applied "out" (outbound Telnet from R1) instead of "in" (incoming sessions to R1).',
+          fix: 'Remove from console/out and apply "access-class 10 in" under line vty.'
+        },
+        {
+          id: 'vty_ts_4',
+          title: 'Case 4 · permit any before the host restriction',
+          output: 'R1# show access-lists\nStandard IP access list 10\n    10 permit any\n    20 permit host 192.168.10.10',
+          cause: 'First-match rule 10 permits everyone before rule 20 is evaluated.',
+          fix: 'From the console, remove the permit-any entry at sequence 10. Keep the existing host permit at sequence 20; implicit deny blocks everyone else. Verify the resulting order and the VTY attachment.',
+          repairCommands: ['enable', 'configure terminal', 'ip access-list standard 10', 'no 10', 'end', 'show access-lists', 'show running-config']
+        },
+        {
+          id: 'vty_ts_5',
+          title: 'Case 5 · Only some VTY lines protected',
+          output: 'R1# show line\n   5 vty 0 4 ... 20 vty 5 15\nline vty 0 4\n access-class 10 in\nline vty 5 15\n ! no access-class',
+          cause: 'When lines 0–4 are busy, PC2/PC3 can connect to unprotected lines 5–15.',
+          fix: 'Check "show line" and apply "access-class 10 in" across all supported VTY ranges.'
+        },
+        {
+          id: 'vty_ts_6',
+          title: 'Case 6 · Correct ACL but wrong authentication or transport',
+          output: 'line vty 0 4\n access-class 10 in\n login\n transport input ssh',
+          cause: 'PC1 is permitted by ACL 10, but "transport input ssh" rejects Telnet (or "login" ignores local username admin).',
+          fix: 'Use "login local" for username admin, and match transport input to the allowed protocol (telnet for this demo, ssh for SSH).'
+        },
+        {
+          id: 'vty_ts_7',
+          title: 'Case 7 · Interface ip access-group confused with VTY access-class',
+          output: 'interface FastEthernet0/0\n ip access-group 10 in',
+          cause: 'ip access-group filters routed transit traffic (including PC2->PC3 pings) rather than just VTY logins, and does not filter PC3 arriving on Fa0/1.',
+          fix: 'Remove ip access-group from Fa0/0 and use "access-class 10 in" under line vty.'
+        }
+      ]
     },
     {
       id: 'p6_port_security',

@@ -30,6 +30,16 @@
     return String(raw || '').trim().replace(/\s+/g, ' ');
   }
 
+  function vtyNumbers(range) {
+    const match = String(range).trim().match(/^(\d+)(?:\s+(\d+))?$/);
+    if (!match) return null;
+    const first = Number(match[1]);
+    const last = match[2] === undefined ? first : Number(match[2]);
+    // Bound work for malformed submissions; this is a trainer limit, not an IOS claim.
+    if (!Number.isSafeInteger(first) || !Number.isSafeInteger(last) || last < first || last > 4095) return null;
+    return Array.from({ length: last - first + 1 }, (_, i) => first + i);
+  }
+
   function isPromptLine(line) {
     return /^[A-Za-z0-9_-]+(?:\([a-z0-9-]+\))?[#>]\s*/i.test(line);
   }
@@ -105,11 +115,18 @@
           password: null,
           loginLocal: false,
           loginPlain: false,
-          transportInput: null
+          transportInput: null,
+          accessClass: { in: null, out: null }
         };
       }
       return state.lines[lineName];
     };
+
+    // Range selections address the same physical VTY lines. A later overlapping
+    // selection changes those lines, rather than creating an independent range.
+    const selectedLines = () => currentLine.startsWith('vty ')
+      ? vtyNumbers(currentLine.slice(4)).map(n => ensureLine(`vty ${n}`))
+      : [ensureLine(currentLine)];
 
     const ensureIf = (ifName) => {
       if (!state.interfaces[ifName]) {
@@ -211,15 +228,17 @@
         continue;
       }
 
-      const lineMatch = low.match(/^line\s+vty\s+(\d+\s+\d+)$/);
+      const lineMatch = low.match(/^line\s+vty\s+(\d+(?:\s+\d+)?)$/);
       if (lineMatch) {
         if (mode !== 'config' && !mode.startsWith('config-')) {
           errors.push(`Line ${i + 1}: "${cmd}" requires global config mode.`);
+        } else if (!vtyNumbers(lineMatch[1])) {
+          errors.push(`Line ${i + 1}: Invalid or unsupported trainer VTY range "${lineMatch[1]}".`);
         } else {
           mode = 'config-line';
           currentLine = `vty ${lineMatch[1]}`;
           currentIf = null;
-          ensureLine(currentLine);
+          selectedLines();
         }
         continue;
       }
@@ -338,24 +357,44 @@
       // Line config commands (scoped to currentLine!)
       if (low === 'login local') {
         if (mode !== 'config-line' || !currentLine) errors.push(`Line ${i + 1}: "login local" must be inside line config mode ((config-line)#).`);
-        else { ensureLine(currentLine).loginLocal = true; state.dirtySinceSave = true; }
+        else {
+          selectedLines().forEach(line => { line.loginLocal = true; line.loginPlain = false; });
+          state.dirtySinceSave = true;
+        }
         continue;
       }
       if (low === 'login') {
         if (mode !== 'config-line' || !currentLine) errors.push(`Line ${i + 1}: "login" must be inside line config mode ((config-line)#).`);
-        else { ensureLine(currentLine).loginPlain = true; state.dirtySinceSave = true; }
+        else {
+          selectedLines().forEach(line => { line.loginPlain = true; line.loginLocal = false; });
+          state.dirtySinceSave = true;
+        }
         continue;
       }
       const linePwMatch = cmd.match(/^password\s+(\S+)$/i);
       if (linePwMatch) {
         if (mode !== 'config-line' || !currentLine) errors.push(`Line ${i + 1}: "password" must be inside line config mode ((config-line)#).`);
-        else { ensureLine(currentLine).password = linePwMatch[1]; state.dirtySinceSave = true; }
+        else { selectedLines().forEach(line => { line.password = linePwMatch[1]; }); state.dirtySinceSave = true; }
         continue;
       }
       const transMatch = low.match(/^transport\s+input\s+(.+)$/);
       if (transMatch) {
         if (mode !== 'config-line' || !currentLine) errors.push(`Line ${i + 1}: "${cmd}" must be inside line config mode ((config-line)#).`);
-        else { ensureLine(currentLine).transportInput = transMatch[1].trim(); state.dirtySinceSave = true; }
+        else { selectedLines().forEach(line => { line.transportInput = transMatch[1].trim(); }); state.dirtySinceSave = true; }
+        continue;
+      }
+      const acMatch = cmd.match(/^(no\s+)?access-class\s+(\S+)\s+(in|out)$/i);
+      if (acMatch) {
+        if (mode !== 'config-line' || !currentLine || !currentLine.startsWith('vty ')) {
+          errors.push(`Line ${i + 1}: "${cmd}" must be inside VTY line configuration mode ((config-line)#).`);
+        } else {
+          const direction = acMatch[3].toLowerCase();
+          selectedLines().forEach(line => {
+            if (!acMatch[1]) line.accessClass[direction] = acMatch[2];
+            else if (line.accessClass[direction] === acMatch[2]) line.accessClass[direction] = null;
+          });
+          state.dirtySinceSave = true;
+        }
         continue;
       }
 
@@ -475,6 +514,7 @@
           errors.push(`Line ${i + 1}: Numbered ACL "${cmd}" must be entered in global config ((config)#), not ${mode}.`);
         } else {
           state.aclRules.push({ aclId: numAclMatch[1], action: numAclMatch[2], target: normalizeSpaces(numAclMatch[3]) });
+          state.dirtySinceSave = true;
         }
         continue;
       }
@@ -613,11 +653,13 @@
       }
     }
     if (spec.requiredVtyRange) {
-      const vtyKey = `vty ${spec.requiredVtyRange}`;
-      const vty = state.lines[vtyKey];
-      if (!vty) {
-        errors.push(`Expected "line ${vtyKey}", but that VTY range was not configured.`);
-      } else {
+      for (const number of vtyNumbers(spec.requiredVtyRange) || []) {
+        const vtyKey = `vty ${number}`;
+        const vty = state.lines[vtyKey];
+        if (!vty) {
+          errors.push(`Required line ${vtyKey} was not configured (cover ${spec.requiredVtyRange}).`);
+          continue;
+        }
         if (spec.requireLoginLocal && !vty.loginLocal) {
           errors.push(vty.loginPlain
             ? `Used "login" (line password) instead of "login local" on line ${vtyKey}.`
@@ -625,6 +667,40 @@
         }
         if (spec.requireTransportSsh && vty.transportInput !== 'ssh') {
           errors.push(`Expected "transport input ssh" on line ${vtyKey} (no Telnet), got "${vty.transportInput || 'default'}".`);
+        }
+        if (spec.requiredTransport && vty.transportInput !== spec.requiredTransport) {
+          errors.push(`Expected "transport input ${spec.requiredTransport}" on line ${vtyKey}, got "${vty.transportInput || 'default'}".`);
+        }
+      }
+    }
+
+    if (spec.requiredVtyAcl) {
+      const va = spec.requiredVtyAcl;
+      const rules = state.aclRules.filter(r => r.aclId === va.aclId);
+      if (va.forbidSubnetTargets) {
+        for (const sub of va.forbidSubnetTargets) {
+          if (rules.some(r => r.action === 'permit' && r.target === sub)) {
+            errors.push(`ACL ${va.aclId} permits entire subnet "${sub}", which would accidentally allow PC2. Use "permit host 192.168.10.10" instead.`);
+          }
+        }
+      }
+      if (va.forbidPermitAnyBeforeHost) {
+        const permitAnyIdx = rules.findIndex(r => r.action === 'permit' && r.target === 'any');
+        if (permitAnyIdx !== -1) {
+          errors.push(`ACL ${va.aclId} contains "permit any" (rule #${permitAnyIdx + 1}), bypassing the host-only VTY restriction.`);
+        }
+      }
+      if (state.aclAttachments.some(a => a.aclId === va.aclId)) {
+        errors.push(`ACL ${va.aclId} was attached with interface "ip access-group" instead of VTY "access-class ${va.aclId} ${va.direction}".`);
+      }
+      const requiredNumbers = new Set(va.vtyRanges.flatMap(rng => vtyNumbers(rng) || []));
+      for (const number of requiredNumbers) {
+        const lineObj = state.lines[`vty ${number}`];
+        const aclId = lineObj && lineObj.accessClass[va.direction];
+        if (!aclId) {
+          errors.push(`Missing "access-class ${va.aclId} ${va.direction}" on line vty ${number} (protect all required VTY lines).`);
+        } else if (aclId !== va.aclId) {
+          errors.push(`line vty ${number} uses access-class "${aclId}" ${va.direction} instead of "${va.aclId}".`);
         }
       }
     }
@@ -712,7 +788,7 @@
           mistakes: Array.isArray(parsed.mistakes) ? parsed.mistakes : [],
           realPt: parsed.realPt || {},
           walkthroughs: parsed.walkthroughs || {},
-          lastGuide: Number(parsed.lastGuide) || 1
+          lastGuide: parsed.lastGuide || 1
         };
       } catch (_) {
         return def;
@@ -1074,6 +1150,18 @@
             `).join('')}
           </div>
           <div id="ts-feedback" class="feedback"></div>
+          ${Array.isArray(p.extraTroubleshoot) && p.extraTroubleshoot.length ? `
+            <hr style="border-color:var(--border); margin:16px 0;">
+            <h4>Professor Update · VTY ACL Troubleshooting Cases (Simulated Output)</h4>
+            ${p.extraTroubleshoot.map(c => `
+              <details style="margin-bottom:8px;">
+                <summary style="cursor:pointer;"><strong>${this.esc(c.title)}</strong></summary>
+                <pre class="ios-pre">${this.esc(c.output)}</pre>
+                <p class="mini"><strong>Cause:</strong> ${this.esc(c.cause)}<br><strong>Fix:</strong> ${this.esc(c.fix)}</p>
+                ${c.repairCommands ? `<p class="mini">Type from the console, one command per line (check sequence numbers first):</p><pre class="ios-pre">${this.esc(c.repairCommands.join('\n'))}</pre>` : ''}
+              </details>
+            `).join('')}
+          ` : ''}
         </div>
       `;
     }

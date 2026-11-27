@@ -11,3 +11,5 @@ Start with the exam preparation plan when resuming this work. Original course PD
 - [CLI trainer study-readiness review](cli-trainer-review.md): independent test/PDF checks, two reproduced false passes, pending activity-source review, and a cheat-sheet correction.
 
 - [Command-by-command CLI walkthroughs](cli-walkthroughs.md): current implementation, exact activity coverage, tests, source fingerprints and real-device verification limitations.
+
+- [AGY handoff: accepted VTY guide and hybrid cheat sheet](agy-handoff-vty-hybrid.md): user acceptance, current fixes and validation, remaining status-wording reconciliation, and publication boundary.

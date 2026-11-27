@@ -258,6 +258,7 @@
     { id: 'q4b', title: 'Slide Q4B · p=7, q=13, e=5', source: 'Slide 21 · B', kind: 'rsa', p: 7, q: 13, e: 5, messages: [8], prompt: 'p = 7, q = 13, e = 5, M = 8. Generate the keys, encrypt M, and decrypt the ciphertext.' },
     { id: 'q4c', title: 'Slide Q4C · p=11, q=7, e=11', source: 'Slide 21 · C', kind: 'rsa', p: 11, q: 7, e: 11, messages: [7], prompt: 'p = 11, q = 7, e = 11, M = 7. Generate the keys, encrypt M, and decrypt the ciphertext.' },
     { id: 'q4d', title: 'Slide Q4D · p=5, q=31, e=13', source: 'Slide 21 · D', kind: 'rsa', p: 5, q: 31, e: 13, messages: [5], prompt: 'p = 5, q = 31, e = 13, M = 5. Generate the keys, encrypt M, and decrypt the ciphertext.' },
+    { id: 'speed_3_5', title: 'Quick RSA · p=3, q=5, e=3 (Speedup)', source: 'Authored quick-calc', kind: 'rsa', p: 3, q: 5, e: 3, text: 'b', messages: [2], prompt: 'Use A=1, B=2, … mapping with p = 3, q = 5, e = 3, and letter B (m = 2). Generate n, z, and d, encrypt m, and decrypt c.' },
     { id: 'encoding', title: 'Slide 14 · Four-digit encoding', source: 'Slide 14', kind: 'encoding', text: 'How are you?', prompt: 'Encode “How are you?” using slide 14: a=00 … z=25, A=26 … Z=51, 0=52 … 9=61, space=62, .=63, ,=64, ;=65, ?=66. Group two character codes into each four-digit block. Keep leading zeros. This question is encoding only.' }
   ];
   const EASY_PRIMES = [2, 3, 5, 7, 11];

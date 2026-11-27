@@ -58,6 +58,26 @@ check(!app.guideRecord().r.completed && app.guideRecord().r.index === 0, 'Restar
 check(app.state.walkthroughs[1].index === 1 && app.state.evidence.existing === 'independent', 'Other guides and pattern evidence survive restart');
 app.chooseGuide(999);
 check(app.activeExercise === 11, 'Invalid activity cannot change selection');
+check(Array.isArray(data.WALKTHROUGHS.supplementary) && data.WALKTHROUGHS.supplementary.length === 1, 'Supplementary guide is separate from Ex 1-11');
+const sup = data.WALKTHROUGHS.supplementary[0];
+check(sup.ex === 'prof-vty-acl' && sup.topologyTable.length === 5, 'Supplementary VTY ACL guide has stable ID and topology table');
+const commands = sup.steps.map(s => s.command);
+const baselineStart = sup.steps.findIndex(s => s.section.startsWith('Part 3'));
+const firstFilter = commands.indexOf('access-class 10 in');
+check(commands.indexOf('transport input telnet') < baselineStart && commands.indexOf('username admin secret cisco123') < baselineStart, 'Login and transport are configured before baseline');
+for (const pc of ['PC1', 'PC2', 'PC3']) {
+  const baseline = sup.steps.slice(baselineStart, firstFilter).filter(s => s.device === pc);
+  check(baseline.some(s => s.command.startsWith('telnet ')) && baseline.some(s => s.command === 'admin') && baseline.some(s => s.command === 'cisco123') && baseline.some(s => s.command === 'exit'), `${pc} baseline authenticates and closes its session`);
+  check(sup.topologyTable.find(r => r.device.startsWith(pc)).gateway, `${pc} gateway is specified`);
+}
+check(commands.indexOf('show users') > commands.indexOf('access-class 10 in') && sup.steps[commands.indexOf('show users') - 1].command === 'cisco123', 'show users follows an authenticated permitted session');
+app.state.walkthroughs['prof-vty-acl'] = { index: 12, done: { 0: true }, typed: {}, checklist: {} };
+app.chooseGuide('prof-vty-acl');
+app.moveGuide(1);
+app = new CliTrainerApp(data);
+check(app.activeExercise === 'prof-vty-acl' && app.guideRecord().r.index === 1, 'Supplementary guide ID and step survive reload');
+check(app.state.walkthroughs['prof-vty-acl'].index === 12 && app.state.walkthroughs['prof-vty-acl'].done[0], 'Earlier supplementary progress retained separately after reordering');
+check(app.state.walkthroughs['prof-vty-acl@2'].index === 1, 'Revised guide progress uses a separate persisted revision');
 store.set(STORAGE_KEY, '{bad json');
 check(new CliTrainerApp(data).guideRecord().r.index === 0, 'Corrupt storage recovers safely');
 app.clearProgress();

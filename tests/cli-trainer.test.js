@@ -110,4 +110,42 @@ const p5Modify = p5.extraScenarios.find(s => s.id === 'p5_modify_acl');
 ok(evaluateCliSubmission(p5Modify.solution.join('\n'), p5Modify.spec).passed, 'Named ACL sequence modification (no 10 + 10 deny ...) passes');
 ok(!evaluateCliSubmission('enable\nconfigure terminal\nip access-list standard BRANCH_FILTER\n30 deny 192.168.20.0 0.0.0.255\nend\nshow access-lists', p5Modify.spec).passed, 'Named ACL modification rejects unremoved seq 10 / wrong order');
 
-console.log(`${checks} CLI-trainer checks passed: 11 activities, 6 patterns, semantic IOS modes/ACLs/trunks/SSH/port-security, coherent variants, and reload/credit protection.`);
+// 12. Professor Update: VTY ACL (access-class) semantic checks
+const p5Vty = p5.extraScenarios.find(s => s.id === 'p5_vty_acl');
+ok(evaluateCliSubmission(p5Vty.solution.join('\n'), p5Vty.spec).passed, 'VTY ACL authored example (host 192.168.10.10 + access-class 10 in) passes');
+ok(!evaluateCliSubmission(p5Vty.solution.join('\n').replace('access-list 10 permit host 192.168.10.10', 'access-list 10 permit 192.168.10.0 0.0.0.255'), p5Vty.spec).passed, 'VTY ACL rejects subnet-wide permit 192.168.10.0/24 that would allow PC2');
+ok(!evaluateCliSubmission(p5Vty.solution.join('\n').replace('access-class 10 in\n', ''), p5Vty.spec).passed, 'VTY ACL rejects unattached ACL (missing access-class)');
+ok(!evaluateCliSubmission(p5Vty.solution.join('\n').replace('access-class 10 in', 'access-class 10 out'), p5Vty.spec).passed, 'VTY ACL rejects wrong direction (out instead of in)');
+ok(!evaluateCliSubmission(p5Vty.solution.join('\n').replace('line vty 0 4\nlogin local\ntransport input telnet\naccess-class 10 in', 'line vty 0 4\nlogin local\ntransport input telnet\nexit\ninterface g0/0\nip access-group 10 in'), p5Vty.spec).passed, 'VTY ACL rejects interface ip access-group used instead of VTY access-class');
+ok(!evaluateCliSubmission('enable\nconfigure terminal\nusername admin secret cisco123\naccess-list 10 permit any\naccess-list 10 permit host 192.168.10.10\nline vty 0 4\nlogin local\ntransport input telnet\naccess-class 10 in\nend\nshow access-lists\nshow running-config', p5Vty.spec).passed, 'VTY ACL rejects permit any before host restriction');
+ok(!evaluateCliSubmission(p5Vty.solution.join('\n').replace('line vty 0 4', 'line vty 0 1'), p5Vty.spec).passed, 'VTY ACL rejects partial VTY range (0 1 when 0 4 required)');
+
+// Effective VTY state: later overlapping selections, equivalent ranges and directions.
+const vtySolution = p5Vty.solution.join('\n');
+const insertBeforeEnd = commands => vtySolution.replace('\nend\n', '\n' + commands + '\nend\n');
+const overridingAcl = 'exit\naccess-list 11 permit any\nline vty 0 3\nlogin local\ntransport input telnet\naccess-class 11 in';
+ok(!evaluateCliSubmission(insertBeforeEnd(overridingAcl), p5Vty.spec).passed, 'Later overlapping VTY range cannot bypass the incoming ACL');
+const splitVty = vtySolution.replace('line vty 0 4\nlogin local\ntransport input telnet\naccess-class 10 in', 'line vty 0 1\nlogin local\ntransport input telnet\naccess-class 10 in\nexit\nline vty 2 4\nlogin local\ntransport input telnet\naccess-class 10 in');
+ok(evaluateCliSubmission(splitVty, p5Vty.spec).passed, 'Equivalent split ranges cover every required line');
+const overlapRestored = insertBeforeEnd(overridingAcl + '\nline vty 0 3\naccess-class 10 in');
+ok(evaluateCliSubmission(overlapRestored, p5Vty.spec).passed, 'Restoring the restricted incoming ACL on the changed lines passes');
+const bothDirections = evaluateCliSubmission(insertBeforeEnd('access-class 11 out'), p5Vty.spec);
+ok(bothDirections.passed && bothDirections.state.lines['vty 0'].accessClass.in === '10' && bothDirections.state.lines['vty 0'].accessClass.out === '11', 'Outgoing ACL does not replace the incoming ACL');
+ok(!evaluateCliSubmission(insertBeforeEnd('line vty 2\nno access-class 10 in'), p5Vty.spec).passed, 'Removing incoming ACL on one selected line is detected');
+ok(!evaluateCliSubmission(insertBeforeEnd('line vty 2\nlogin'), p5Vty.spec).passed, 'Later plain login replaces login local on that single line');
+ok(!evaluateCliSubmission(insertBeforeEnd('line vty 2 3\ntransport input ssh'), p5Vty.spec).passed, 'Later transport change affects overlapping lines');
+ok(evaluateCliSubmission(insertBeforeEnd('line vty 2\naccess-class 10 in'), p5Vty.spec).passed, 'Single-line selection is valid and preserves other settings');
+ok(!evaluateCliSubmission(vtySolution.replace('line vty 0 4', 'line vty 4 0'), p5Vty.spec).passed, 'Reversed VTY range rejected');
+ok(!evaluateCliSubmission(vtySolution.replace('line vty 0 4', 'line console 0'), p5Vty.spec).passed, 'Console access-class cannot substitute for VTY filtering');
+const repair = p5.extraTroubleshoot.find(c => c.id === 'vty_ts_1');
+const brokenRules = [{ aclId: '10', seq: 10, action: 'permit', target: '192.168.10.0 0.0.0.255' }, { aclId: '10', seq: 20, action: 'deny', target: 'any' }];
+const repairSpec = { requireEnable: true, initialAclRules: brokenRules, aclId: '10', orderedAclRules: p5Vty.spec.orderedAclRules, requireVerifyCmds: ['show access-lists', 'show running-config'] };
+const repaired = evaluateCliSubmission(repair.repairCommands.join('\n'), repairSpec);
+ok(repaired.passed && repaired.state.aclRules.length === 2 && !repaired.state.aclRules.some(r => r.target === '192.168.10.0 0.0.0.255'), 'Published repair removes the broad rule and preserves deny any');
+ok(!evaluateCliSubmission(repair.repairCommands.filter(c => c !== 'no 10').join('\n').replace('10 permit host', 'permit host'), repairSpec).passed, 'Adding a host permit without removing the broad rule is not a repair');
+
+const anyRepair = p5.extraTroubleshoot.find(c => c.id === 'vty_ts_4');
+const anyRepairResult = evaluateCliSubmission(anyRepair.repairCommands.join('\n'), { ...repairSpec, initialAclRules: [{ aclId: '10', seq: 10, action: 'permit', target: 'any' }, { aclId: '10', seq: 20, action: 'permit', target: 'host 192.168.10.10' }], orderedAclRules: [p5Vty.spec.orderedAclRules[0]] });
+ok(anyRepairResult.passed && anyRepairResult.state.aclRules.length === 1 && anyRepairResult.state.aclRules[0].target === 'host 192.168.10.10', 'Permit-any repair preserves only the existing host permit and implicit deny');
+
+console.log(`${checks} CLI-trainer checks passed: 11 activities, 6 patterns, semantic IOS modes/ACLs/VTY-access-class/trunks/SSH/port-security, coherent variants, and reload/credit protection.`);
